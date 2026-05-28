@@ -1,15 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { 
   Github, 
   Linkedin, 
   Mail, 
-  Plus, 
-  Trash2, 
-  Edit3, 
-  Save, 
   ExternalLink, 
   Sparkles, 
   Award, 
@@ -18,18 +14,15 @@ import {
   Shield, 
   Code, 
   Flame, 
-  Cpu, 
   CheckCircle, 
   X,
+  FileText,
+  Terminal as TerminalIcon,
+  ChevronRight,
+  User,
+  Activity,
   Layers,
-  Heart,
-  Palette,
-  Lock,
-  Unlock,
-  KeyRound,
-  Send,
-  Loader2,
-  Trash
+  Heart
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Perspective, Highlight } from "@/components/ui/perspective-highlight";
@@ -38,7 +31,7 @@ import { SplineScene } from "@/components/ui/splite";
 import { Spotlight } from "@/components/ui/spotlight";
 import { SpotlightHover } from "@/components/ui/spotlight-hover";
 
-const INITIAL_PROFILE = {
+const PROFILE_DATA = {
   name: "Vivek Goud Shaganti",
   title: "Full Stack Engineer & Blockchain Developer",
   email: "vivekshaganti@gmail.com",
@@ -139,188 +132,78 @@ const INITIAL_PROFILE = {
       link: "#",
       liveLink: "#"
     }
+  ],
+  stats: [
+    { label: "CGPA", value: "9.21" },
+    { label: "Hackathons", value: "4+" },
+    { label: "Projects Built", value: "8+" },
+    { label: "Club VP Roles", value: "1" }
   ]
 };
 
 type ThemeMode = "volt" | "amber" | "chrome";
 
 export default function Home() {
-  const [profile, setProfile] = useState(INITIAL_PROFILE);
-  const [isEditMode, setIsEditMode] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>("volt");
   const [activeTab, setActiveTab] = useState("all");
   
-  // Customizer OTP Verification State
-  const [showOtpModal, setShowOtpModal] = useState(false);
-  const [otpInput, setOtpInput] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpLoading, setOtpLoading] = useState(false);
-  const [otpError, setOtpError] = useState("");
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  // Custom interactive terminal state
+  const [terminalInput, setTerminalInput] = useState("");
+  const [terminalHistory, setTerminalHistory] = useState<string[]>([
+    "System Initialized. Welcome to Vivek's Command Interface.",
+    "Type 'help' to see list of operational commands."
+  ]);
+  const terminalEndRef = useRef<HTMLDivElement>(null);
 
-  // Advanced customization panel state
-  const [showAdminPanel, setShowAdminPanel] = useState(false);
-  const [adminTab, setAdminTab] = useState<"summary" | "skills" | "experience" | "academics" | "projects">("summary");
-  
-  // Editing individual item models
-  const [editingProject, setEditingProject] = useState<any>(null);
+  // Mouse cursor coordinate state
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  // Load profile & auth state on mount
   useEffect(() => {
-    const savedProfile = localStorage.getItem("vivek_portfolio_profile");
-    if (savedProfile) {
-      try {
-        setProfile(JSON.parse(savedProfile));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    const savedAuth = sessionStorage.getItem("vivek_portfolio_authorized");
-    if (savedAuth === "true") {
-      setIsAuthorized(true);
-    }
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  const saveProfile = (newProfile: typeof INITIAL_PROFILE) => {
-    setProfile(newProfile);
-    localStorage.setItem("vivek_portfolio_profile", JSON.stringify(newProfile));
-  };
+  useEffect(() => {
+    terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [terminalHistory]);
 
-  const handleSendOtp = async () => {
-    setOtpLoading(true);
-    setOtpError("");
-    try {
-      const res = await fetch("/api/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "vivekshaganti@gmail.com" })
-      });
-      if (res.ok) {
-        setOtpSent(true);
-      } else {
-        const err = await res.json();
-        setOtpError(err.error || "Failed to trigger OTP.");
-      }
-    } catch (e) {
-      setOtpError("Network connection error.");
-    } finally {
-      setOtpLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
+  const handleTerminalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setOtpLoading(true);
-    setOtpError("");
-    try {
-      const res = await fetch("/api/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ otp: otpInput })
-      });
-      if (res.ok) {
-        setIsAuthorized(true);
-        sessionStorage.setItem("vivek_portfolio_authorized", "true");
-        setIsEditMode(true);
-        setShowOtpModal(false);
-        setShowAdminPanel(true); // Open edit dashboard automatically!
-      } else {
-        const err = await res.json();
-        setOtpError(err.error || "Invalid OTP entered.");
-      }
-    } catch (e) {
-      setOtpError("Validation process failed.");
-    } finally {
-      setOtpLoading(false);
+    const cmd = terminalInput.trim().toLowerCase();
+    if (!cmd) return;
+
+    let response = "";
+    switch (cmd) {
+      case "help":
+        response = "Available commands: about, skills, projects, clear, stats";
+        break;
+      case "about":
+        response = `Profile: ${PROFILE_DATA.name} | ${PROFILE_DATA.title}. Bio: ${PROFILE_DATA.bio}`;
+        break;
+      case "skills":
+        response = `Arsenal: Languages: ${PROFILE_DATA.skills.languages.join(", ")}; Frontend: ${PROFILE_DATA.skills.frontend.join(", ")}; Backend: ${PROFILE_DATA.skills.backend.join(", ")}`;
+        break;
+      case "projects":
+        response = `Active Nodes: ${PROFILE_DATA.projects.map(p => p.title).join(" | ")}`;
+        break;
+      case "stats":
+        response = `Metrics: CGPA: 9.21, Hackathons: 4+, System Projects: 8+, VP Blockchain Club: 1`;
+        break;
+      case "clear":
+        setTerminalHistory([]);
+        setTerminalInput("");
+        return;
+      default:
+        response = `Command not recognized: '${cmd}'. Type 'help' for instructions.`;
     }
+
+    setTerminalHistory(prev => [...prev, `> ${terminalInput}`, response]);
+    setTerminalInput("");
   };
 
-  const handleCustomizeClick = () => {
-    if (isEditMode) {
-      setIsEditMode(false);
-      setShowAdminPanel(false);
-    } else if (isAuthorized) {
-      setIsEditMode(true);
-      setShowAdminPanel(true);
-    } else {
-      setShowOtpModal(true);
-    }
-  };
-
-  // Add Project
-  const handleAddProject = () => {
-    const newProj = {
-      id: Date.now().toString(),
-      title: "New Simulation Node",
-      category: "AI & Web3",
-      tech: ["Next.js", "TypeScript"],
-      description: "Interactive simulation node demonstrating hardware execution acceleration.",
-      link: "https://github.com/vivek-shaganti1",
-      liveLink: "https://github.com/vivek-shaganti1"
-    };
-    const updated = {
-      ...profile,
-      projects: [newProj, ...profile.projects]
-    };
-    saveProfile(updated);
-    setEditingProject(newProj);
-  };
-
-  const handleDeleteProject = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (confirm("Are you sure you want to remove this project?")) {
-      const updated = {
-        ...profile,
-        projects: profile.projects.filter(p => p.id !== id)
-      };
-      saveProfile(updated);
-      if (editingProject?.id === id) setEditingProject(null);
-    }
-  };
-
-  // Skill Editor Helpers
-  const handleSkillChange = (category: string, value: string) => {
-    const arr = value.split(",").map(s => s.trim()).filter(Boolean);
-    saveProfile({
-      ...profile,
-      skills: {
-        ...profile.skills,
-        [category]: arr
-      }
-    });
-  };
-
-  // Experience Editor Helpers
-  const handleAddExperience = () => {
-    const newExp = {
-      role: "New Role",
-      company: "New Company",
-      duration: "Duration",
-      description: "Describe details of your responsibilities and achievements."
-    };
-    saveProfile({
-      ...profile,
-      experience: [...profile.experience, newExp]
-    });
-  };
-
-  const handleEditExperience = (index: number, field: string, value: string) => {
-    const list = [...profile.experience];
-    list[index] = { ...list[index], [field]: value };
-    saveProfile({
-      ...profile,
-      experience: list
-    });
-  };
-
-  const handleDeleteExperience = (index: number) => {
-    saveProfile({
-      ...profile,
-      experience: profile.experience.filter((_, i) => i !== index)
-    });
-  };
-
-  // Theme styling configurations
   const themeColors = {
     volt: {
       primary: "text-[#CCFF00]",
@@ -329,7 +212,6 @@ export default function Home() {
       bg: "bg-[#CCFF00]/10",
       glow: "shadow-[#CCFF00]/10",
       accentGrad: "from-[#CCFF00] via-[#8dfa00] to-emerald-400",
-      highlight: "volt",
       lineColor: "#CCFF00"
     },
     amber: {
@@ -339,7 +221,6 @@ export default function Home() {
       bg: "bg-[#FFDE21]/10",
       glow: "shadow-[#FFDE21]/10",
       accentGrad: "from-[#FFDE21] via-orange-400 to-red-500",
-      highlight: "red",
       lineColor: "#FFDE21"
     },
     chrome: {
@@ -349,32 +230,36 @@ export default function Home() {
       bg: "bg-sky-400/10",
       glow: "shadow-sky-400/10",
       accentGrad: "from-white via-sky-300 to-indigo-400",
-      highlight: "purple",
       lineColor: "#38bdf8"
     }
   };
 
   const currentTheme = themeColors[themeMode];
   const categories = ["all", "AI & Web3", "Developer Tooling", "Automation", "Web App"];
-  const filteredProjects = activeTab === "all" ? profile.projects : profile.projects.filter(p => p.category === activeTab);
+  const filteredProjects = activeTab === "all" ? PROFILE_DATA.projects : PROFILE_DATA.projects.filter(p => p.category === activeTab);
 
   return (
     <div className={cn(
-      "relative min-h-screen bg-[#060608] text-[#e4e4e7] selection:bg-zinc-800 selection:text-white font-sans antialiased overflow-x-hidden transition-colors duration-500",
+      "relative min-h-screen bg-[#050507] text-[#e4e4e7] selection:bg-zinc-800 selection:text-white font-sans antialiased overflow-x-hidden transition-colors duration-500",
       themeMode
     )}>
       
-      {/* Dynamic Ambient Background Sparkles & Liquid Filters */}
-      <div className="absolute top-0 left-1/4 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-zinc-900/10 blur-[130px] pointer-events-none" />
+      {/* Premium Glow Spotlights & Floating Interactive Cursor Particle */}
+      <div 
+        className="pointer-events-none fixed top-0 left-0 w-8 h-8 rounded-full border border-white/10 bg-white/5 blur-md z-50 transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-75"
+        style={{ left: `${mousePosition.x}px`, top: `${mousePosition.y}px` }}
+      />
+
+      <div className="absolute top-0 left-1/4 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-zinc-900/5 blur-[130px] pointer-events-none" />
       <div className={cn(
-        "absolute top-[20%] right-10 w-[700px] h-[700px] rounded-full blur-[180px] pointer-events-none transition-all duration-1000 opacity-15",
+        "absolute top-[20%] right-10 w-[700px] h-[700px] rounded-full blur-[180px] pointer-events-none transition-all duration-1000 opacity-10",
         themeMode === "volt" && "bg-[#CCFF00]",
         themeMode === "amber" && "bg-[#FFDE21]",
         themeMode === "chrome" && "bg-sky-500"
       )} />
 
-      {/* FLOATING HEADER */}
-      <header className="sticky top-0 z-40 w-full border-b border-zinc-900 bg-[#060608]/90 backdrop-blur-md">
+      {/* FLOATING HEADER NAVBAR */}
+      <header className="sticky top-0 z-40 w-full border-b border-zinc-900/60 bg-[#050507]/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-6 md:px-8">
           
           {/* Logo "V" style */}
@@ -408,58 +293,47 @@ export default function Home() {
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-wider text-zinc-500">
             <a href="#about" className="hover:text-white transition-colors">About</a>
-            <a href="#spline-hero" className="hover:text-white transition-colors">3D View</a>
+            <a href="#spline-hero" className="hover:text-white transition-colors">3D Model</a>
             <a href="#skills" className="hover:text-white transition-colors">Skills</a>
             <a href="#projects" className="hover:text-white transition-colors">Projects</a>
-            <a href="#experience" className="hover:text-white transition-colors">Experience</a>
+            <a href="#experience" className="hover:text-white transition-colors">Journey</a>
           </nav>
 
           <div className="flex items-center gap-4">
-            {/* Theme switcher */}
+            {/* Color switcher panel */}
             <div className="flex items-center gap-1.5 bg-zinc-950 border border-zinc-900 p-1 rounded-full">
               <button 
                 onClick={() => setThemeMode("volt")} 
                 className={cn("w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all", themeMode === "volt" ? "bg-[#CCFF00] text-black scale-110" : "text-zinc-600 hover:text-white")}
+                title="Volt Green Theme"
               >
                 V
               </button>
               <button 
                 onClick={() => setThemeMode("amber")} 
                 className={cn("w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all", themeMode === "amber" ? "bg-[#FFDE21] text-black scale-110" : "text-zinc-600 hover:text-white")}
+                title="Amber Theme"
               >
                 A
               </button>
               <button 
                 onClick={() => setThemeMode("chrome")} 
                 className={cn("w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all", themeMode === "chrome" ? "bg-sky-400 text-black scale-110" : "text-zinc-600 hover:text-white")}
+                title="Ice Blue Theme"
               >
                 C
               </button>
             </div>
 
-            {/* Customize Mode Lock toggle */}
-            <button 
-              onClick={handleCustomizeClick}
-              className={cn(
-                "flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] uppercase font-bold tracking-wider transition-all duration-300",
-                isEditMode 
-                  ? "bg-red-600 text-white" 
-                  : "bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-white"
-              )}
+            {/* Resume PDF download shortcut */}
+            <a 
+              href="/Vivek Goud Shaganti CV.pdf" 
+              download
+              className="flex items-center gap-2 rounded-full px-4 py-1.5 bg-zinc-950 border border-zinc-800 text-[10px] font-bold uppercase tracking-wider text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors"
             >
-              {isEditMode ? <Unlock className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
-              {isEditMode ? "Lock Panel" : "Customize"}
-            </button>
-
-            {isEditMode && (
-              <button 
-                onClick={() => setShowAdminPanel(!showAdminPanel)}
-                className="bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-white rounded-full p-2"
-                title="Toggle Dashboard Editor"
-              >
-                <Layers className="h-3.5 w-3.5" />
-              </button>
-            )}
+              <FileText className="h-3.5 w-3.5" />
+              Resume
+            </a>
           </div>
         </div>
       </header>
@@ -467,34 +341,34 @@ export default function Home() {
       {/* MAIN CONTAINER */}
       <main className="mx-auto max-w-7xl px-6 py-12 md:px-8 space-y-24 md:space-y-36 relative z-10">
 
-        {/* 3D INTERACTIVE HERO ELEMENT */}
+        {/* 3D INTERACTIVE ROBOT HERO SECTION */}
         <section id="spline-hero" className="relative w-full rounded-2xl border border-zinc-900 bg-black/60 overflow-hidden shadow-2xl">
           <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="rgba(255,255,255,0.06)" />
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[500px]">
             {/* Left Content */}
             <div className="lg:col-span-6 p-8 md:p-12 flex flex-col justify-center space-y-6 z-10 relative">
               <div className="inline-flex items-center gap-2 rounded-full bg-zinc-950 border border-zinc-850 px-3 py-1 text-[10px] text-zinc-400 w-fit font-mono tracking-widest uppercase">
                 <Sparkles className={cn("h-3.5 w-3.5", currentTheme.primary)} />
-                System Core Live Preview
+                Operational System Command Interface
               </div>
 
               <div className="space-y-2">
                 <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white font-mono leading-none">
-                  {profile.name}
+                  {PROFILE_DATA.name}
                 </h1>
                 <p className={cn("text-sm md:text-base font-bold font-mono tracking-widest uppercase", currentTheme.primary)}>
-                  {profile.title}
+                  {PROFILE_DATA.title}
                 </p>
               </div>
 
               <p className="text-zinc-400 text-xs md:text-sm leading-relaxed max-w-lg font-mono">
-                Ingesting direct telemetry from your workspace. Fully customizable live portfolio tracking experience. Interactive 3D robotic model loading modules to visualize structural hardware processes.
+                BTech Computer Science undergraduate specializing in backend core, React frontend architectures, automated AI nodes, and blockchain smart contracts.
               </p>
 
               <div className="flex flex-wrap gap-3 pt-2">
                 <a 
-                  href={profile.linkedin}
+                  href={PROFILE_DATA.linkedin}
                   target="_blank"
                   rel="noreferrer"
                   className={cn(
@@ -506,7 +380,7 @@ export default function Home() {
                   Connect
                 </a>
                 <a 
-                  href={profile.github}
+                  href={PROFILE_DATA.github}
                   target="_blank"
                   rel="noreferrer"
                   className={cn(
@@ -526,13 +400,29 @@ export default function Home() {
                 scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
                 className="w-full h-full absolute inset-0"
               />
-              {/* Scan holographic visual overlay */}
-              <div className="absolute top-0 left-0 w-full h-[2px] bg-cyan-400/20 animate-bounce pointer-events-none" />
+              <div className="absolute top-0 left-0 w-full h-[2px] bg-cyan-400/10 animate-pulse pointer-events-none" />
             </div>
           </div>
         </section>
 
-        {/* BIO SUMMARY SECTION */}
+        {/* SYSTEM STATS METRICS GRID */}
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {PROFILE_DATA.stats.map((stat, index) => (
+            <div 
+              key={index}
+              className="rounded-xl border border-zinc-900 bg-[#09090b]/40 p-6 text-center backdrop-blur-md relative overflow-hidden group hover:border-zinc-800 transition-all"
+            >
+              <span className={cn("block text-2xl md:text-4xl font-black font-mono tracking-tight", currentTheme.primary)}>
+                {stat.value}
+              </span>
+              <span className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-1">
+                {stat.label}
+              </span>
+            </div>
+          ))}
+        </section>
+
+        {/* PROFILE/BIO SUMMARY SECTION */}
         <section id="about" className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-6">
             <h2 className="text-2xl md:text-3xl font-black font-mono tracking-wider text-white">
@@ -540,9 +430,9 @@ export default function Home() {
             </h2>
             
             <Perspective className="max-w-none">
-              <div className="bg-[#0b0b0d]/70 backdrop-blur-xl border border-zinc-900 rounded-2xl p-6 md:p-8 space-y-6 relative overflow-hidden">
+              <div className="bg-[#0b0b0d]/70 backdrop-blur-xl border border-zinc-900 rounded-2xl p-6 md:p-8 space-y-6">
                 <p className="text-zinc-400 leading-relaxed text-sm md:text-base font-mono">
-                  {profile.bio}
+                  {PROFILE_DATA.bio}
                 </p>
                 <div className="flex flex-wrap gap-2 pt-2">
                   <Highlight color="green">Anurag University</Highlight>
@@ -553,7 +443,7 @@ export default function Home() {
             </Perspective>
           </div>
 
-          {/* Fixed CPU Visualizer */}
+          {/* CPU Visualizer */}
           <div className="lg:col-span-5">
             <div className="rounded-xl border border-zinc-900 bg-[#09090b]/40 p-6 md:p-8 backdrop-blur-xl relative overflow-hidden group shadow-2xl">
               <CpuArchitecture 
@@ -569,7 +459,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* SKILLS SECTION */}
+        {/* SKILLS ARSENAL */}
         <section id="skills" className="space-y-8">
           <div className="flex flex-col gap-2">
             <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
@@ -581,7 +471,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.entries(profile.skills).map(([category, items]) => (
+            {Object.entries(PROFILE_DATA.skills).map(([category, items]) => (
               <div 
                 key={category}
                 className="rounded-xl border border-zinc-900 bg-zinc-950/40 p-6 backdrop-blur-md relative overflow-hidden"
@@ -604,6 +494,46 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* INTERACTIVE HACKER COMMAND TERMINAL */}
+        <section className="space-y-6">
+          <div className="flex flex-col gap-1">
+            <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
+              Sandbox Console Interface
+            </span>
+            <h2 className="text-xl md:text-2xl font-bold font-mono text-white">
+              Command Terminal
+            </h2>
+          </div>
+
+          <div className="rounded-xl border border-zinc-900 bg-black p-6 font-mono text-xs md:text-sm text-zinc-300 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-2 right-4 flex items-center gap-1.5 opacity-50">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+            </div>
+
+            <div className="h-40 overflow-y-auto space-y-2 pr-2">
+              {terminalHistory.map((line, idx) => (
+                <div key={idx} className="whitespace-pre-wrap leading-relaxed">
+                  {line}
+                </div>
+              ))}
+              <div ref={terminalEndRef} />
+            </div>
+
+            <form onSubmit={handleTerminalSubmit} className="mt-4 pt-3 border-t border-zinc-900 flex items-center gap-2">
+              <ChevronRight className={cn("h-4 w-4 shrink-0", currentTheme.primary)} />
+              <input 
+                type="text" 
+                value={terminalInput}
+                onChange={e => setTerminalInput(e.target.value)}
+                placeholder="Type command (help, stats, about)..."
+                className="w-full bg-transparent border-none outline-none text-white font-mono placeholder-zinc-700 text-xs md:text-sm"
+              />
+            </form>
           </div>
         </section>
 
@@ -648,7 +578,7 @@ export default function Home() {
                   currentTheme.borderHover
                 )}
               >
-                {/* Spotlight hover effect inside card */}
+                {/* Spotlight hover effect */}
                 <SpotlightHover size={150} className="from-zinc-800/10 via-zinc-700/10 to-transparent" />
 
                 <div className="space-y-4 relative z-10">
@@ -718,7 +648,7 @@ export default function Home() {
             </h2>
 
             <div className="relative border-l border-zinc-900 pl-6 space-y-8 ml-2">
-              {profile.experience.map((exp, idx) => (
+              {PROFILE_DATA.experience.map((exp, idx) => (
                 <div key={idx} className="relative group">
                   <span className={cn(
                     "absolute -left-[31px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full border bg-zinc-950",
@@ -756,24 +686,66 @@ export default function Home() {
                 </div>
                 <div className="space-y-2">
                   <h3 className="font-bold text-white text-xs md:text-sm font-mono">
-                    {profile.education.institution}
+                    {PROFILE_DATA.education.institution}
                   </h3>
                   <p className="text-[11px] text-zinc-400 font-mono">
-                    {profile.education.degree}
+                    {PROFILE_DATA.education.degree}
                   </p>
                   <p className="text-[10px] font-mono text-zinc-500">
-                    {profile.education.duration}
+                    {PROFILE_DATA.education.duration}
                   </p>
                   <span className={cn(
                     "inline-block mt-2 px-2.5 py-0.5 rounded text-[10px] font-mono border",
                     currentTheme.primary,
                     currentTheme.border
                   )}>
-                    {profile.education.grade}
+                    {PROFILE_DATA.education.grade}
                   </span>
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* ACHIEVEMENTS & CERTIFICATIONS */}
+        <section id="achievements" className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Achievements */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 pb-2 border-b border-zinc-900">
+              <Flame className="h-5 w-5 text-pink-500" />
+              <h3 className="font-mono font-bold text-lg text-white">
+                Achievements & Awards
+              </h3>
+            </div>
+            <ul className="space-y-3.5">
+              {PROFILE_DATA.achievements.map((ach, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-xs md:text-sm text-zinc-300">
+                  <CheckCircle className="h-4 w-4 shrink-0 text-pink-500 mt-0.5" />
+                  <span>{ach}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Certifications */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 pb-2 border-b border-zinc-900">
+              <Shield className="h-5 w-5 text-purple-500" />
+              <h3 className="font-mono font-bold text-lg text-white">
+                Professional Certifications
+              </h3>
+            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {PROFILE_DATA.certifications.map((cert, idx) => (
+                <li 
+                  key={idx} 
+                  className="flex items-center gap-2 rounded bg-zinc-900/40 border border-zinc-800/80 p-2.5 text-xs text-zinc-300 hover:border-zinc-700/80 transition-colors font-mono"
+                >
+                  <div className="h-2 w-2 rounded-full bg-purple-500 shrink-0" />
+                  <span className="line-clamp-2">{cert}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
       </main>
@@ -790,412 +762,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      {/* SECURITY OTP AUTH MODAL */}
-      <AnimatePresence>
-        {showOtpModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-xl border border-zinc-800 bg-[#0c0c0e] p-6 shadow-2xl relative"
-            >
-              <button 
-                onClick={() => {
-                  setShowOtpModal(false);
-                  setOtpSent(false);
-                  setOtpInput("");
-                  setOtpError("");
-                }}
-                className="absolute top-4 right-4 text-zinc-500 hover:text-white"
-              >
-                <X className="h-4 w-4" />
-              </button>
-              
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className={cn("h-12 w-12 rounded-full border flex items-center justify-center bg-zinc-950", currentTheme.border)}>
-                  <KeyRound className={cn("h-5 w-5", currentTheme.primary)} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold font-mono text-white">Security Validation</h3>
-                  <p className="text-xs text-zinc-500 font-mono mt-1">
-                    Authenticating access to customize vivekshaganti@gmail.com profile configuration.
-                  </p>
-                </div>
-
-                {!otpSent ? (
-                  <button 
-                    onClick={handleSendOtp}
-                    disabled={otpLoading}
-                    className="w-full py-2.5 rounded bg-zinc-900 border border-zinc-800 text-xs font-mono font-bold text-white hover:bg-zinc-850 flex items-center justify-center gap-2"
-                  >
-                    {otpLoading && <Loader2 className="h-3 w-3 animate-spin" />}
-                    SEND_OTP_KEY
-                  </button>
-                ) : (
-                  <form onSubmit={handleVerifyOtp} className="w-full space-y-3 pt-2">
-                    <input 
-                      type="text"
-                      value={otpInput}
-                      onChange={e => setOtpInput(e.target.value)}
-                      placeholder="Enter 6-digit OTP code"
-                      maxLength={6}
-                      className={cn(
-                        "w-full bg-zinc-950 border rounded px-3 py-2 text-sm text-center text-white tracking-widest font-mono focus:outline-none focus:ring-1",
-                        otpError ? "border-red-500 focus:ring-red-500" : "border-zinc-800 focus:ring-purple-500"
-                      )}
-                      required
-                    />
-                    {otpError && (
-                      <span className="text-[10px] text-red-500 font-mono block">
-                        {otpError}
-                      </span>
-                    )}
-                    <span className="text-[10px] text-zinc-500 font-mono block">
-                      OTP has been outputted to terminal console and written in .otp.txt file.
-                    </span>
-                    <button 
-                      type="submit"
-                      disabled={otpLoading}
-                      className="w-full py-2 rounded bg-zinc-900 border border-zinc-800 text-xs font-mono font-bold text-white hover:bg-zinc-850 flex items-center justify-center gap-2"
-                    >
-                      {otpLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                      VERIFY_KEY
-                    </button>
-                  </form>
-                )}
-
-                {otpError && !otpSent && (
-                  <span className="text-xs text-red-500 font-mono">{otpError}</span>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* FULL CUSTOMIZATION ADMIN DRAWER PANEL */}
-      <AnimatePresence>
-        {isEditMode && showAdminPanel && (
-          <motion.div 
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 20 }}
-            className="fixed top-0 right-0 h-full w-full max-w-lg bg-[#0a0a0c] border-l border-zinc-900 shadow-2xl z-50 flex flex-col justify-between"
-          >
-            {/* Drawer Header */}
-            <div className="p-6 border-b border-zinc-900 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Edit3 className={cn("h-4 w-4", currentTheme.primary)} />
-                <h3 className="text-sm font-bold font-mono text-white">Operational Customizer</h3>
-              </div>
-              <button 
-                onClick={() => setShowAdminPanel(false)}
-                className="text-zinc-500 hover:text-white"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* Sidebar Tabs */}
-            <div className="flex border-b border-zinc-900 px-6 overflow-x-auto text-[10px] font-mono font-bold gap-2">
-              {(["summary", "skills", "experience", "academics", "projects"] as const).map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setAdminTab(tab)}
-                  className={cn(
-                    "py-3 border-b-2 transition-colors uppercase whitespace-nowrap",
-                    adminTab === tab ? "border-[#CCFF00] text-white" : "border-transparent text-zinc-500 hover:text-zinc-300"
-                  )}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-
-            {/* Content Body */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              
-              {/* Tab 1: Summary/Bio */}
-              {adminTab === "summary" && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Name</label>
-                    <input 
-                      type="text" 
-                      value={profile.name}
-                      onChange={e => saveProfile({...profile, name: e.target.value})}
-                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Professional Title</label>
-                    <input 
-                      type="text" 
-                      value={profile.title}
-                      onChange={e => saveProfile({...profile, title: e.target.value})}
-                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Summary (Bio)</label>
-                    <textarea 
-                      value={profile.bio}
-                      onChange={e => saveProfile({...profile, bio: e.target.value})}
-                      rows={6}
-                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 2: Technical Skills */}
-              {adminTab === "skills" && (
-                <div className="space-y-4">
-                  <p className="text-[10px] font-mono text-zinc-500">Edit skills as comma-separated values.</p>
-                  {Object.keys(profile.skills).map((cat) => (
-                    <div key={cat}>
-                      <label className="block text-[10px] font-mono text-zinc-400 uppercase mb-1">{cat}</label>
-                      <input 
-                        type="text"
-                        value={(profile.skills as any)[cat].join(", ")}
-                        onChange={e => handleSkillChange(cat, e.target.value)}
-                        className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Tab 3: Experience */}
-              {adminTab === "experience" && (
-                <div className="space-y-6">
-                  <button 
-                    onClick={handleAddExperience}
-                    className="w-full py-2 bg-zinc-900 border border-zinc-800 text-[10px] font-mono font-bold text-white rounded hover:bg-zinc-850"
-                  >
-                    ADD_NEW_WORK_NODE
-                  </button>
-
-                  <div className="space-y-6 divide-y divide-zinc-900">
-                    {profile.experience.map((exp, idx) => (
-                      <div key={idx} className="pt-4 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono text-zinc-500">Work Node #{idx+1}</span>
-                          <button 
-                            onClick={() => handleDeleteExperience(idx)}
-                            className="text-red-500 hover:text-red-400 text-xs"
-                          >
-                            <Trash className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <input 
-                            type="text" 
-                            placeholder="Role"
-                            value={exp.role}
-                            onChange={e => handleEditExperience(idx, "role", e.target.value)}
-                            className="bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                          />
-                          <input 
-                            type="text" 
-                            placeholder="Company"
-                            value={exp.company}
-                            onChange={e => handleEditExperience(idx, "company", e.target.value)}
-                            className="bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                          />
-                        </div>
-                        <input 
-                          type="text" 
-                          placeholder="Duration"
-                          value={exp.duration}
-                          onChange={e => handleEditExperience(idx, "duration", e.target.value)}
-                          className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                        />
-                        <textarea 
-                          placeholder="Description"
-                          value={exp.description}
-                          onChange={e => handleEditExperience(idx, "description", e.target.value)}
-                          rows={3}
-                          className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 4: Academics */}
-              {adminTab === "academics" && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Institution</label>
-                    <input 
-                      type="text" 
-                      value={profile.education.institution}
-                      onChange={e => saveProfile({
-                        ...profile,
-                        education: { ...profile.education, institution: e.target.value }
-                      })}
-                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Degree Title</label>
-                    <input 
-                      type="text" 
-                      value={profile.education.degree}
-                      onChange={e => saveProfile({
-                        ...profile,
-                        education: { ...profile.education, degree: e.target.value }
-                      })}
-                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Duration</label>
-                      <input 
-                        type="text" 
-                        value={profile.education.duration}
-                        onChange={e => saveProfile({
-                          ...profile,
-                          education: { ...profile.education, duration: e.target.value }
-                        })}
-                        className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">GPA / Score</label>
-                      <input 
-                        type="text" 
-                        value={profile.education.grade}
-                        onChange={e => saveProfile({
-                          ...profile,
-                          education: { ...profile.education, grade: e.target.value }
-                        })}
-                        className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 5: Projects */}
-              {adminTab === "projects" && (
-                <div className="space-y-4">
-                  <button 
-                    onClick={handleAddProject}
-                    className="w-full py-2 bg-zinc-900 border border-zinc-800 text-[10px] font-mono font-bold text-white rounded hover:bg-zinc-850"
-                  >
-                    ADD_NEW_PROJECT_NODE
-                  </button>
-
-                  <div className="space-y-6 divide-y divide-zinc-900 pt-4">
-                    {profile.projects.map((proj) => (
-                      <div key={proj.id} className="pt-4 space-y-2.5">
-                        <div className="flex items-center justify-between">
-                          <input 
-                            type="text" 
-                            value={proj.title}
-                            onChange={e => {
-                              const updated = profile.projects.map(p => p.id === proj.id ? { ...p, title: e.target.value } : p);
-                              saveProfile({ ...profile, projects: updated });
-                            }}
-                            className="bg-transparent border-b border-zinc-800 text-sm font-bold font-mono text-white focus:outline-none focus:border-purple-500"
-                          />
-                          <button 
-                            onClick={(e) => handleDeleteProject(proj.id, e)}
-                            className="text-red-500 hover:text-red-400"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <label className="block text-[8px] font-mono text-zinc-650 uppercase">Category</label>
-                            <input 
-                              type="text" 
-                              value={proj.category}
-                              onChange={e => {
-                                const updated = profile.projects.map(p => p.id === proj.id ? { ...p, category: e.target.value } : p);
-                                saveProfile({ ...profile, projects: updated });
-                              }}
-                              className="w-full bg-zinc-950 border border-zinc-900 rounded p-1.5 text-[11px] text-white font-mono"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[8px] font-mono text-zinc-650 uppercase">Repo Source Link</label>
-                            <input 
-                              type="text" 
-                              value={proj.link}
-                              onChange={e => {
-                                const updated = profile.projects.map(p => p.id === proj.id ? { ...p, link: e.target.value } : p);
-                                saveProfile({ ...profile, projects: updated });
-                              }}
-                              className="w-full bg-zinc-950 border border-zinc-900 rounded p-1.5 text-[11px] text-white font-mono"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-[8px] font-mono text-zinc-650 uppercase">Live Deployed URL</label>
-                          <input 
-                            type="text" 
-                            value={proj.liveLink}
-                            onChange={e => {
-                              const updated = profile.projects.map(p => p.id === proj.id ? { ...p, liveLink: e.target.value } : p);
-                              saveProfile({ ...profile, projects: updated });
-                            }}
-                            className="w-full bg-zinc-950 border border-zinc-900 rounded p-1.5 text-[11px] text-white font-mono"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[8px] font-mono text-zinc-650 uppercase">Description</label>
-                          <textarea 
-                            value={proj.description}
-                            onChange={e => {
-                              const updated = profile.projects.map(p => p.id === proj.id ? { ...p, description: e.target.value } : p);
-                              saveProfile({ ...profile, projects: updated });
-                            }}
-                            rows={2}
-                            className="w-full bg-zinc-950 border border-zinc-900 rounded p-1.5 text-[11px] text-white font-mono"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[8px] font-mono text-zinc-650 uppercase">Technologies (Comma separated)</label>
-                          <input 
-                            type="text" 
-                            value={proj.tech.join(", ")}
-                            onChange={e => {
-                              const techArr = e.target.value.split(",").map(t => t.trim()).filter(Boolean);
-                              const updated = profile.projects.map(p => p.id === proj.id ? { ...p, tech: techArr } : p);
-                              saveProfile({ ...profile, projects: updated });
-                            }}
-                            className="w-full bg-zinc-950 border border-zinc-900 rounded p-1.5 text-[11px] text-white font-mono"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-            </div>
-
-            {/* Footer buttons */}
-            <div className="p-6 border-t border-zinc-900 flex justify-end gap-2 bg-[#09090b]">
-              <button 
-                onClick={() => setShowAdminPanel(false)}
-                className="px-4 py-2 border border-zinc-800 text-[10px] font-mono font-bold text-white rounded hover:bg-zinc-900"
-              >
-                CLOSE_PANEL
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
     </div>
   );
