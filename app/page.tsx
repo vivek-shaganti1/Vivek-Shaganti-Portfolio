@@ -17,12 +17,17 @@ import {
   CheckCircle, 
   X,
   FileText,
-  Terminal as TerminalIcon,
   ChevronRight,
-  User,
-  Activity,
+  Edit3,
+  Unlock,
+  Lock,
   Layers,
-  Heart
+  Heart,
+  Save,
+  Plus,
+  Trash,
+  Trash2,
+  KeyRound
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Perspective, Highlight } from "@/components/ui/perspective-highlight";
@@ -30,8 +35,9 @@ import { CpuArchitecture } from "@/components/ui/cpu-architecture";
 import { SplineScene } from "@/components/ui/splite";
 import { Spotlight } from "@/components/ui/spotlight";
 import { SpotlightHover } from "@/components/ui/spotlight-hover";
+import ResumeUploadModal from "@/components/resume-upload-modal";
 
-const PROFILE_DATA = {
+const INITIAL_PROFILE = {
   name: "Vivek Goud Shaganti",
   title: "Full Stack Engineer & Blockchain Developer",
   email: "vivekshaganti@gmail.com",
@@ -144,10 +150,25 @@ const PROFILE_DATA = {
 type ThemeMode = "volt" | "amber" | "chrome";
 
 export default function Home() {
+  const [profile, setProfile] = useState(INITIAL_PROFILE);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>("volt");
   const [activeTab, setActiveTab] = useState("all");
   
-  // Custom interactive terminal state
+  // Customizer Password Protection State
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  // Advanced customization panel state
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [adminTab, setAdminTab] = useState<"summary" | "skills" | "experience" | "academics" | "projects" | "analytics">("summary");
+  
+  // Editing individual item models
+  const [editingProject, setEditingProject] = useState<any>(null);
+
+  // Command Terminal State
   const [terminalInput, setTerminalInput] = useState("");
   const [terminalHistory, setTerminalHistory] = useState<string[]>([
     "System Initialized. Welcome to Vivek's Command Interface.",
@@ -155,8 +176,16 @@ export default function Home() {
   ]);
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
-  // Mouse cursor coordinate state
+  // Mouse Coordinate State
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Dynamic Resume States
+  const [resumeBase64, setResumeBase64] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [isResumeDropdownOpen, setIsResumeDropdownOpen] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [isResumeUploadModalOpen, setIsResumeUploadModalOpen] = useState(false);
+  const [resumeUpdatedAt, setResumeUpdatedAt] = useState<string | null>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -166,9 +195,153 @@ export default function Home() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
+  // Recruiter Analytics Sync
+  const [analyticsData, setAnalyticsData] = useState<{
+    interactions: number;
+    downloads: number;
+    questions: Record<string, number>;
+  }>({ interactions: 0, downloads: 0, questions: {} });
+
+  useEffect(() => {
+    const loadAnalytics = () => {
+      const dataStr = localStorage.getItem("portfolio_recruiter_analytics");
+      if (dataStr) {
+        try {
+          setAnalyticsData(JSON.parse(dataStr));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    loadAnalytics();
+    window.addEventListener("analytics_updated", loadAnalytics);
+    return () => window.removeEventListener("analytics_updated", loadAnalytics);
+  }, []);
+
   useEffect(() => {
     terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [terminalHistory]);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedProfile = localStorage.getItem("vivek_portfolio_profile");
+    if (savedProfile) {
+      try {
+        setProfile(JSON.parse(savedProfile));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    const savedAuth = sessionStorage.getItem("portfolio_edit_auth");
+    if (savedAuth === "true") {
+      setIsAuthorized(true);
+    }
+    const savedResume = localStorage.getItem("portfolio_resume_base64");
+    if (savedResume) {
+      setResumeBase64(savedResume);
+    }
+    const savedResumeTime = localStorage.getItem("portfolio_resume_updated_at");
+    if (savedResumeTime) {
+      setResumeUpdatedAt(savedResumeTime);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const saveProfile = (newProfile: typeof INITIAL_PROFILE) => {
+    setProfile(newProfile);
+    localStorage.setItem("vivek_portfolio_profile", JSON.stringify(newProfile));
+  };
+
+  const handleCustomizeClick = () => {
+    console.log("[CUSTOMIZER] handleCustomizeClick called. isEditMode:", isEditMode, "isAuthorized:", isAuthorized);
+    if (isEditMode) {
+      console.log("[CUSTOMIZER] Locking console.");
+      setIsEditMode(false);
+      setShowAdminPanel(false);
+    } else {
+      if (isAuthorized) {
+        console.log("[CUSTOMIZER] Already authorized. Opening customizer.");
+        setIsEditMode(true);
+        setShowAdminPanel(true);
+      } else {
+        console.log("[CUSTOMIZER] Not authorized. Opening password modal.");
+        setShowPasswordModal(true);
+        setPasswordInput("");
+        setPasswordError(false);
+      }
+    }
+  };
+
+  const handleResumeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      setToast({ message: "Only PDF files are allowed", type: "error" });
+      return;
+    }
+
+    setUploadProgress(10);
+    const reader = new FileReader();
+
+    // Mock progress loading effect
+    const progressInterval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev === null) return 10;
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prev + 20;
+      });
+    }, 100);
+
+    reader.onload = (event) => {
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      const base64String = event.target?.result as string;
+      if (base64String) {
+        localStorage.setItem("portfolio_resume_base64", base64String);
+        setResumeBase64(base64String);
+        window.dispatchEvent(new Event("storage"));
+        setToast({ message: "Resume updated successfully!", type: "success" });
+        console.log("[CUSTOMIZER] Resume PDF uploaded successfully.");
+      } else {
+        setToast({ message: "Failed to read PDF file", type: "error" });
+      }
+
+      setTimeout(() => {
+        setUploadProgress(null);
+      }, 1000);
+    };
+
+    reader.onerror = () => {
+      clearInterval(progressInterval);
+      setUploadProgress(null);
+      setToast({ message: "Failed to upload resume", type: "error" });
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const handleResumeDelete = () => {
+    localStorage.removeItem("portfolio_resume_base64");
+    localStorage.removeItem("portfolio_resume_updated_at");
+    setResumeBase64(null);
+    setResumeUpdatedAt(null);
+    window.dispatchEvent(new Event("storage"));
+    setToast({ message: "Custom resume deleted. Reverted to default.", type: "success" });
+    console.log("[CUSTOMIZER] Custom resume PDF deleted. Reverted to static CV.");
+  };
 
   const handleTerminalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,19 +351,19 @@ export default function Home() {
     let response = "";
     switch (cmd) {
       case "help":
-        response = "Available commands: about, skills, projects, clear, stats";
+        response = "Available commands: about, skills, projects, stats, clear";
         break;
       case "about":
-        response = `Profile: ${PROFILE_DATA.name} | ${PROFILE_DATA.title}. Bio: ${PROFILE_DATA.bio}`;
+        response = `Profile: ${profile.name} | ${profile.title}. Bio: ${profile.bio}`;
         break;
       case "skills":
-        response = `Arsenal: Languages: ${PROFILE_DATA.skills.languages.join(", ")}; Frontend: ${PROFILE_DATA.skills.frontend.join(", ")}; Backend: ${PROFILE_DATA.skills.backend.join(", ")}`;
+        response = `Arsenal: Languages: ${profile.skills.languages.join(", ")}; Frontend: ${profile.skills.frontend.join(", ")}; Backend: ${profile.skills.backend.join(", ")}`;
         break;
       case "projects":
-        response = `Active Nodes: ${PROFILE_DATA.projects.map(p => p.title).join(" | ")}`;
+        response = `Active Nodes: ${profile.projects.map(p => p.title).join(" | ")}`;
         break;
       case "stats":
-        response = `Metrics: CGPA: 9.21, Hackathons: 4+, System Projects: 8+, VP Blockchain Club: 1`;
+        response = `Metrics: CGPA: 9.21, Hackathons: 4+, System Projects: ${profile.projects.length}, VP Blockchain Club: 1`;
         break;
       case "clear":
         setTerminalHistory([]);
@@ -202,6 +375,74 @@ export default function Home() {
 
     setTerminalHistory(prev => [...prev, `> ${terminalInput}`, response]);
     setTerminalInput("");
+  };
+
+  const handleAddProject = () => {
+    const newProj = {
+      id: Date.now().toString(),
+      title: "New Custom Project",
+      category: "AI & Web3",
+      tech: ["React.js", "TypeScript"],
+      description: "Hacker operational simulation layer running on Vercel serverless functions.",
+      link: "https://github.com/vivek-shaganti1",
+      liveLink: "https://github.com/vivek-shaganti1"
+    };
+    saveProfile({
+      ...profile,
+      projects: [newProj, ...profile.projects]
+    });
+    setEditingProject(newProj);
+  };
+
+  const handleDeleteProject = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm("Are you sure you want to remove this project?")) {
+      saveProfile({
+        ...profile,
+        projects: profile.projects.filter(p => p.id !== id)
+      });
+      if (editingProject?.id === id) setEditingProject(null);
+    }
+  };
+
+  const handleSkillChange = (category: string, value: string) => {
+    const arr = value.split(",").map(s => s.trim()).filter(Boolean);
+    saveProfile({
+      ...profile,
+      skills: {
+        ...profile.skills,
+        [category]: arr
+      }
+    });
+  };
+
+  const handleAddExperience = () => {
+    const newExp = {
+      role: "New Role",
+      company: "New Company",
+      duration: "Duration",
+      description: "Describe details of your responsibilities and achievements."
+    };
+    saveProfile({
+      ...profile,
+      experience: [...profile.experience, newExp]
+    });
+  };
+
+  const handleEditExperience = (index: number, field: string, value: string) => {
+    const list = [...profile.experience];
+    list[index] = { ...list[index], [field]: value };
+    saveProfile({
+      ...profile,
+      experience: list
+    });
+  };
+
+  const handleDeleteExperience = (index: number) => {
+    saveProfile({
+      ...profile,
+      experience: profile.experience.filter((_, i) => i !== index)
+    });
   };
 
   const themeColors = {
@@ -236,7 +477,7 @@ export default function Home() {
 
   const currentTheme = themeColors[themeMode];
   const categories = ["all", "AI & Web3", "Developer Tooling", "Automation", "Web App"];
-  const filteredProjects = activeTab === "all" ? PROFILE_DATA.projects : PROFILE_DATA.projects.filter(p => p.category === activeTab);
+  const filteredProjects = activeTab === "all" ? profile.projects : profile.projects.filter(p => p.category === activeTab);
 
   return (
     <div className={cn(
@@ -244,7 +485,7 @@ export default function Home() {
       themeMode
     )}>
       
-      {/* Premium Glow Spotlights & Floating Interactive Cursor Particle */}
+      {/* Interactive Cursor Particle */}
       <div 
         className="pointer-events-none fixed top-0 left-0 w-8 h-8 rounded-full border border-white/10 bg-white/5 blur-md z-50 transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-75"
         style={{ left: `${mousePosition.x}px`, top: `${mousePosition.y}px` }}
@@ -293,52 +534,124 @@ export default function Home() {
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-wider text-zinc-500">
             <a href="#about" className="hover:text-white transition-colors">About</a>
-            <a href="#spline-hero" className="hover:text-white transition-colors">3D Model</a>
+            <a href="#spline-hero" className="hover:text-white transition-colors">3D View</a>
             <a href="#skills" className="hover:text-white transition-colors">Skills</a>
             <a href="#projects" className="hover:text-white transition-colors">Projects</a>
             <a href="#experience" className="hover:text-white transition-colors">Journey</a>
           </nav>
 
           <div className="flex items-center gap-4">
-            {/* Color switcher panel */}
+            {/* Color switcher */}
             <div className="flex items-center gap-1.5 bg-zinc-950 border border-zinc-900 p-1 rounded-full">
               <button 
                 onClick={() => setThemeMode("volt")} 
                 className={cn("w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all", themeMode === "volt" ? "bg-[#CCFF00] text-black scale-110" : "text-zinc-600 hover:text-white")}
-                title="Volt Green Theme"
               >
                 V
               </button>
               <button 
                 onClick={() => setThemeMode("amber")} 
                 className={cn("w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all", themeMode === "amber" ? "bg-[#FFDE21] text-black scale-110" : "text-zinc-600 hover:text-white")}
-                title="Amber Theme"
               >
                 A
               </button>
               <button 
                 onClick={() => setThemeMode("chrome")} 
                 className={cn("w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all", themeMode === "chrome" ? "bg-sky-400 text-black scale-110" : "text-zinc-600 hover:text-white")}
-                title="Ice Blue Theme"
               >
                 C
               </button>
             </div>
+            {/* Dynamic Resume Link & Dropdown Component */}
+            <div className="relative">
+              {isEditMode ? (
+                <>
+                  <button
+                    onClick={() => setIsResumeDropdownOpen(!isResumeDropdownOpen)}
+                    className="flex items-center gap-2 rounded-full px-4 py-1.5 bg-zinc-950 border border-zinc-800 text-[10px] font-bold uppercase tracking-wider text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors cursor-pointer select-none"
+                  >
+                    <FileText className="h-3.5 w-3.5" />
+                    Resume ⚙️
+                  </button>
 
-            {/* Resume PDF download shortcut */}
-            <a 
-              href="/Vivek Goud Shaganti CV.pdf" 
-              download
-              className="flex items-center gap-2 rounded-full px-4 py-1.5 bg-zinc-950 border border-zinc-800 text-[10px] font-bold uppercase tracking-wider text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors"
-            >
-              <FileText className="h-3.5 w-3.5" />
-              Resume
-            </a>
+                  <AnimatePresence>
+                    {isResumeDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 mt-2 w-48 bg-[#0a0a0c]/95 border border-zinc-800 rounded-lg shadow-xl py-1 z-[9990] font-mono text-[10px] font-bold"
+                        style={{
+                          backdropFilter: "blur(8px)",
+                          WebkitBackdropFilter: "blur(8px)",
+                        }}
+                      >
+                        <a
+                          href={resumeBase64 || "/Vivek Goud Shaganti CV.pdf"}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={() => setIsResumeDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-zinc-300 hover:text-white hover:bg-zinc-900 transition-colors w-full text-left"
+                        >
+                          View Resume
+                        </a>
+                        <button
+                          onClick={() => {
+                            setIsResumeUploadModalOpen(true);
+                            setIsResumeDropdownOpen(false);
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 text-zinc-300 hover:text-white hover:bg-zinc-900 transition-colors w-full text-left font-bold"
+                        >
+                          Upload New Resume
+                        </button>
+                        {resumeBase64 && (
+                          <>
+                            <button
+                              onClick={() => {
+                                setIsResumeUploadModalOpen(true);
+                                setIsResumeDropdownOpen(false);
+                              }}
+                              className="flex items-center gap-2 px-4 py-2 text-zinc-300 hover:text-white hover:bg-zinc-900 transition-colors w-full text-left font-bold"
+                            >
+                              Replace Resume
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleResumeDelete();
+                                setIsResumeDropdownOpen(false);
+                              }}
+                              className="flex items-center gap-2 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-zinc-900 transition-colors w-full text-left border-t border-zinc-900"
+                            >
+                              Delete Resume
+                            </button>
+                          </>
+                        )}
+                        {resumeUpdatedAt && (
+                          <div className="px-4 py-1.5 text-[7px] text-zinc-650 border-t border-zinc-900 uppercase tracking-widest font-normal">
+                            Updated: {resumeUpdatedAt}
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </>
+              ) : (
+                <a
+                  href={resumeBase64 || "/Vivek Goud Shaganti CV.pdf"}
+                  download
+                  className="flex items-center gap-2 rounded-full px-4 py-1.5 bg-zinc-950 border border-zinc-800 text-[10px] font-bold uppercase tracking-wider text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors"
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  Resume
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </header>
 
-      {/* MAIN CONTAINER */}
+      {/* MAIN CONTENT AREA */}
       <main className="mx-auto max-w-7xl px-6 py-12 md:px-8 space-y-24 md:space-y-36 relative z-10">
 
         {/* 3D INTERACTIVE ROBOT HERO SECTION */}
@@ -355,10 +668,10 @@ export default function Home() {
 
               <div className="space-y-2">
                 <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white font-mono leading-none">
-                  {PROFILE_DATA.name}
+                  {profile.name}
                 </h1>
                 <p className={cn("text-sm md:text-base font-bold font-mono tracking-widest uppercase", currentTheme.primary)}>
-                  {PROFILE_DATA.title}
+                  {profile.title}
                 </p>
               </div>
 
@@ -368,7 +681,7 @@ export default function Home() {
 
               <div className="flex flex-wrap gap-3 pt-2">
                 <a 
-                  href={PROFILE_DATA.linkedin}
+                  href={profile.linkedin}
                   target="_blank"
                   rel="noreferrer"
                   className={cn(
@@ -380,7 +693,7 @@ export default function Home() {
                   Connect
                 </a>
                 <a 
-                  href={PROFILE_DATA.github}
+                  href={profile.github}
                   target="_blank"
                   rel="noreferrer"
                   className={cn(
@@ -407,19 +720,35 @@ export default function Home() {
 
         {/* SYSTEM STATS METRICS GRID */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {PROFILE_DATA.stats.map((stat, index) => (
-            <div 
-              key={index}
-              className="rounded-xl border border-zinc-900 bg-[#09090b]/40 p-6 text-center backdrop-blur-md relative overflow-hidden group hover:border-zinc-800 transition-all"
-            >
-              <span className={cn("block text-2xl md:text-4xl font-black font-mono tracking-tight", currentTheme.primary)}>
-                {stat.value}
-              </span>
-              <span className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-1">
-                {stat.label}
-              </span>
-            </div>
-          ))}
+          {profile.stats ? (
+            profile.stats.map((stat, index) => (
+              <div 
+                key={index}
+                className="rounded-xl border border-zinc-900 bg-[#09090b]/40 p-6 text-center backdrop-blur-md relative overflow-hidden group hover:border-zinc-800 transition-all"
+              >
+                <span className={cn("block text-2xl md:text-4xl font-black font-mono tracking-tight", currentTheme.primary)}>
+                  {stat.value}
+                </span>
+                <span className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-1">
+                  {stat.label}
+                </span>
+              </div>
+            ))
+          ) : (
+            INITIAL_PROFILE.stats.map((stat, index) => (
+              <div 
+                key={index}
+                className="rounded-xl border border-zinc-900 bg-[#09090b]/40 p-6 text-center backdrop-blur-md relative overflow-hidden group hover:border-zinc-800 transition-all"
+              >
+                <span className={cn("block text-2xl md:text-4xl font-black font-mono tracking-tight", currentTheme.primary)}>
+                  {stat.value}
+                </span>
+                <span className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-1">
+                  {stat.label}
+                </span>
+              </div>
+            ))
+          )}
         </section>
 
         {/* PROFILE/BIO SUMMARY SECTION */}
@@ -432,7 +761,7 @@ export default function Home() {
             <Perspective className="max-w-none">
               <div className="bg-[#0b0b0d]/70 backdrop-blur-xl border border-zinc-900 rounded-2xl p-6 md:p-8 space-y-6">
                 <p className="text-zinc-400 leading-relaxed text-sm md:text-base font-mono">
-                  {PROFILE_DATA.bio}
+                  {profile.bio}
                 </p>
                 <div className="flex flex-wrap gap-2 pt-2">
                   <Highlight color="green">Anurag University</Highlight>
@@ -471,7 +800,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.entries(PROFILE_DATA.skills).map(([category, items]) => (
+            {Object.entries(profile.skills).map(([category, items]) => (
               <div 
                 key={category}
                 className="rounded-xl border border-zinc-900 bg-zinc-950/40 p-6 backdrop-blur-md relative overflow-hidden"
@@ -537,7 +866,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* PROJECTS SECTION */}
+        {/* PROJECTS SHOWCASE */}
         <section id="projects" className="space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="flex flex-col gap-2">
@@ -648,7 +977,7 @@ export default function Home() {
             </h2>
 
             <div className="relative border-l border-zinc-900 pl-6 space-y-8 ml-2">
-              {PROFILE_DATA.experience.map((exp, idx) => (
+              {profile.experience.map((exp, idx) => (
                 <div key={idx} className="relative group">
                   <span className={cn(
                     "absolute -left-[31px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full border bg-zinc-950",
@@ -686,20 +1015,20 @@ export default function Home() {
                 </div>
                 <div className="space-y-2">
                   <h3 className="font-bold text-white text-xs md:text-sm font-mono">
-                    {PROFILE_DATA.education.institution}
+                    {profile.education.institution}
                   </h3>
                   <p className="text-[11px] text-zinc-400 font-mono">
-                    {PROFILE_DATA.education.degree}
+                    {profile.education.degree}
                   </p>
                   <p className="text-[10px] font-mono text-zinc-500">
-                    {PROFILE_DATA.education.duration}
+                    {profile.education.duration}
                   </p>
                   <span className={cn(
                     "inline-block mt-2 px-2.5 py-0.5 rounded text-[10px] font-mono border",
                     currentTheme.primary,
                     currentTheme.border
                   )}>
-                    {PROFILE_DATA.education.grade}
+                    {profile.education.grade}
                   </span>
                 </div>
               </div>
@@ -707,47 +1036,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ACHIEVEMENTS & CERTIFICATIONS */}
-        <section id="achievements" className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Achievements */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-2 pb-2 border-b border-zinc-900">
-              <Flame className="h-5 w-5 text-pink-500" />
-              <h3 className="font-mono font-bold text-lg text-white">
-                Achievements & Awards
-              </h3>
-            </div>
-            <ul className="space-y-3.5">
-              {PROFILE_DATA.achievements.map((ach, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-xs md:text-sm text-zinc-300">
-                  <CheckCircle className="h-4 w-4 shrink-0 text-pink-500 mt-0.5" />
-                  <span>{ach}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* Decorative divider before footer */}
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent mt-16" />
 
-          {/* Certifications */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-2 pb-2 border-b border-zinc-900">
-              <Shield className="h-5 w-5 text-purple-500" />
-              <h3 className="font-mono font-bold text-lg text-white">
-                Professional Certifications
-              </h3>
-            </div>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {PROFILE_DATA.certifications.map((cert, idx) => (
-                <li 
-                  key={idx} 
-                  className="flex items-center gap-2 rounded bg-zinc-900/40 border border-zinc-800/80 p-2.5 text-xs text-zinc-300 hover:border-zinc-700/80 transition-colors font-mono"
-                >
-                  <div className="h-2 w-2 rounded-full bg-purple-500 shrink-0" />
-                  <span className="line-clamp-2">{cert}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
       </main>
 
       {/* FOOTER */}
@@ -762,6 +1053,619 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+
+
+      {/* FULL CUSTOMIZATION ADMIN DRAWER PANEL */}
+      <AnimatePresence>
+        {isEditMode && showAdminPanel && (
+          <motion.div 
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 20 }}
+            className="fixed top-0 right-0 h-full w-full max-w-lg bg-[#0a0a0c] border-l border-zinc-900 shadow-2xl z-50 flex flex-col justify-between"
+          >
+            {/* Drawer Header */}
+            <div className="p-6 border-b border-zinc-900 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Edit3 className={cn("h-4 w-4", currentTheme.primary)} />
+                <h3 className="text-sm font-bold font-mono text-white">System Param Customizer</h3>
+              </div>
+              <button 
+                onClick={() => setShowAdminPanel(false)}
+                className="text-zinc-500 hover:text-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Sidebar Tabs */}
+            <div className="flex border-b border-zinc-900 px-6 overflow-x-auto text-[10px] font-mono font-bold gap-2">
+              {(["summary", "skills", "experience", "academics", "projects", "analytics"] as const).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setAdminTab(tab)}
+                  className={cn(
+                    "py-3 border-b-2 transition-colors uppercase whitespace-nowrap",
+                    adminTab === tab ? "border-[#CCFF00] text-white" : "border-transparent text-zinc-500 hover:text-zinc-300"
+                  )}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            {/* Content Body */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              
+              {/* Tab 1: Summary/Bio */}
+              {adminTab === "summary" && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Name</label>
+                    <input 
+                      type="text" 
+                      value={profile.name}
+                      onChange={e => saveProfile({...profile, name: e.target.value})}
+                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Professional Title</label>
+                    <input 
+                      type="text" 
+                      value={profile.title}
+                      onChange={e => saveProfile({...profile, title: e.target.value})}
+                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Summary (Bio)</label>
+                    <textarea 
+                      value={profile.bio}
+                      onChange={e => saveProfile({...profile, bio: e.target.value})}
+                      rows={6}
+                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 2: Technical Skills */}
+              {adminTab === "skills" && (
+                <div className="space-y-4">
+                  <p className="text-[10px] font-mono text-zinc-500">Edit skills as comma-separated values.</p>
+                  {Object.keys(profile.skills).map((cat) => (
+                    <div key={cat}>
+                      <label className="block text-[10px] font-mono text-zinc-400 uppercase mb-1">{cat}</label>
+                      <input 
+                        type="text"
+                        value={(profile.skills as any)[cat].join(", ")}
+                        onChange={e => handleSkillChange(cat, e.target.value)}
+                        className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Tab 3: Experience */}
+              {adminTab === "experience" && (
+                <div className="space-y-6">
+                  <button 
+                    onClick={handleAddExperience}
+                    className="w-full py-2 bg-zinc-900 border border-zinc-800 text-[10px] font-mono font-bold text-white rounded hover:bg-zinc-850"
+                  >
+                    ADD_NEW_WORK_NODE
+                  </button>
+
+                  <div className="space-y-6 divide-y divide-zinc-900">
+                    {profile.experience.map((exp, idx) => (
+                      <div key={idx} className="pt-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono text-zinc-500">Work Node #{idx+1}</span>
+                          <button 
+                            onClick={() => handleDeleteExperience(idx)}
+                            className="text-red-500 hover:text-red-400 text-xs"
+                          >
+                            <Trash className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <input 
+                            type="text" 
+                            placeholder="Role"
+                            value={exp.role}
+                            onChange={e => handleEditExperience(idx, "role", e.target.value)}
+                            className="bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                          />
+                          <input 
+                            type="text" 
+                            placeholder="Company"
+                            value={exp.company}
+                            onChange={e => handleEditExperience(idx, "company", e.target.value)}
+                            className="bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                          />
+                        </div>
+                        <input 
+                          type="text" 
+                          placeholder="Duration"
+                          value={exp.duration}
+                          onChange={e => handleEditExperience(idx, "duration", e.target.value)}
+                          className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                        />
+                        <textarea 
+                          placeholder="Description"
+                          value={exp.description}
+                          onChange={e => handleEditExperience(idx, "description", e.target.value)}
+                          rows={3}
+                          className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 4: Academics */}
+              {adminTab === "academics" && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Institution</label>
+                    <input 
+                      type="text" 
+                      value={profile.education.institution}
+                      onChange={e => saveProfile({
+                        ...profile,
+                        education: { ...profile.education, institution: e.target.value }
+                      })}
+                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Degree Title</label>
+                    <input 
+                      type="text" 
+                      value={profile.education.degree}
+                      onChange={e => saveProfile({
+                        ...profile,
+                        education: { ...profile.education, degree: e.target.value }
+                      })}
+                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">Duration</label>
+                      <input 
+                        type="text" 
+                        value={profile.education.duration}
+                        onChange={e => saveProfile({
+                          ...profile,
+                          education: { ...profile.education, duration: e.target.value }
+                        })}
+                        className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-mono text-zinc-500 uppercase mb-1">GPA / Score</label>
+                      <input 
+                        type="text" 
+                        value={profile.education.grade}
+                        onChange={e => saveProfile({
+                          ...profile,
+                          education: { ...profile.education, grade: e.target.value }
+                        })}
+                        className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 5: Projects */}
+              {adminTab === "projects" && (
+                <div className="space-y-4">
+                  <button 
+                    onClick={handleAddProject}
+                    className="w-full py-2 bg-zinc-900 border border-zinc-800 text-[10px] font-mono font-bold text-white rounded hover:bg-zinc-850"
+                  >
+                    ADD_NEW_PROJECT_NODE
+                  </button>
+
+                  <div className="space-y-6 divide-y divide-zinc-900 pt-4">
+                    {profile.projects.map((proj) => (
+                      <div key={proj.id} className="pt-4 space-y-2.5">
+                        <div className="flex items-center justify-between">
+                          <input 
+                            type="text" 
+                            value={proj.title}
+                            onChange={e => {
+                              const updated = profile.projects.map(p => p.id === proj.id ? { ...p, title: e.target.value } : p);
+                              saveProfile({ ...profile, projects: updated });
+                            }}
+                            className="bg-transparent border-b border-zinc-800 text-sm font-bold font-mono text-white focus:outline-none focus:border-purple-500"
+                          />
+                          <button 
+                            onClick={(e) => handleDeleteProject(proj.id, e)}
+                            className="text-red-500 hover:text-red-400"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[8px] font-mono text-zinc-650 uppercase">Category</label>
+                            <input 
+                              type="text" 
+                              value={proj.category}
+                              onChange={e => {
+                                const updated = profile.projects.map(p => p.id === proj.id ? { ...p, category: e.target.value } : p);
+                                saveProfile({ ...profile, projects: updated });
+                              }}
+                              className="w-full bg-zinc-950 border border-zinc-900 rounded p-1.5 text-[11px] text-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[8px] font-mono text-zinc-650 uppercase">Repo Source Link</label>
+                            <input 
+                              type="text" 
+                              value={proj.link}
+                              onChange={e => {
+                                const updated = profile.projects.map(p => p.id === proj.id ? { ...p, link: e.target.value } : p);
+                                saveProfile({ ...profile, projects: updated });
+                              }}
+                              className="w-full bg-zinc-950 border border-zinc-900 rounded p-1.5 text-[11px] text-white font-mono"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[8px] font-mono text-zinc-650 uppercase">Live Deployed URL</label>
+                          <input 
+                            type="text" 
+                            value={proj.liveLink}
+                            onChange={e => {
+                              const updated = profile.projects.map(p => p.id === proj.id ? { ...p, liveLink: e.target.value } : p);
+                              saveProfile({ ...profile, projects: updated });
+                            }}
+                            className="w-full bg-zinc-950 border border-zinc-900 rounded p-1.5 text-[11px] text-white font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[8px] font-mono text-zinc-650 uppercase">Description</label>
+                          <textarea 
+                            value={proj.description}
+                            onChange={e => {
+                              const updated = profile.projects.map(p => p.id === proj.id ? { ...p, description: e.target.value } : p);
+                              saveProfile({ ...profile, projects: updated });
+                            }}
+                            rows={2}
+                            className="w-full bg-zinc-950 border border-zinc-900 rounded p-1.5 text-[11px] text-white font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[8px] font-mono text-zinc-650 uppercase">Technologies (Comma separated)</label>
+                          <input 
+                            type="text" 
+                            value={proj.tech.join(", ")}
+                            onChange={e => {
+                              const techArr = e.target.value.split(",").map(t => t.trim()).filter(Boolean);
+                              const updated = profile.projects.map(p => p.id === proj.id ? { ...p, tech: techArr } : p);
+                              saveProfile({ ...profile, projects: updated });
+                            }}
+                            className="w-full bg-zinc-950 border border-zinc-900 rounded p-1.5 text-[11px] text-white font-mono"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 6: Recruiter Analytics */}
+              {adminTab === "analytics" && (
+                <div className="space-y-6 font-mono text-zinc-300">
+                  <div className="border border-zinc-900 bg-zinc-950/40 rounded-lg p-4 space-y-4">
+                    <h4 className="text-white font-bold text-xs uppercase tracking-wider border-b border-zinc-900 pb-2">
+                      SYSTEM ANALYTICS REPORT
+                    </h4>
+                    
+                    <div className="grid grid-cols-2 gap-4 text-center">
+                      <div className="bg-zinc-900/40 border border-zinc-850 p-3 rounded">
+                        <span className="block text-[8px] text-zinc-500 uppercase tracking-widest">TOTAL AI QUERIES</span>
+                        <span className="text-xl font-bold text-white mt-1 block">{analyticsData.interactions}</span>
+                      </div>
+                      
+                      <div className="bg-zinc-900/40 border border-zinc-850 p-3 rounded">
+                        <span className="block text-[8px] text-zinc-500 uppercase tracking-widest">RESUME DOWNLOADS</span>
+                        <span className="text-xl font-bold text-white mt-1 block">{analyticsData.downloads}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border border-zinc-900 bg-zinc-950/40 rounded-lg p-4 space-y-2">
+                    <h4 className="text-white font-bold text-xs uppercase tracking-wider border-b border-zinc-900 pb-2">
+                      DIAGNOSTIC EVENT COUNTS
+                    </h4>
+                    <div className="space-y-1.5 max-h-48 overflow-y-auto pr-2 text-[10px]">
+                      <div className="flex justify-between py-1 border-b border-zinc-950">
+                        <span className="text-zinc-500">Recruiter Chat Opens</span>
+                        <span className="text-white">{analyticsData.interactions > 0 ? "RECORDED" : "INITIALIZED"}</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-zinc-950">
+                        <span className="text-zinc-500">Resume Cache State</span>
+                        <span className="text-white">{resumeBase64 ? "CUSTOM_PDF" : "DEFAULT_FALLBACK"}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+            {/* Footer buttons */}
+            <div className="p-6 border-t border-zinc-900 flex justify-end gap-2 bg-[#09090b]">
+              <button 
+                onClick={() => setShowAdminPanel(false)}
+                className="px-4 py-2 border border-zinc-800 text-[10px] font-mono font-bold text-white rounded hover:bg-zinc-900"
+              >
+                CLOSE_PANEL
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {showPasswordModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 10 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 10 }}
+              className="w-full max-w-sm bg-[#09090b]/95 border border-zinc-800/80 rounded-lg overflow-hidden shadow-2xl p-5 space-y-4 font-mono relative"
+            >
+              {/* Decorative side accent */}
+              <div className={cn(
+                "absolute top-0 left-0 w-1 h-full",
+                themeMode === "volt" && "bg-[#CCFF00]",
+                themeMode === "amber" && "bg-[#FFDE21]",
+                themeMode === "chrome" && "bg-sky-400"
+              )} />
+              
+              <div className="flex items-center justify-between border-b border-zinc-900/60 pb-3 pl-2">
+                <div className="flex items-center gap-2">
+                  <Lock className={cn("h-4 w-4", currentTheme.primary)} />
+                  <span className="text-[10px] font-bold text-white tracking-widest uppercase">
+                    SECURE CONSOLE DECRYPT
+                  </span>
+                </div>
+                <button 
+                  onClick={() => {
+                    setShowPasswordModal(false);
+                    setPasswordError(false);
+                    setPasswordInput("");
+                  }}
+                  className="text-zinc-500 hover:text-white transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                console.log("[CUSTOMIZER] Password submit attempted.");
+                if (passwordInput === "vivek2006") {
+                  console.log("[CUSTOMIZER] Password accepted!");
+                  setIsAuthorized(true);
+                  sessionStorage.setItem("portfolio_edit_auth", "true");
+                  console.log("[CUSTOMIZER] Editor opened.");
+                  setIsEditMode(true);
+                  setShowAdminPanel(true);
+                  setShowPasswordModal(false);
+                  setPasswordError(false);
+                  setPasswordInput("");
+                } else {
+                  console.log("[CUSTOMIZER] Password rejected.");
+                  setPasswordError(true);
+                }
+              }} className="space-y-4 pl-2">
+                <div className="space-y-2">
+                  <label className="block text-[9px] text-zinc-500 uppercase tracking-wider">
+                    AUTHORIZED SIGNATURE REQUIRED
+                  </label>
+                  <input
+                    type="password"
+                    autoFocus
+                    value={passwordInput}
+                    onChange={(e) => {
+                      setPasswordInput(e.target.value);
+                      if (passwordError) setPasswordError(false);
+                    }}
+                    placeholder="ENTER PASSWORD"
+                    className={cn(
+                      "w-full bg-zinc-950/80 border rounded p-2 text-xs text-white font-mono placeholder:text-zinc-700 focus:outline-none focus:ring-1 focus:ring-opacity-50",
+                      passwordError 
+                        ? "border-red-500/50 focus:ring-red-500 focus:border-red-500" 
+                        : "border-zinc-800/80 focus:ring-zinc-700 focus:border-zinc-700"
+                    )}
+                  />
+                  {passwordError && (
+                    <p className="text-[9px] text-red-500 font-bold uppercase tracking-wider animate-pulse">
+                      AUTHENTICATION FAULT: DECRYPTION FAILS
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPasswordModal(false);
+                      setPasswordError(false);
+                      setPasswordInput("");
+                    }}
+                    className="px-3 py-1.5 border border-zinc-800 text-[9px] font-bold text-zinc-400 hover:text-white rounded transition-colors"
+                  >
+                    ABORT
+                  </button>
+                  <button
+                    type="submit"
+                    className={cn(
+                      "px-4 py-1.5 text-[9px] font-bold text-black rounded transition-colors uppercase tracking-widest",
+                      themeMode === "volt" && "bg-[#CCFF00] hover:bg-[#8dfa00]",
+                      themeMode === "amber" && "bg-[#FFDE21] hover:bg-yellow-400",
+                      themeMode === "chrome" && "bg-sky-400 hover:bg-sky-500"
+                    )}
+                  >
+                    ACCESS
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* FLOATING ACCESS TERMINAL BUTTON - ALWAYS VISIBLE */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex gap-2">
+        <button
+          onClick={() => {
+            console.log("[CUSTOMIZER] Customizer button clicked. isEditMode:", isEditMode, "isAuthorized:", isAuthorized);
+            handleCustomizeClick();
+          }}
+          className={cn(
+            "flex items-center gap-2 rounded-full px-5 py-2.5 text-[10px] md:text-xs font-mono font-bold tracking-wider transition-all duration-300 backdrop-blur-md border shadow-lg cursor-pointer select-none whitespace-nowrap active:scale-95",
+            isEditMode
+              ? "bg-red-500/25 hover:bg-red-500/40 border-red-500/40 text-red-400 shadow-red-500/20"
+              : themeMode === "volt"
+                ? "bg-zinc-950/70 border-[#CCFF00]/40 text-[#CCFF00] hover:bg-zinc-900/80 shadow-[#CCFF00]/10 hover:shadow-[#CCFF00]/20"
+                : themeMode === "amber"
+                  ? "bg-zinc-950/70 border-[#FFDE21]/40 text-[#FFDE21] hover:bg-zinc-900/80 shadow-[#FFDE21]/10 hover:shadow-[#FFDE21]/20"
+                  : "bg-zinc-950/70 border-sky-400/40 text-sky-450 text-sky-400 hover:bg-zinc-900/80 shadow-sky-400/10 hover:shadow-sky-400/20"
+          )}
+          style={{
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+          }}
+        >
+          {isEditMode ? <Unlock className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
+          <span>{isEditMode ? "LOCK CONSOLE" : "CUSTOMIZER TERMINAL"}</span>
+        </button>
+
+        {isEditMode && (
+          <button
+            onClick={() => {
+              console.log("[CUSTOMIZER] Toggle drawer clicked. Current state:", showAdminPanel);
+              setShowAdminPanel(!showAdminPanel);
+            }}
+            className={cn(
+              "flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[10px] md:text-xs font-mono font-bold tracking-wider transition-all duration-300 backdrop-blur-md border shadow-lg cursor-pointer select-none whitespace-nowrap active:scale-95",
+              themeMode === "volt"
+                ? "bg-zinc-950/70 border-[#CCFF00]/40 text-white hover:bg-zinc-900/80"
+                : themeMode === "amber"
+                  ? "bg-zinc-950/70 border-[#FFDE21]/40 text-white hover:bg-zinc-900/80"
+                  : "bg-zinc-950/70 border-sky-400/40 text-white hover:bg-zinc-900/80"
+            )}
+            style={{
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+            }}
+          >
+            <Edit3 className="h-3.5 w-3.5" />
+            <span>DRAWER</span>
+          </button>
+        )}
+      </div>
+
+      {/* Upload Progress Overlay */}
+      <AnimatePresence>
+        {uploadProgress !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center font-mono gap-4"
+          >
+            <div className="w-64 space-y-2 text-center">
+              <span className="text-[10px] font-bold text-white tracking-widest uppercase">
+                UPLOADING RESUME PDF...
+              </span>
+              <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-800">
+                <motion.div 
+                  className={cn(
+                    "h-full rounded-full",
+                    themeMode === "volt" && "bg-[#CCFF00]",
+                    themeMode === "amber" && "bg-[#FFDE21]",
+                    themeMode === "chrome" && "bg-sky-400"
+                  )}
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${uploadProgress}%` }}
+                  transition={{ duration: 0.1 }}
+                />
+              </div>
+              <span className="text-[9px] text-zinc-500 uppercase tracking-widest">
+                {uploadProgress}% COMPLETE
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className={cn(
+              "fixed top-6 right-6 z-[10000] px-4 py-2.5 rounded-lg border shadow-xl flex items-center gap-2 font-mono text-xs font-bold",
+              toast.type === "success" 
+                ? "bg-emerald-950/90 border-emerald-500/50 text-emerald-400" 
+                : "bg-red-950/90 border-red-500/50 text-red-400"
+            )}
+            style={{
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+            }}
+          >
+            <span className="relative flex h-2 w-2">
+              <span className={cn(
+                "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                toast.type === "success" ? "bg-emerald-400" : "bg-red-400"
+              )}></span>
+              <span className={cn(
+                "relative inline-flex rounded-full h-2 w-2",
+                toast.type === "success" ? "bg-emerald-500" : "bg-red-500"
+              )}></span>
+            </span>
+            <span>{toast.message}</span>
+            <button 
+              onClick={() => setToast(null)}
+              className="ml-2 text-zinc-400 hover:text-white transition-colors"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <ResumeUploadModal
+        isOpen={isResumeUploadModalOpen}
+        onClose={() => setIsResumeUploadModalOpen(false)}
+        onUploadSuccess={(base64, timestamp) => {
+          setResumeBase64(base64);
+          setResumeUpdatedAt(timestamp);
+          setToast({ message: "Resume uploaded successfully!", type: "success" });
+          window.dispatchEvent(new Event("storage"));
+        }}
+        themeMode={themeMode}
+      />
 
     </div>
   );
