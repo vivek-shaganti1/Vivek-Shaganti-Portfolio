@@ -2802,17 +2802,40 @@ export default function Home() {
                       )}
                       <input 
                         type="file" 
-                        accept="image/*"
-                        onChange={e => {
+                        accept="image/png, image/jpeg, image/jpg, image/webp"
+                        onChange={async e => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (event) => {
-                              const base64 = event.target?.result as string;
-                              saveProfile({ ...profile, avatar: base64 });
-                              setToast({ message: "Profile picture updated.", type: "success" });
-                            };
-                            reader.readAsDataURL(file);
+                            if (!file.type.startsWith("image/")) {
+                              setToast({ message: "Payload Validation Fault: file must be PNG, JPG, JPEG, or WEBP.", type: "error" });
+                              return;
+                            }
+                            if (file.size > 5 * 1024 * 1024) {
+                              setToast({ message: "Payload Validation Fault: image size exceeds 5 MB constraint.", type: "error" });
+                              return;
+                            }
+                            try {
+                              setUploadProgress(25);
+                              const formData = new FormData();
+                              formData.append("file", file);
+                              const res = await fetch("/api/upload", {
+                                method: "POST",
+                                body: formData,
+                              });
+                              setUploadProgress(75);
+                              const data = await res.json();
+                              setUploadProgress(100);
+                              setTimeout(() => setUploadProgress(null), 400);
+                              if (data.secure_url) {
+                                saveProfile({ ...profile, avatar: data.secure_url });
+                                setToast({ message: "Profile picture saved to Cloudinary.", type: "success" });
+                              } else {
+                                setToast({ message: `Upload Fault: ${data.error || "failed"}`, type: "error" });
+                              }
+                            } catch (err: any) {
+                              setUploadProgress(null);
+                              setToast({ message: `Network Fault: ${err.message || "upload failed"}`, type: "error" });
+                            }
                           }
                         }}
                         className="hidden"
