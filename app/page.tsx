@@ -810,6 +810,12 @@ function ImmersiveBackground({ resolvedTheme, mousePos }: ImmersiveBackgroundPro
   );
 }
 
+
+const isValidUrl = (url: string) => {
+  if (!url) return true;
+  return url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/");
+};
+
 export default function Home() {
   const [profile, setProfile] = useState(INITIAL_PROFILE);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -2046,7 +2052,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
+            {filteredProjects.map((project: any) => (
               <div
                 key={project.id}
                 onClick={() => setSelectedProject(project)}
@@ -2101,23 +2107,24 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-zinc-900/60 mt-4 relative z-10 flex justify-between items-center">
-                  <div className="flex flex-wrap gap-1.5">
-                    {project.tech.slice(0, 3).map((t, i) => (
-                      <span 
-                        key={i}
-                        className="px-2 py-0.5 rounded text-[9px] font-mono bg-zinc-900 border border-zinc-850 text-zinc-500"
-                      >
-                        {t}
-                      </span>
+<div className="pt-6 border-t border-zinc-900/60 mt-4 relative z-10 flex justify-between items-center flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1">
+                    {project.tech.slice(0, 2).map((t: string, i: number) => (
+                      <span key={i} className="px-2 py-0.5 rounded text-[8px] font-mono bg-zinc-900 border border-zinc-850 text-zinc-500">{t}</span>
                     ))}
-                    {project.tech.length > 3 && (
-                      <span className="text-[9px] text-zinc-600 font-mono align-middle self-center">+{project.tech.length - 3}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    {project.showGithub !== false && (project.githubUrl || project.link) && (
+                      <a href={project.githubUrl || project.link} target="_blank" rel="noreferrer" className="px-2 py-1 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-white rounded text-[8px] font-bold uppercase tracking-wider flex items-center gap-0.5">
+                        GitHub
+                      </a>
+                    )}
+                    {project.showLive !== false && (project.liveUrl || project.liveLink) && (
+                      <a href={project.liveUrl || project.liveLink} target="_blank" rel="noreferrer" className={cn("px-2 py-1 rounded text-black text-[8px] font-bold uppercase tracking-wider flex items-center gap-0.5", currentTheme.bg)}>
+                        Live
+                      </a>
                     )}
                   </div>
-                  <span className={cn("text-[9px] font-bold tracking-widest uppercase flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity", currentTheme.primary)}>
-                    INSPECT <ArrowRight className="h-3 w-3" />
-                  </span>
                 </div>
               </div>
             ))}
@@ -3015,10 +3022,141 @@ export default function Home() {
                         />
                       </div>
 
+                      {/* PROJECT LINKS SECTION */}
+                      <div className="border-t border-zinc-900 pt-4 space-y-3">
+                        <span className="text-[9px] text-zinc-555 font-bold uppercase tracking-widest block font-bold text-white">Project Links (CMS v4.3)</span>
+                        
+                        <div className="space-y-1">
+                          <label className="block text-[8px] text-zinc-555 uppercase">GitHub Repository URL</label>
+                          <input 
+                            type="text" 
+                            value={editingProject.githubUrl || ""}
+                            onChange={e => setEditingProject({ ...editingProject, githubUrl: e.target.value })}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                            placeholder="https://github.com/username/repo"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[8px] text-zinc-555 uppercase">Live Website URL</label>
+                          <input 
+                            type="text" 
+                            value={editingProject.liveUrl || ""}
+                            onChange={e => setEditingProject({ ...editingProject, liveUrl: e.target.value })}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                            placeholder="https://app.vercel.app"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[8px] text-zinc-555 uppercase">Demo Video URL</label>
+                          <input 
+                            type="text" 
+                            value={editingProject.demoVideo || ""}
+                            onChange={e => setEditingProject({ ...editingProject, demoVideo: e.target.value })}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                            placeholder="https://youtube.com/watch?v=..."
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[8px] text-zinc-555 uppercase">Documentation URL</label>
+                          <input 
+                            type="text" 
+                            value={editingProject.docsUrl || ""}
+                            onChange={e => setEditingProject({ ...editingProject, docsUrl: e.target.value })}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                            placeholder="https://docs.site"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[8px] text-zinc-555 uppercase">Thumbnail Image URL</label>
+                          <input 
+                            type="text" 
+                            value={editingProject.thumbnailUrl || ""}
+                            onChange={e => setEditingProject({ ...editingProject, thumbnailUrl: e.target.value })}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                            placeholder="https://images.site/photo.png"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 pt-1">
+                          <div>
+                            <label className="block text-[8px] text-zinc-555 uppercase">Project Stars</label>
+                            <input 
+                              type="number" 
+                              value={editingProject.stars || 0}
+                              onChange={e => setEditingProject({ ...editingProject, stars: parseInt(e.target.value) || 0 })}
+                              className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[8px] text-zinc-555 uppercase">Downloads Count</label>
+                            <input 
+                              type="number" 
+                              value={editingProject.downloads || 0}
+                              onChange={e => setEditingProject({ ...editingProject, downloads: parseInt(e.target.value) || 0 })}
+                              className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 pt-3 pb-3">
+                          <label className="flex items-center gap-2 cursor-pointer text-[9px] uppercase font-bold text-zinc-450">
+                            <input
+                              type="checkbox"
+                              checked={!!editingProject.isFeatured}
+                              onChange={e => setEditingProject({ ...editingProject, isFeatured: e.target.checked })}
+                              className="rounded bg-zinc-900 border-zinc-800 text-emerald-500"
+                            />
+                            <span>Featured Project</span>
+                          </label>
+
+                          <label className="flex items-center gap-2 cursor-pointer text-[9px] uppercase font-bold text-zinc-450">
+                            <input
+                              type="checkbox"
+                              checked={!!editingProject.isOpenSource}
+                              onChange={e => setEditingProject({ ...editingProject, isOpenSource: e.target.checked })}
+                              className="rounded bg-zinc-900 border-zinc-800 text-emerald-500"
+                            />
+                            <span>Open Source</span>
+                          </label>
+
+                          <label className="flex items-center gap-2 cursor-pointer text-[9px] uppercase font-bold text-zinc-450">
+                            <input
+                              type="checkbox"
+                              checked={editingProject.showGithub !== false}
+                              onChange={e => setEditingProject({ ...editingProject, showGithub: e.target.checked })}
+                              className="rounded bg-zinc-900 border-zinc-800 text-emerald-500"
+                            />
+                            <span>Show GitHub Button</span>
+                          </label>
+
+                          <label className="flex items-center gap-2 cursor-pointer text-[9px] uppercase font-bold text-zinc-450">
+                            <input
+                              type="checkbox"
+                              checked={editingProject.showLive !== false}
+                              onChange={e => setEditingProject({ ...editingProject, showLive: e.target.checked })}
+                              className="rounded bg-zinc-900 border-zinc-800 text-emerald-500"
+                            />
+                            <span>Show Live Button</span>
+                          </label>
+                        </div>
+                      </div>
                       <button 
                         onClick={() => {
+                          if (!isValidUrl(editingProject.githubUrl) || 
+                              !isValidUrl(editingProject.liveUrl) || 
+                              !isValidUrl(editingProject.demoVideo) || 
+                              !isValidUrl(editingProject.docsUrl) || 
+                              !isValidUrl(editingProject.thumbnailUrl)) {
+                            setToast({ message: "Validation Fault: URL parameters must be formatted with secure protocol wrappers (http/https).", type: "error" });
+                            return;
+                          }
                           const updated = profile.projects.map(p => p.id === editingProject.id ? editingProject : p);
                           saveProfile({ ...profile, projects: updated });
+                          setToast({ message: "Project variables updated.", type: "success" });
                           setEditingProject(null);
                         }}
                         className="w-full py-2 bg-emerald-500 hover:bg-emerald-600 text-[10px] font-bold text-black uppercase rounded"
