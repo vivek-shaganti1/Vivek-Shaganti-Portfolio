@@ -55,6 +55,8 @@ import { Perspective, Highlight } from "@/components/ui/perspective-highlight";
 import { CpuArchitecture } from "@/components/ui/cpu-architecture";
 import { Spotlight } from "@/components/ui/spotlight";
 import { SpotlightHover } from "@/components/ui/spotlight-hover";
+import RobotCompanion from "@/components/robot-companion";
+import RecruiterChatbot from "@/components/recruiter-chatbot";
 import ResumeUploadModal from "@/components/resume-upload-modal";
 
 const INITIAL_PROFILE = {
@@ -636,6 +638,174 @@ export function KnowledgeGraph({ themeMode, onNodeSelect }: { themeMode: ThemeMo
         <span>• DRAG NODES TO APPLY PHYSICS</span>
         <span>• PINCH/WHEEL TO ZOOM / DRAG SPACE TO PAN</span>
       </div>
+    </div>
+  );
+}
+
+
+interface ImmersiveBackgroundProps {
+  resolvedTheme: "dark" | "light";
+  mousePos: { x: number; y: number };
+}
+
+function ImmersiveBackground({ resolvedTheme, mousePos }: ImmersiveBackgroundProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    
+    let animationFrameId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+    
+    const handleResize = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener("resize", handleResize);
+    
+    class Particle {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      alpha: number;
+      
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.radius = Math.random() * 2 + 0.5;
+        this.alpha = Math.random() * 0.5 + 0.2;
+      }
+      
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+      }
+      
+      draw() {
+        if (!ctx) return;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = resolvedTheme === "light" 
+          ? `rgba(99, 102, 241, ${this.alpha})`
+          : `rgba(204, 255, 0, ${this.alpha})`;
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+    
+    const particles: Particle[] = Array.from({ length: 60 }, () => new Particle());
+    
+    const animate = () => {
+      ctx.clearRect(0, 0, width, height);
+      
+      // Draw connection lines
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+        
+        const dxMouse = mousePos.x - particles[i].x;
+        const dyMouse = mousePos.y - particles[i].y;
+        const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+        if (distMouse < 180) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(mousePos.x, mousePos.y);
+          ctx.strokeStyle = resolvedTheme === "light"
+            ? `rgba(168, 85, 247, ${0.12 * (1 - distMouse / 180)})`
+            : `rgba(204, 255, 0, ${0.12 * (1 - distMouse / 180)})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+        
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = resolvedTheme === "light"
+              ? `rgba(99, 102, 241, ${0.08 * (1 - dist / 120)})`
+              : `rgba(255, 255, 255, ${0.04 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [resolvedTheme, mousePos]);
+  
+  const fragments = ["AI", "LLM", "React", "Spring", "Node", "Docker", "GPT", "RAG", "Python", "SQL", "Cloud", "API"];
+  
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      {/* Perspective Grid */}
+      <div 
+        className={cn(
+          "absolute inset-0 opacity-[0.03] transition-all duration-1000",
+          resolvedTheme === "light" ? "bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)]" : "bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)]"
+        )}
+        style={{
+          backgroundSize: "60px 60px",
+          transform: `perspective(500px) rotateX(60deg) translateY(${(mousePos.y * -0.01) - 40}px) translateX(${mousePos.x * -0.01}px)`,
+          transformOrigin: "top center",
+          transition: "transform 0.1s ease-out"
+        }}
+      />
+      
+      <div 
+        className="absolute w-[600px] h-[600px] rounded-full filter blur-[140px] opacity-10 animate-pulse transition-all duration-300 pointer-events-none"
+        style={{
+          background: resolvedTheme === "light" ? "radial-gradient(circle, #a855f7 0%, transparent 70%)" : "radial-gradient(circle, #CCFF00 0%, transparent 70%)",
+          left: "50%",
+          top: "50%",
+          transform: `translate(-50%, -50%) translate(${mousePos.x * 0.02}px, ${mousePos.y * 0.02}px)`
+        }}
+      />
+      
+      {/* GPU Canvas Engine */}
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-60" />
+      
+      {/* Floating fragments */}
+      {fragments.map((word, idx) => (
+        <span 
+          key={word}
+          className="absolute text-[8px] font-bold font-mono tracking-widest text-zinc-650 opacity-[0.06] select-none uppercase hidden md:inline-block"
+          style={{
+            left: `${10 + (idx * 7)}%`,
+            top: `${20 + (Math.sin(idx) * 40)}%`
+          }}
+        >
+          {word}
+        </span>
+      ))}
+      
+      {/* Scanline cyberpunk grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[size:100%_4px] pointer-events-none opacity-25" />
     </div>
   );
 }
@@ -1403,8 +1573,7 @@ export default function Home() {
       )}
 
       
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#141416_1px,transparent_1px),linear-gradient(to_bottom,#141416_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none opacity-40" />
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#09090b] to-transparent pointer-events-none z-0" />
+      <ImmersiveBackground resolvedTheme={resolvedTheme} mousePos={mousePosition} />
       
       <div 
         className="fixed w-[280px] h-[280px] rounded-full pointer-events-none z-30 blur-[120px] opacity-15 transition-transform duration-75 mix-blend-screen hidden lg:block"
@@ -3487,6 +3656,13 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* AI Robot Companion Floating Mascot */}
+      <div className="fixed bottom-20 right-6 z-50">
+        <RobotCompanion themeMode={themeMode} />
+      </div>
+
+      {/* Recruiter Chatbot Console */}
+      <RecruiterChatbot />
       <ResumeUploadModal
         isOpen={isResumeUploadModalOpen}
         onClose={() => setIsResumeUploadModalOpen(false)}

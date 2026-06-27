@@ -132,7 +132,16 @@ export default function RecruiterChatbot() {
       }
     };
     window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    
+    const handleTrigger = () => {
+      setIsOpen(true);
+    };
+    window.addEventListener("recruiter-chat-trigger", handleTrigger);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("recruiter-chat-trigger", handleTrigger);
+    };
   }, []);
 
   useEffect(() => {
