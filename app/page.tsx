@@ -644,6 +644,88 @@ export default function Home() {
   const [profile, setProfile] = useState(INITIAL_PROFILE);
   const [isEditMode, setIsEditMode] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>("volt");
+  // Dynamic Scroll Handler for shrinking header
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Theme Setting Handler
+  const [themeSetting, setThemeSetting] = useState<"dark" | "light" | "auto">("dark");
+  const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    if (themeSetting === "auto") {
+      const match = window.matchMedia("(prefers-color-scheme: light)");
+      setResolvedTheme(match.matches ? "light" : "dark");
+      const listener = (e: MediaQueryListEvent) => {
+        setResolvedTheme(e.matches ? "light" : "dark");
+      };
+      match.addEventListener("change", listener);
+      return () => match.removeEventListener("change", listener);
+    } else {
+      setResolvedTheme(themeSetting);
+    }
+  }, [themeSetting]);
+
+  // Live status rotation
+  const statusItems = [
+    "🟢 Available for Opportunities",
+    "🚀 PwC Launchpad Participant",
+    "🤖 Building Intelligent AI Systems",
+    "📚 BTech CSE (CGPA: 9.21)"
+  ];
+  const [statusIdx, setStatusIdx] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStatusIdx(prev => (prev + 1) % statusItems.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Segmented navigation active items
+  const navItems = [
+    { label: "Core", id: "spline-hero" },
+    { label: "About", id: "about" },
+    { label: "Projects", id: "projects" },
+    { label: "Graph", id: "knowledge-graph" },
+    { label: "Timeline", id: "timeline" },
+    { label: "Skills", id: "skills" },
+    { label: "Experience", id: "experience" },
+    { label: "Analytics", id: "analytics" },
+    { label: "Blogs", id: "blogs" },
+    { label: "Contact", id: "contact" }
+  ];
+  
+  // Track active section on scroll
+  const [activeSection, setActiveSection] = useState("spline-hero");
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + 200;
+      for (const item of navItems) {
+        const el = document.getElementById(item.id);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
+            setActiveSection(item.id);
+            break;
+          }
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const [activeTab, setActiveTab] = useState("all");
   const [projectSearch, setProjectSearch] = useState("");
   
@@ -1268,7 +1350,58 @@ export default function Home() {
   }, [visitors]);
 
   return (
-    <div className="min-h-screen bg-[#060608] text-zinc-300 font-mono relative overflow-hidden flex flex-col justify-between">
+    <div className={cn("min-h-screen bg-[#060608] text-zinc-300 font-mono relative overflow-hidden flex flex-col justify-between theme-light-wrapper", resolvedTheme === "light" && "theme-light")}>\n
+      {/* DYNAMIC LIGHT MODE OVERRIDES */}
+      {resolvedTheme === "light" && (
+        <style dangerouslySetInnerHTML={{ __html: `
+          .theme-light-wrapper {
+            background-color: #fafafa !important;
+            color: #18181b !important;
+          }
+          .theme-light-wrapper .bg-zinc-955,
+          .theme-light-wrapper .bg-zinc-955\\/40,
+          .theme-light-wrapper .bg-zinc-955\\/80,
+          .theme-light-wrapper .bg-zinc-955\\/60,
+          .theme-light-wrapper .bg-zinc-950\\/40,
+          .theme-light-wrapper .bg-zinc-955\\/40,
+          .theme-light-wrapper .bg-zinc-950\\/60,
+          .theme-light-wrapper .bg-[#0a0a0c],
+          .theme-light-wrapper .bg-[#09090b],
+          .theme-light-wrapper .bg-[#09090b]\\/40 {
+            background-color: rgba(255, 255, 255, 0.75) !important;
+            backdrop-filter: blur(20px) !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+          }
+          .theme-light-wrapper .border-zinc-900,
+          .theme-light-wrapper .border-zinc-850,
+          .theme-light-wrapper .border-zinc-800 {
+            border-color: rgba(0, 0, 0, 0.08) !important;
+          }
+          .theme-light-wrapper .text-zinc-300,
+          .theme-light-wrapper .text-zinc-400,
+          .theme-light-wrapper .text-zinc-450 {
+            color: #27272a !important;
+          }
+          .theme-light-wrapper .text-zinc-550,
+          .theme-light-wrapper .text-zinc-500,
+          .theme-light-wrapper .text-zinc-555,
+          .theme-light-wrapper .text-zinc-650 {
+            color: #71717a !important;
+          }
+          .theme-light-wrapper .text-white {
+            color: #09090b !important;
+          }
+          .theme-light-wrapper .bg-black {
+            background-color: #ffffff !important;
+          }
+          .theme-light-wrapper pre,
+          .theme-light-wrapper code {
+            background-color: #f4f4f5 !important;
+            color: #09090b !important;
+          }
+        `}} />
+      )}
+
       
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#141416_1px,transparent_1px),linear-gradient(to_bottom,#141416_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none opacity-40" />
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#09090b] to-transparent pointer-events-none z-0" />
@@ -1410,7 +1543,7 @@ export default function Home() {
         
         <section id="spline-hero" className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[580px]">
           
-          <div className="lg:col-span-3 rounded-2xl border border-zinc-900 bg-zinc-955/40 p-6 flex flex-col justify-between backdrop-blur-md relative overflow-hidden h-full">
+          <div id="about" className="lg:col-span-3 rounded-2xl border border-zinc-900 bg-zinc-955/40 p-6 flex flex-col justify-between backdrop-blur-md relative overflow-hidden h-full">
             <div className="space-y-6">
               <div className="relative w-24 h-24 mx-auto group">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#CCFF00] via-cyan-400 to-[#FFDE21] animate-spin opacity-40 blur-sm pointer-events-none duration-500" />
@@ -1476,7 +1609,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="lg:col-span-6 rounded-2xl border border-zinc-900 bg-[#09090b]/40 backdrop-blur-md relative overflow-hidden flex flex-col justify-between h-full group">
+          <div id="knowledge-graph" className="lg:col-span-6 rounded-2xl border border-zinc-900 bg-[#09090b]/40 backdrop-blur-md relative overflow-hidden flex flex-col justify-between h-full group">
             <div className="p-4 border-b border-zinc-900 bg-black/40 flex items-center justify-between z-20 relative">
               <span className="text-[10px] font-bold tracking-widest text-white uppercase flex items-center gap-1.5">
                 <Activity className={cn("h-3.5 w-3.5", currentTheme.primary)} />
@@ -1498,7 +1631,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="lg:col-span-3 rounded-2xl border border-zinc-900 bg-zinc-955/40 p-6 flex flex-col justify-between backdrop-blur-md relative overflow-hidden h-full">
+          <div id="about" className="lg:col-span-3 rounded-2xl border border-zinc-900 bg-zinc-955/40 p-6 flex flex-col justify-between backdrop-blur-md relative overflow-hidden h-full">
             <div className="space-y-4 flex flex-col h-full justify-between">
               <div className="space-y-3">
                 <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest block border-b border-zinc-900 pb-2 flex items-center gap-1">
@@ -3386,6 +3519,27 @@ function UserIcon(props: React.SVGProps<SVGSVGElement>) {
     >
       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
       <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
+function MenuIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="4" x2="20" y1="12" y2="12" />
+      <line x1="4" x2="20" y1="6" y2="6" />
+      <line x1="4" x2="20" y1="18" y2="18" />
     </svg>
   );
 }
