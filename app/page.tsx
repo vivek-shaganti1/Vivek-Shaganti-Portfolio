@@ -911,7 +911,7 @@ export default function Home() {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   const [showAdminPanel, setShowAdminPanel] = useState(false);
-  const [adminTab, setAdminTab] = useState<"summary" | "skills" | "experience" | "projects" | "blogs" | "timeline" | "certifications" | "crm" | "analytics" | "settings">("summary");
+  const [adminTab, setAdminTab] = useState<"summary" | "skills" | "experience" | "projects" | "blogs" | "timeline" | "certifications" | "crm" | "analytics" | "settings" | "resume">("summary");
   
   const [editingProject, setEditingProject] = useState<any>(null);
 
@@ -938,6 +938,18 @@ export default function Home() {
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [isResumeUploadModalOpen, setIsResumeUploadModalOpen] = useState(false);
   const [resumeUpdatedAt, setResumeUpdatedAt] = useState<string | null>(null);
+  const [resumeHistory, setResumeHistory] = useState<any[]>([]);
+
+  useEffect(() => {
+    const savedHistory = localStorage.getItem("portfolio_resume_history");
+    if (savedHistory) {
+      try {
+        setResumeHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, []);
 
   // CRM & Analytics & Settings States
   const [recruiters, setRecruiters] = useState<any[]>([]);
@@ -2753,7 +2765,7 @@ export default function Home() {
             </div>
 
             <div className="flex border-b border-zinc-900 px-6 overflow-x-auto text-[10px] font-mono font-bold gap-2 bg-black/40">
-              {(["summary", "skills", "experience", "projects", "blogs", "timeline", "crm", "analytics", "settings"] as const).map(tab => (
+              {(["summary", "skills", "experience", "projects", "blogs", "timeline", "crm", "analytics", "settings", "resume"] as const).map(tab => (
                 <button
                   key={tab}
                   onClick={() => setAdminTab(tab)}
@@ -3433,6 +3445,129 @@ export default function Home() {
                 </form>
               )}
 
+              {adminTab === "resume" && (
+                <div className="space-y-6 font-mono text-[11px]">
+                  <div className="p-4 border border-zinc-900 bg-zinc-955 rounded-lg space-y-4">
+                    <span className="text-[10px] text-white font-bold uppercase tracking-widest block border-b border-zinc-900 pb-2">
+                      Active Resume Details
+                    </span>
+                    {resumeBase64 ? (
+                      <div className="space-y-2 text-[10px] text-zinc-400">
+                        <div>
+                          <span className="text-zinc-600 block text-[8px] uppercase">File Name</span>
+                          <span className="text-white font-bold">Vivek_Goud_Shaganti_CV.pdf</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <span className="text-zinc-600 block text-[8px] uppercase">Active Version</span>
+                            <span className="text-[#CCFF00] font-bold">v{resumeHistory.length + 1}</span>
+                          </div>
+                          <div>
+                            <span className="text-zinc-600 block text-[8px] uppercase">Payload Size</span>
+                            <span className="text-white">{Math.round(resumeBase64.length * 0.75 / 1024)} KB</span>
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-zinc-600 block text-[8px] uppercase">Last Synchronization</span>
+                          <span className="text-white">{resumeUpdatedAt || "Just now"}</span>
+                        </div>
+                        
+                        <div className="flex gap-2 pt-2">
+                          <button
+                            onClick={() => handleResumeAction("view")}
+                            className="px-2.5 py-1 bg-zinc-900 border border-zinc-800 text-white rounded hover:border-zinc-700 text-[9px] uppercase"
+                          >
+                            Preview
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (!isAuthorized) {
+                                setToast({ message: "Security Fault: Admin signature required.", type: "error" });
+                                return;
+                              }
+                              setIsResumeUploadModalOpen(true);
+                            }}
+                            className="px-2.5 py-1 bg-[#CCFF00] text-black font-bold rounded hover:bg-[#8dfa00] text-[9px] uppercase"
+                          >
+                            Replace File
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (!isAuthorized) {
+                                setToast({ message: "Security Fault: Admin signature required.", type: "error" });
+                                return;
+                              }
+                              if (window.confirm("Permanently delete active resume payload?")) {
+                                handleResumeAction("delete");
+                              }
+                            }}
+                            className="px-2.5 py-1 bg-red-955/20 border border-red-900/30 text-red-400 rounded hover:bg-red-955/40 text-[9px] uppercase ml-auto"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 space-y-3">
+                        <p className="text-zinc-650 text-xs font-bold">No active resume payload hosted in local storage.</p>
+                        <button
+                          onClick={() => {
+                            if (!isAuthorized) {
+                              setToast({ message: "Security Fault: Admin signature required.", type: "error" });
+                              return;
+                            }
+                            setIsResumeUploadModalOpen(true);
+                          }}
+                          className="px-4 py-2 bg-[#CCFF00] text-black rounded text-[10px] font-bold uppercase hover:bg-[#8dfa00]"
+                        >
+                          Upload First Version
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Version Rollback Segment */}
+                  <div className="p-4 border border-zinc-900 bg-zinc-955 rounded-lg space-y-3">
+                    <span className="text-[10px] text-white font-bold uppercase tracking-widest block border-b border-zinc-900 pb-2">
+                      Version Rollback Vault ({resumeHistory.length} Backups)
+                    </span>
+                    {resumeHistory.length === 0 ? (
+                      <p className="text-zinc-655 text-center py-2 text-[9px]">No historical rollback nodes cataloged.</p>
+                    ) : (
+                      <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
+                        {resumeHistory.map((item, idx) => (
+                          <div key={idx} className="p-2 border border-zinc-900 bg-zinc-950 rounded flex items-center justify-between hover:border-zinc-800 transition-colors">
+                            <div className="space-y-0.5">
+                              <span className="text-white font-bold">Version {item.version || `v${idx + 1}`}</span>
+                              <span className="text-[8px] text-zinc-555 block">{item.timestamp} • {item.size}</span>
+                            </div>
+                            <button
+                              onClick={() => {
+                                if (!isAuthorized) {
+                                  setToast({ message: "Security Fault: Admin signature required.", type: "error" });
+                                  return;
+                                }
+                                if (window.confirm(`Rollback active resume to version ${item.version}?`)) {
+                                  setResumeBase64(item.base64);
+                                  setResumeUpdatedAt(item.timestamp);
+                                  localStorage.setItem("portfolio_resume_base64", item.base64);
+                                  localStorage.setItem("portfolio_resume_updated_at", item.timestamp);
+                                  setToast({ message: `Active CV restored to version ${item.version}`, type: "success" });
+                                  window.dispatchEvent(new Event("storage"));
+                                }
+                              }}
+                              className="px-2 py-0.5 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-white rounded text-[8px] uppercase"
+                            >
+                              Restore
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {adminTab === "blogs" && (
                 <div className="space-y-4">
                   <span className="text-[9px] text-zinc-500 uppercase font-mono block">Currently configured blog logs</span>
@@ -3799,15 +3934,24 @@ export default function Home() {
         <RobotCompanion themeMode={themeMode} />
       </div>
 
-      {/* Recruiter Chatbot Console */}
-      <RecruiterChatbot />
       <ResumeUploadModal
         isOpen={isResumeUploadModalOpen}
         onClose={() => setIsResumeUploadModalOpen(false)}
         onUploadSuccess={(base64, timestamp) => {
+          const size = Math.round(base64.length * 0.75 / 1024) + " KB";
+          const version = `v${resumeHistory.length + 1}`;
+          const newEntry = { base64, timestamp, size, version };
+          
+          const updatedHistory = [...resumeHistory, newEntry];
+          setResumeHistory(updatedHistory);
+          localStorage.setItem("portfolio_resume_history", JSON.stringify(updatedHistory));
+          
           setResumeBase64(base64);
           setResumeUpdatedAt(timestamp);
-          setToast({ message: "Resume uploaded successfully!", type: "success" });
+          localStorage.setItem("portfolio_resume_base64", base64);
+          localStorage.setItem("portfolio_resume_updated_at", timestamp);
+          
+          setToast({ message: `Resume uploaded as version ${version}.`, type: "success" });
           window.dispatchEvent(new Event("storage"));
         }}
         themeMode={themeMode}
