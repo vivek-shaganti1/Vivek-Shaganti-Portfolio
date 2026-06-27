@@ -61,7 +61,7 @@ import ResumeUploadModal from "@/components/resume-upload-modal";
 import CurvedVLogo from "@/components/curved-v-logo";
 
 const INITIAL_PROFILE = {
-  schemaVersion: 5,
+  schemaVersion: 6,
   avatar: "",
   name: "Vivek Goud Shaganti",
   title: "Full Stack Engineer & AI Automation Developer",
@@ -1274,10 +1274,15 @@ export default function Home() {
     if (savedProfile) {
       try {
         const parsed = JSON.parse(savedProfile);
-        if (!parsed.schemaVersion || parsed.schemaVersion < 5) {
-          console.warn("[PROFILE MIGRATION] Outdated schema detected in localStorage. Overwriting with INITIAL_PROFILE (v5).");
-          localStorage.setItem("vivek_portfolio_profile", JSON.stringify(INITIAL_PROFILE));
-          setProfile(INITIAL_PROFILE);
+        if (!parsed.schemaVersion || parsed.schemaVersion < 6) {
+          console.warn("[PROFILE MIGRATION] Migrating customizer settings to new schema v6.");
+          const migratedProfile = {
+            ...INITIAL_PROFILE,
+            ...parsed,
+            schemaVersion: 6
+          };
+          localStorage.setItem("vivek_portfolio_profile", JSON.stringify(migratedProfile));
+          setProfile(migratedProfile);
         } else {
           setProfile(parsed);
         }
