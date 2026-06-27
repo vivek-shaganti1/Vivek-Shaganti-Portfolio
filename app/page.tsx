@@ -1520,7 +1520,7 @@ export default function Home() {
   }, [visitors]);
 
   return (
-    <div className={cn("min-h-screen bg-[#060608] text-zinc-300 font-mono relative overflow-hidden flex flex-col justify-between theme-light-wrapper", resolvedTheme === "light" && "theme-light")}>\n
+    <div className={cn("min-h-screen bg-[#060608] text-zinc-300 font-mono relative overflow-hidden flex flex-col justify-between theme-light-wrapper", resolvedTheme === "light" && "theme-light")}>
       {/* DYNAMIC LIGHT MODE OVERRIDES */}
       {resolvedTheme === "light" && (
         <style dangerouslySetInnerHTML={{ __html: `
