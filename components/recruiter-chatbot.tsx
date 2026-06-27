@@ -243,13 +243,13 @@ export default function RecruiterChatbot() {
           reply = "Vivek Goud Shaganti is a Computer Science undergraduate (BTech CSE, 3rd Year) with a CGPA of 9.21. Passionate about building intelligent, scalable systems, decentralization, and developer tooling. Experienced with Spring Boot, React, and automated AI workflows.";
           break;
         case "/skills":
-          reply = "Vivek's Tech Stack:\n- Languages: Java, Python, JavaScript, SQL, C\n- Frontend: React.js, Next.js, Tailwind CSS, TypeScript, Framer Motion\n- Backend: Spring Boot, Node.js, Express, REST APIs, JWT Auth\n- Databases: MySQL, MongoDB, PostgreSQL, Redis\n- Blockchain: Smart Contracts, Web3 Fundamentals\n- Tools: Git, Postman, Docker, Agile Methods";
+          reply = "Vivek's Tech Stack:\n- Programming Languages: Java, Python, JavaScript, TypeScript, SQL, C, C++\n- Frontend Engineering: React.js, Next.js, Tailwind CSS, TypeScript, Framer Motion, ShadCN UI\n- Backend Engineering: Spring Boot, Node.js, Express.js, REST APIs, JWT Auth, WebSockets\n- Databases & Storage: MySQL, PostgreSQL, MongoDB, Redis, Supabase, NeonDB, Drizzle\n- Artificial Intelligence: Generative AI, LLMs, AI Agents, Prompt Engineering, RAG, Gemini, Groq\n- Cloud & DevOps: Azure, Vercel, Render, Docker, GitHub Actions, CI/CD\n- APIs & Integrations: REST APIs, Webhooks, Telegram API, GitHub API\n- Data & Analytics: Pandas, NumPy, Plotly, Qlik Sense, Machine Learning\n- Developer Tools: Git, GitHub, VS Code, IntelliJ, Postman, pnpm\n- Blockchain: Solidity, Smart Contracts, Web3 Fundamentals";
           break;
         case "/projects":
-          reply = "Active Nodes: rShield-ai, JavaMind-AI, Instagram-automation, vivekx-ecommerce. Click any inline link in chatbot to inspect details.";
+          reply = "Key Projects:\n- AI Interview Platform (Production)\n- JavaMind AI (Active)\n- rShield (Active)\n- Instagram AI Automation (Production)\n- Trading AI (Research)\n- RAN Fitness (Production)\n- Portfolio OS (Production)\n- Full Stack E-Commerce (Production)\n- Sticker Ordering Platform (Production)\n- AI Interview Prep (Research)\n- Job Applier AI (Research)\n- Jarvis AI (Active)\n- VSystem Automation (Active)\n- Productivity Task Manager (Archived)";
           break;
         case "/experience":
-          reply = "Journey nodes:\n- Python Development Intern @ Cognifyz Technologies (Apr 2025 - May 2025)\n- Vice President @ Blockchain Club AU (2024 - Present)\n- Team Lead @ LiteraZe Society (2023 - Present)";
+          reply = "Journey nodes:\n- PwC Launchpad Participant (2025)\n- Python Development Intern @ Cognifyz Technologies (Apr 2025 - May 2025)\n- Vice President @ Blockchain Club AU (2024 - Present)\n- Team Lead @ LiteraZe Society (2023 - Present)";
           break;
         case "/contact":
           reply = "Contact links:\n- Email: vivekshaganti@gmail.com\n- LinkedIn: linkedin.com/in/vivek-goud-shaganti-01111b28a\n- GitHub: github.com/vivek-shaganti1";

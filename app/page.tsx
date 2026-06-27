@@ -45,6 +45,7 @@ import { SpotlightHover } from "@/components/ui/spotlight-hover";
 import ResumeUploadModal from "@/components/resume-upload-modal";
 
 const INITIAL_PROFILE = {
+  schemaVersion: 3,
   name: "Vivek Goud Shaganti",
   title: "Full Stack Engineer & AI Automation Developer",
   email: "vivekshaganti@gmail.com",
@@ -420,10 +421,21 @@ export default function Home() {
     const savedProfile = localStorage.getItem("vivek_portfolio_profile");
     if (savedProfile) {
       try {
-        setProfile(JSON.parse(savedProfile));
+        const parsed = JSON.parse(savedProfile);
+        if (!parsed.schemaVersion || parsed.schemaVersion < 3) {
+          console.warn("[PROFILE MIGRATION] Outdated schema detected in localStorage. Overwriting with INITIAL_PROFILE (v3).");
+          localStorage.setItem("vivek_portfolio_profile", JSON.stringify(INITIAL_PROFILE));
+          setProfile(INITIAL_PROFILE);
+        } else {
+          setProfile(parsed);
+        }
       } catch (e) {
         console.error(e);
+        localStorage.setItem("vivek_portfolio_profile", JSON.stringify(INITIAL_PROFILE));
+        setProfile(INITIAL_PROFILE);
       }
+    } else {
+      localStorage.setItem("vivek_portfolio_profile", JSON.stringify(INITIAL_PROFILE));
     }
     const savedAuth = sessionStorage.getItem("portfolio_edit_auth");
     if (savedAuth === "true") {
