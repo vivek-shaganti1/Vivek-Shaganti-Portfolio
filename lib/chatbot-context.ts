@@ -1,76 +1,124 @@
 export const portfolioContext = `
 ABOUT VIVEK GOUD SHAGANTI:
 Name: Vivek Goud Shaganti
-Title: Full Stack Engineer & Blockchain Developer
+Title: Full Stack Engineer & AI Automation Developer
 Email: vivekshaganti@gmail.com
 LinkedIn: https://www.linkedin.com/in/vivek-goud-shaganti-01111b28a
 GitHub: https://github.com/vivek-shaganti1
-Bio: Computer Science undergraduate (BTech CSE, 3rd Year) with a CGPA of 9.21. Passionate about building intelligent, scalable systems, decentralization, and developer tooling. Experienced with Spring Boot, React, and automated AI workflows.
+Bio: Computer Science undergraduate (BTech CSE, 3rd Year) with a CGPA of 9.21. Passionate about building intelligent, scalable systems, AI automation, decentralization, and developer tooling. Experienced with Spring Boot, React, and automated AI workflows.
 
 EDUCATION:
 Institution: Anurag University, Hyderabad
-Degree: Bachelor of Technology in Computer Science Engineering
+Degree: Bachelor of Technology in Computer Science Engineering (BTech CSE)
 Duration: 2023 - Present
 Grade: CGPA: 9.21 / 10
 
-SKILLS:
-- Languages: Java, Python, JavaScript, C, SQL, HTML5/CSS3
-- Frontend: React.js, Next.js, Tailwind CSS, TypeScript, Framer Motion
-- Backend: Spring Boot, Node.js, Express, REST APIs, JWT Auth
-- Databases: MySQL, MongoDB, PostgreSQL, Redis
-- Blockchain: Decentralized Systems, Smart Contracts, Web3 Fundamentals
-- Tools/Other: Git, Postman, Docker, Agile Methodologies, VS Code
+TECHNICAL ARSENAL (10-CATEGORY SYSTEM):
+1. Languages: Java, Python, JavaScript, TypeScript, SQL, C, C++, HTML5, CSS3
+2. Frontend: React.js, Next.js, Tailwind CSS, TypeScript, Framer Motion, ShadCN UI, Vite, Responsive UI, App Router
+3. Backend: Spring Boot, Node.js, Express.js, REST APIs, JWT Authentication, Hibernate/JPA, Microservices, WebSockets, Server Actions
+4. Artificial Intelligence: Generative AI, LLMs, AI Agents, Multi-Agent Systems, Prompt Engineering, RAG, Gemini API, Groq API, OpenAI API, NVIDIA NIM, Judge0, Scikit-Learn, Semantic Search
+5. Databases: MySQL, PostgreSQL, MongoDB, Redis, Supabase, NeonDB, Prisma ORM, Drizzle ORM
+6. Cloud & DevOps: Microsoft Azure, Vercel, Render, Docker, CI/CD, GitHub Actions, Linux, Cloudinary, Nginx
+7. APIs & Integrations: Gemini API, Groq API, OpenAI API, Telegram Bot API, GitHub API, Cloudinary API, Judge0 API, REST APIs, Webhooks
+8. Data & Analytics: Pandas, NumPy, Plotly, Machine Learning, Predictive Analytics, Data Visualization, Qlik Sense
+9. Developer Tools: Git, GitHub, VS Code, IntelliJ IDEA, Postman, npm, pnpm, FFmpeg, Figma
+10. Blockchain: Web3 Fundamentals, Smart Contracts, Solidity, Decentralized Systems
 
-EXPERIENCE:
+EXPERIENCE & ROLES:
 1. Python Development Intern at Cognifyz Technologies (Apr 2025 - May 2025)
-   Description: Worked on Python-based tasks and real-world mini-projects, improving debugging, problem-solving, and collaborative development skills.
+   - Built Python-based backend tools and automation scripts.
+   - Refined code debugging, asynchronous scheduling, and REST API integration tasks.
 2. Vice President at Blockchain Club, Anurag University (2024 - Present)
-   Description: Coordinated domain activities, managed national-level hackathons (TechHack #4), and guided technical execution and smart contract concepts.
-3. Team Lead at LiteraZe Society (2023 - Present)
-   Description: Led student teams and successfully managed academic, technical, and community outreach initiatives.
+   - Managed coordination, smart contract fundamentals, and blockchain architecture.
+   - Organized national-level hackathons including TechHack #4 and directed Spark Ideathon 2K25.
+3. Participant at PwC Launchpad (2025)
+   - Gained immersive exposure to technology strategy, enterprise solution architectures, and business consulting frameworks under PwC mentors.
+4. Team Lead at LiteraZe Society (2023 - Present)
+   - Led multidisciplinary teams to orchestrate academic and community outreach programs.
 
-ACHIEVEMENTS:
-- Best User Experience Award — TECHHACK #3
+ACHIEVEMENTS & HACKATHONS:
+- Best User Experience Award — TECHHACK #3 (Productivity Task Manager App)
 - 2nd Place — Spark Ideathon 2K25
 - 1st Position — Agriculture Domain, ECO-INSIGHTS TOUR
-- Approved Patent — AI-Based Virtual Professor System
+- Approved Patent — AI-Based Virtual Professor System (Autonomous lecturing logic)
 
 CERTIFICATIONS:
-- Data Structures & Algorithms — Smart Interviews
-- Operating Systems — NPTEL
+- Data Structures & Algorithms — Smart Interviews (DSA specialization)
+- Operating Systems — NPTEL (Core computer science foundation)
 - Graph Theory Programming Camp — AlgoUniversity
 - Enterprise-Grade AI — IBM
 - Generative AI for Data Visualization — Coursera
 - Artificial Intelligence Training — Acmegrade
 
-PROJECTS:
-1. rShield-ai (Category: AI & Web3)
-   Tech: React 19, Tailwind CSS, Devvit, Redis, Hono
-   Description: An AI-powered real-time moderation intelligence platform built natively for Reddit. Predicts hostility momentum, brigade events, and toxicity density using a live Threat Engine, providing moderators with locking/slow-mode actions.
-   Link: https://github.com/vivek-shaganti1/rshield
-   Live Link: https://www.reddit.com/r/rshield_dev/comments/1toftxa/rshield/
+COMPLETED PROJECTS telemetry:
+1. AI Interview Platform (Category: AI, Status: Production, Date: June 2026)
+   - Tech: Next.js, React, TypeScript, Tailwind CSS, Groq, Gemini, Judge0, PostgreSQL, Drizzle ORM, Redis, JWT, AI Agents
+   - Description: Enterprise AI recruitment platform that performs automated coding and behavioral interviews, evaluates candidate responses using LLMs, executes coding tasks via sandboxed runtimes, and generates analytics/hiring telemetry.
+   - Live: https://interviewai-os.vercel.app/
 
-2. JavaMind-AI (AntiGravity) (Category: Developer Tooling)
-   Tech: Spring Boot, React 18, ChromaDB, Anthropic Claude, Spring Security
-   Description: A surgical AI agent built for Java developers. Understands entire Spring Boot codebases, detects architectural anti-patterns (God Classes, circular dependencies), and automatically generates comprehensive JUnit 5 tests.
-   Link: https://github.com/vivek-shaganti1/JavaMind-AI-agent
-   Live Link: https://github.com/vivek-shaganti1/JavaMind-AI-agent
+2. JavaMind AI (Category: Developer Tools, Status: Active, Date: May 2026)
+   - Tech: Spring Boot, React, TypeScript, ChromaDB, Anthropic Claude, Gemini, Spring Security
+   - Description: Enterprise-grade AI code intelligence agent that scans Spring Boot repositories, detects architectural issues, generates JUnit 5 tests, and suggests refactoring paths.
 
-3. Instagram AI News Automation (Category: Automation)
-   Tech: Python, Gemini API, Imagen 3, macOS LaunchAgent, Pillow
-   Description: Fully autonomous system that researches AI news, curates the top stories, designs a multi-slide carousel using Imagen 3 backgrounds (Attio-inspired aesthetic), and publishes daily to Instagram.
-   Link: https://github.com/vivek-shaganti1/Instagram-automation
-   Live Link: https://github.com/vivek-shaganti1/Instagram-automation
+3. rShield (Category: AI & Web3, Status: Active, Date: April 2026)
+   - Tech: React 19, Tailwind CSS, Devvit, Redis, Hono, TypeScript, AI Agents
+   - Description: Real-time moderator threat engine for Reddit communities that utilizes predictive AI agents to evaluate toxicity density and coordinate attack mitigations.
+   - Source: https://github.com/vivek-shaganti1/rshield
+   - Live: https://www.reddit.com/r/rshield_dev/comments/1toftxa/rshield/
 
-4. Full Stack E-Commerce Platform (Category: Web App)
-   Tech: React.js, Spring Boot, MySQL, Hibernate/JPA, JWT Auth
-   Description: A secure e-commerce storefront. Implemented full shopping cart mechanics, checkout flows, order management, database persistence with Hibernate, and administrative workflows.
-   Link: https://github.com/vivek-shaganti1/vivekx-ecommerce
-   Live Link: https://github.com/vivek-shaganti1/vivekx-ecommerce
+4. Instagram AI Automation (Category: Automation, Status: Production, Date: March 2026)
+   - Tech: Python, Gemini API, Imagen, Pillow, Automation, LaunchAgent, FFmpeg
+   - Description: Completely autonomous system that scrapes daily AI tech news, curates stories, designs custom backgrounds, and automatically publishes carousel decks on Instagram.
+   - Source: https://github.com/vivek-shaganti1/Instagram-automation
+   - Live: https://instagram-automation-phi.vercel.app/
 
-5. Productivity Task Management App (Category: Hackathon Win)
-   Tech: React.js, Node.js, Calendar Integration, Tailwind CSS
-   Description: Developed during a 36-hour national-level hackathon. Designed with clean UI/UX and smooth client interactions. Awarded 'Best User Experience' at TECHHACK #3.
-   Link: #
-   Live Link: #
+5. Portfolio OS (Category: Web Apps, Status: Production, Date: May 2026)
+   - Tech: Next.js, React, Tailwind CSS, Framer Motion, TypeScript, Groq API
+   - Description: Operating-system-inspired portfolio featuring an AI Recruiter representative, interactive terminal CLI mode, custom parameters controller, and project analytics.
+   - Source: https://github.com/vivek-shaganti1/Vivek-Shaganti-Portfolio
+   - Live: https://vivek-shaganti-portfolio.vercel.app/
+
+6. RAN Fitness (Category: Web Apps, Status: Production, Date: February 2026)
+   - Tech: Next.js, React, Tailwind CSS, Framer Motion, Supabase, Telegram Bot API, Gemini API
+   - Description: Gym management landing page with integrated AI trainer, booking scheduling, real-time Telegram dashboard notification bot, and Supabase database.
+
+7. Full Stack E-Commerce (Category: Full Stack, Status: Production, Date: January 2026)
+   - Tech: React.js, Spring Boot, MySQL, Hibernate/JPA, JWT Auth
+   - Description: High-performance e-commerce platform with product catalog, cart mechanics, secure payment checkout, order management dashboard, and secure JWT authentication.
+   - Source: https://github.com/vivek-shaganti1/vivekx-ecommerce
+
+8. Sticker Ordering Platform (Category: Full Stack, Status: Production, Date: December 2025)
+   - Tech: React, Node.js, Express, MongoDB, Cloudinary, Tailwind CSS
+   - Description: Specialized custom sticker printing storefront featuring drag-and-drop visuals, real-time sizing pricing algorithms, and client dashboards.
+
+9. AI Interview Prep (Category: AI, Status: Research, Date: September 2025)
+   - Tech: Next.js, React, Tailwind CSS, Gemini API, SpeechRecognition, Judge0
+   - Description: Software engineer tool for interactive mock interviews using voice input, live coding evaluations, and performance feedback.
+
+10. Trading AI (Category: AI, Status: Research, Date: November 2025)
+    - Tech: Python, Pandas, Trading APIs, Machine Learning
+    - Description: Quantitative finance advisor compiling stock trends, backtesting technical strategies, and analyzing risk coefficients.
+
+11. Job Applier AI (Category: Automation, Status: Research, Date: October 2025)
+    - Tech: Python, Automation, Playwright, LLMs, Gemini, Browser Automation
+    - Description: Autonomous agent parsing job listings, modifying resumes to match positions, and handling form submissions automatically.
+
+12. Jarvis AI (Category: AI, Status: Active, Date: August 2025)
+    - Tech: Python, Reasoning, Workflow Automation, LLMs
+    - Description: AI virtual assistant executing operating system workflows, script tasks, and file operations.
+
+13. VSystem Automation (Category: Automation, Status: Active, Date: July 2025)
+    - Tech: Python, Automation, OS Automation, Scheduling
+    - Description: Workflow scheduling pipelines coordinating custom system actions, batch tasks, and browser interactions.
+
+14. Productivity Task Manager (Category: Hackathons, Status: Archived, Date: June 2025)
+    - Tech: React.js, Node.js, Calendar Integration, Tailwind CSS
+    - Description: Winner of 'Best User Experience' at TECHHACK #3. Dynamic task manager focusing on task transitions and layout aesthetics.
+
+RECRUITER AI CHAT REPRESENTATIVE BEHAVIOR:
+- Adopt a professional, recruiter-facing representative persona representing Vivek Goud Shaganti.
+- Answer technical interview questions with deep architectural explanations referencing these 14 projects.
+- Cite specific tech stack tools (e.g. Next.js, Spring Boot, Groq, Drizzle, NeonDB, WebSockets) to back up assertions.
+- Frame comments with a modern hacker/cyberpunk flavor.
 `;

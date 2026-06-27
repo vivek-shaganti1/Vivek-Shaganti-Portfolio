@@ -27,7 +27,8 @@ import {
   Plus,
   Trash,
   Trash2,
-  KeyRound
+  KeyRound,
+  Search
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Perspective, Highlight } from "@/components/ui/perspective-highlight";
@@ -39,7 +40,7 @@ import ResumeUploadModal from "@/components/resume-upload-modal";
 
 const INITIAL_PROFILE = {
   name: "Vivek Goud Shaganti",
-  title: "Full Stack Engineer & Blockchain Developer",
+  title: "Full Stack Engineer & AI Automation Developer",
   email: "vivekshaganti@gmail.com",
   linkedin: "https://www.linkedin.com/in/vivek-goud-shaganti-01111b28a",
   github: "https://github.com/vivek-shaganti1",
@@ -51,12 +52,16 @@ const INITIAL_PROFILE = {
     grade: "CGPA: 9.21 / 10"
   },
   skills: {
-    languages: ["Java", "Python", "JavaScript", "C", "SQL", "HTML5/CSS3"],
-    frontend: ["React.js", "Next.js", "Tailwind CSS", "TypeScript", "Framer Motion"],
-    backend: ["Spring Boot", "Node.js", "Express", "REST APIs", "JWT Auth"],
-    databases: ["MySQL", "MongoDB", "PostgreSQL", "Redis"],
-    blockchain: ["Decentralized Systems", "Smart Contracts", "Web3 Fundamentals"],
-    tools: ["Git", "Postman", "Docker", "Agile Methodologies", "VS Code"]
+    languages: ["Java", "Python", "JavaScript", "TypeScript", "SQL", "C", "C++", "HTML5", "CSS3"],
+    frontend: ["React.js", "Next.js", "Tailwind CSS", "TypeScript", "Framer Motion", "ShadCN UI", "Vite", "Responsive UI", "App Router"],
+    backend: ["Spring Boot", "Node.js", "Express.js", "REST APIs", "JWT Authentication", "Hibernate/JPA", "Microservices", "WebSockets", "Server Actions"],
+    artificialIntelligence: ["Generative AI", "LLMs", "AI Agents", "Multi-Agent Systems", "Prompt Engineering", "RAG", "Gemini API", "Groq API", "OpenAI API", "NVIDIA NIM", "Judge0", "Scikit-Learn", "Semantic Search"],
+    databases: ["MySQL", "PostgreSQL", "MongoDB", "Redis", "Supabase", "NeonDB", "Prisma ORM", "Drizzle ORM"],
+    cloudDevOps: ["Microsoft Azure", "Vercel", "Render", "Docker", "CI/CD", "GitHub Actions", "Linux", "Cloudinary", "Nginx"],
+    developerTools: ["Git", "GitHub", "VS Code", "IntelliJ IDEA", "Postman", "npm", "pnpm", "FFmpeg", "Figma"],
+    apisIntegrations: ["Gemini API", "Groq API", "OpenAI API", "Telegram Bot API", "GitHub API", "Cloudinary API", "Judge0 API", "REST APIs", "Webhooks"],
+    dataAnalytics: ["Pandas", "NumPy", "Plotly", "Machine Learning", "Predictive Analytics", "Data Visualization", "Qlik Sense"],
+    blockchain: ["Web3 Fundamentals", "Smart Contracts", "Solidity", "Decentralized Systems"]
   },
   experience: [
     {
@@ -70,6 +75,12 @@ const INITIAL_PROFILE = {
       company: "Blockchain Club, Anurag University",
       duration: "2024 - Present",
       description: "Coordinated domain activities, managed national-level hackathons (TechHack #4), and guided technical execution and smart contract concepts."
+    },
+    {
+      role: "PwC Launchpad Participant",
+      company: "PwC India",
+      duration: "2025",
+      description: "Selected for PwC Launchpad program, gaining hands-on exposure to enterprise solutions, business consulting methodologies, and technology strategy frameworks."
     },
     {
       role: "Team Lead",
@@ -95,46 +106,195 @@ const INITIAL_PROFILE = {
   projects: [
     {
       id: "1",
-      title: "rShield-ai",
-      category: "AI & Web3",
-      tech: ["React 19", "Tailwind CSS", "Devvit", "Redis", "Hono"],
-      description: "An AI-powered real-time moderation intelligence platform built natively for Reddit. Predicts hostility momentum, brigade events, and toxicity density using a live Threat Engine, providing moderators with locking/slow-mode actions.",
-      link: "https://github.com/vivek-shaganti1/rshield",
-      liveLink: "https://www.reddit.com/r/rshield_dev/comments/1toftxa/rshield/"
+      title: "AI Interview Platform",
+      category: "AI",
+      categories: ["Featured", "AI", "Full Stack", "AI Agents"],
+      isFeatured: true,
+      status: "Production",
+      completionDate: "June 2026",
+      tech: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Groq", "Gemini", "Judge0", "PostgreSQL", "Drizzle ORM", "Redis", "JWT", "AI Agents"],
+      description: "Enterprise AI recruitment platform conducting technical and behavioral interviews, evaluating candidates using LLMs, executing coding assessments, analytics, and generating hiring reports.",
+      link: "#",
+      liveLink: "https://interviewai-os.vercel.app/",
+      stars: 12,
+      forks: 4
     },
     {
       id: "2",
-      title: "JavaMind-AI (AntiGravity)",
-      category: "Developer Tooling",
-      tech: ["Spring Boot", "React 18", "ChromaDB", "Anthropic Claude", "Spring Security"],
-      description: "A surgical AI agent built for Java developers. Understands entire Spring Boot codebases, detects architectural anti-patterns (God Classes, circular dependencies), and automatically generates comprehensive JUnit 5 tests.",
+      title: "JavaMind AI",
+      category: "Developer Tools",
+      categories: ["Featured", "Developer Tools", "AI", "AI Agents"],
+      isFeatured: true,
+      status: "Active",
+      completionDate: "May 2026",
+      tech: ["Spring Boot", "React", "TypeScript", "ChromaDB", "Anthropic Claude", "Gemini", "Spring Security"],
+      description: "Enterprise-grade AI code intelligence platform for Java developers. Understands complete Spring Boot codebases, detects architectural anti-patterns, and recommends refactoring.",
       link: "https://github.com/vivek-shaganti1/JavaMind-AI-agent",
-      liveLink: "https://github.com/vivek-shaganti1/JavaMind-AI-agent"
+      liveLink: "https://github.com/vivek-shaganti1/JavaMind-AI-agent",
+      stars: 28,
+      forks: 8
     },
     {
       id: "3",
-      title: "Instagram AI News Automation",
-      category: "Automation",
-      tech: ["Python", "Gemini API", "Imagen 3", "macOS LaunchAgent", "Pillow"],
-      description: "Fully autonomous system that researches AI news, curates the top stories, designs a multi-slide carousel using Imagen 3 backgrounds (Attio-inspired aesthetic), and publishes daily to Instagram.",
-      link: "https://github.com/vivek-shaganti1/Instagram-automation",
-      liveLink: "https://github.com/vivek-shaganti1/Instagram-automation"
+      title: "rShield",
+      category: "AI & Web3",
+      categories: ["Featured", "AI", "AI Agents", "Open Source"],
+      isFeatured: true,
+      status: "Active",
+      completionDate: "April 2026",
+      tech: ["React 19", "Tailwind CSS", "Devvit", "Redis", "Hono", "TypeScript", "AI Agents"],
+      description: "AI-powered Reddit community intelligence platform predicting toxicity escalation, coordinated attacks, raid detection, and moderation insights using intelligent AI agents.",
+      link: "https://github.com/vivek-shaganti1/rshield",
+      liveLink: "https://www.reddit.com/r/rshield_dev/comments/1toftxa/rshield/",
+      stars: 45,
+      forks: 11
     },
     {
       id: "4",
-      title: "Full Stack E-Commerce Platform",
-      category: "Web App",
-      tech: ["React.js", "Spring Boot", "MySQL", "Hibernate/JPA", "JWT Auth"],
-      description: "A secure e-commerce storefront. Implemented full shopping cart mechanics, checkout flows, order management, database persistence with Hibernate, and administrative workflows.",
-      link: "https://github.com/vivek-shaganti1/vivekx-ecommerce",
-      liveLink: "https://github.com/vivek-shaganti1/vivekx-ecommerce"
+      title: "Portfolio OS",
+      category: "Web Apps",
+      categories: ["Featured", "Web Apps", "Open Source"],
+      isFeatured: true,
+      status: "Production",
+      completionDate: "May 2026",
+      tech: ["Next.js", "React", "Tailwind CSS", "Framer Motion", "TypeScript", "Groq API"],
+      description: "Interactive operating-system-inspired developer portfolio with terminal interface, AI recruiter assistant, recruiter mode, and dynamic project filtering.",
+      link: "https://github.com/vivek-shaganti1/Vivek-Shaganti-Portfolio",
+      liveLink: "https://vivek-shaganti-portfolio.vercel.app/",
+      stars: 18,
+      forks: 3
     },
     {
       id: "5",
-      title: "Productivity Task Management App",
-      category: "Hackathon Win",
+      title: "Instagram AI Automation",
+      category: "Automation",
+      categories: ["Featured", "Automation"],
+      isFeatured: true,
+      status: "Production",
+      completionDate: "March 2026",
+      tech: ["Python", "Gemini API", "Imagen", "Pillow", "Automation", "LaunchAgent", "FFmpeg"],
+      description: "Fully autonomous AI content automation platform researching trending AI news, curating stories, designing carousel graphics, and publishing daily to Instagram.",
+      link: "https://github.com/vivek-shaganti1/Instagram-automation",
+      liveLink: "https://instagram-automation-phi.vercel.app/",
+      stars: 32,
+      forks: 9
+    },
+    {
+      id: "6",
+      title: "Trading AI",
+      category: "AI",
+      categories: ["AI"],
+      isFeatured: false,
+      status: "Research",
+      completionDate: "November 2025",
+      tech: ["Python", "Pandas", "Trading APIs", "Machine Learning"],
+      description: "Algorithmic trading assistant capable of market analysis, strategy execution, risk management, portfolio monitoring, paper trading, and broker API integration.",
+      link: "#",
+      liveLink: "#"
+    },
+    {
+      id: "7",
+      title: "RAN Fitness",
+      category: "Web Apps",
+      categories: ["Web Apps"],
+      isFeatured: false,
+      status: "Production",
+      completionDate: "February 2026",
+      tech: ["Next.js", "React", "Tailwind CSS", "Framer Motion", "Supabase", "Telegram Bot API", "Gemini API"],
+      description: "Premium gym management website featuring animated UI, AI fitness coach, admin dashboard, Telegram notifications, booking workflows, and Supabase integration.",
+      link: "#",
+      liveLink: "#"
+    },
+    {
+      id: "8",
+      title: "Full Stack E-Commerce",
+      category: "Full Stack",
+      categories: ["Full Stack", "Web Apps"],
+      isFeatured: false,
+      status: "Production",
+      completionDate: "January 2026",
+      tech: ["React.js", "Spring Boot", "MySQL", "Hibernate/JPA", "JWT Auth"],
+      description: "Production-ready e-commerce platform built with Spring Boot and React featuring JWT authentication, shopping cart, product catalog, checkout, and MySQL persistence.",
+      link: "https://github.com/vivek-shaganti1/vivekx-ecommerce",
+      liveLink: "https://github.com/vivek-shaganti1/vivekx-ecommerce",
+      stars: 15,
+      forks: 5
+    },
+    {
+      id: "9",
+      title: "Productivity Task Manager",
+      category: "Hackathons",
+      categories: ["Hackathons"],
+      isFeatured: false,
+      status: "Archived",
+      completionDate: "June 2025",
       tech: ["React.js", "Node.js", "Calendar Integration", "Tailwind CSS"],
       description: "Developed during a 36-hour national-level hackathon. Designed with clean UI/UX and smooth client interactions. Awarded 'Best User Experience' at TECHHACK #3.",
+      link: "#",
+      liveLink: "#"
+    },
+    {
+      id: "10",
+      title: "Sticker Ordering Platform",
+      category: "Full Stack",
+      categories: ["Full Stack", "Web Apps"],
+      isFeatured: false,
+      status: "Production",
+      completionDate: "December 2025",
+      tech: ["React", "Node.js", "Express", "MongoDB", "Cloudinary", "Tailwind CSS"],
+      description: "A high-performance full stack e-commerce web application specializing in custom stickers with visual customization tools, real-time pricing, and checkout.",
+      link: "#",
+      liveLink: "#"
+    },
+    {
+      id: "11",
+      title: "AI Interview Prep",
+      category: "AI",
+      categories: ["AI"],
+      isFeatured: false,
+      status: "Research",
+      completionDate: "September 2025",
+      tech: ["Next.js", "React", "Tailwind CSS", "Gemini API", "SpeechRecognition", "Judge0"],
+      description: "Intelligent software engineer preparation tool featuring interactive voice interviews, dynamic coding tests, automated feedback, and performance tracking.",
+      link: "#",
+      liveLink: "#"
+    },
+    {
+      id: "12",
+      title: "Job Applier AI",
+      category: "Automation",
+      categories: ["Automation", "AI Agents"],
+      isFeatured: false,
+      status: "Research",
+      completionDate: "October 2025",
+      tech: ["Python", "Automation", "Playwright", "LLMs", "Gemini", "Browser Automation"],
+      description: "AI-powered autonomous job application assistant scanning job portals, optimizing resumes, filling applications intelligently, and tracking history.",
+      link: "#",
+      liveLink: "#"
+    },
+    {
+      id: "13",
+      title: "Jarvis AI",
+      category: "AI",
+      categories: ["AI", "AI Agents"],
+      isFeatured: false,
+      status: "Active",
+      completionDate: "August 2025",
+      tech: ["Python", "Reasoning", "Workflow Automation", "LLMs"],
+      description: "Personal AI assistant capable of reasoning, workflow orchestration, desktop interaction, tool execution, and automation pipelines.",
+      link: "#",
+      liveLink: "#"
+    },
+    {
+      id: "14",
+      title: "VSystem Automation",
+      category: "Automation",
+      categories: ["Automation"],
+      isFeatured: false,
+      status: "Active",
+      completionDate: "July 2025",
+      tech: ["Python", "Automation", "OS Automation", "Scheduling"],
+      description: "Desktop workflow automation platform integrating AI agents, system automation, file operations, scheduling, and browser automation.",
       link: "#",
       liveLink: "#"
     }
@@ -142,9 +302,22 @@ const INITIAL_PROFILE = {
   stats: [
     { label: "CGPA", value: "9.21" },
     { label: "Hackathons", value: "4+" },
-    { label: "Projects Built", value: "8+" },
+    { label: "Projects Built", value: "14" },
     { label: "Club VP Roles", value: "1" }
   ]
+};
+
+const skillCategoryLabels: Record<string, string> = {
+  languages: "Languages",
+  frontend: "Frontend",
+  backend: "Backend",
+  artificialIntelligence: "Artificial Intelligence",
+  databases: "Databases",
+  cloudDevOps: "Cloud & DevOps",
+  developerTools: "Developer Tools",
+  apisIntegrations: "APIs & Integrations",
+  dataAnalytics: "Data & Analytics",
+  blockchain: "Blockchain"
 };
 
 type ThemeMode = "volt" | "amber" | "chrome";
@@ -154,6 +327,7 @@ export default function Home() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>("volt");
   const [activeTab, setActiveTab] = useState("all");
+  const [projectSearch, setProjectSearch] = useState("");
   
   // Customizer Password Protection State
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -381,11 +555,17 @@ export default function Home() {
     const newProj = {
       id: Date.now().toString(),
       title: "New Custom Project",
-      category: "AI & Web3",
-      tech: ["React.js", "TypeScript"],
+      category: "AI",
+      categories: ["AI"],
+      isFeatured: false,
+      status: "Active",
+      completionDate: "2026",
+      tech: ["React", "TypeScript"],
       description: "Hacker operational simulation layer running on Vercel serverless functions.",
       link: "https://github.com/vivek-shaganti1",
-      liveLink: "https://github.com/vivek-shaganti1"
+      liveLink: "https://github.com/vivek-shaganti1",
+      stars: 0,
+      forks: 0
     };
     saveProfile({
       ...profile,
@@ -476,8 +656,20 @@ export default function Home() {
   };
 
   const currentTheme = themeColors[themeMode];
-  const categories = ["all", "AI & Web3", "Developer Tooling", "Automation", "Web App"];
-  const filteredProjects = activeTab === "all" ? profile.projects : profile.projects.filter(p => p.category === activeTab);
+  const categories = ["all", "Featured", "AI", "Automation", "Developer Tools", "Full Stack", "Web Apps", "AI Agents", "Hackathons", "Open Source"];
+  const filteredProjects = profile.projects
+    .filter(p => {
+      if (activeTab === "all") return true;
+      if (activeTab === "Featured") return p.isFeatured;
+      return p.categories?.includes(activeTab) || p.category === activeTab;
+    })
+    .filter(p => {
+      if (!projectSearch) return true;
+      const q = projectSearch.toLowerCase();
+      return p.title.toLowerCase().includes(q) || 
+             p.description.toLowerCase().includes(q) ||
+             p.tech.some(t => t.toLowerCase().includes(q));
+    });
 
   return (
     <div className={cn(
@@ -803,23 +995,25 @@ export default function Home() {
             {Object.entries(profile.skills).map(([category, items]) => (
               <div 
                 key={category}
-                className="rounded-xl border border-zinc-900 bg-zinc-950/40 p-6 backdrop-blur-md relative overflow-hidden"
+                className="rounded-xl border border-zinc-900 bg-zinc-950/40 p-6 backdrop-blur-md relative overflow-hidden flex flex-col justify-between h-full hover:border-zinc-800 transition-colors duration-300"
               >
-                <div className="flex items-center justify-between mb-4 border-b border-zinc-900 pb-2">
-                  <h3 className="capitalize font-mono font-bold text-white text-sm">
-                    {category}
-                  </h3>
-                  <Code className="h-4 w-4 text-zinc-600" />
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {items.map((skill, idx) => (
-                    <span 
-                      key={idx}
-                      className="px-2.5 py-1 text-xs rounded bg-zinc-900 border border-zinc-850 text-zinc-400 hover:text-white transition-colors cursor-default"
-                    >
-                      {skill}
-                    </span>
-                  ))}
+                <div>
+                  <div className="flex items-center justify-between mb-4 border-b border-zinc-900 pb-2">
+                    <h3 className="font-mono font-bold text-white text-sm tracking-wide">
+                      {skillCategoryLabels[category] || category}
+                    </h3>
+                    <Code className="h-4 w-4 text-zinc-650" />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {items.map((skill, idx) => (
+                      <span 
+                        key={idx}
+                        className="px-2.5 py-1 text-xs rounded bg-zinc-900 border border-zinc-850 text-zinc-400 hover:text-white hover:border-zinc-700 hover:scale-105 transition-all duration-200 cursor-default"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
@@ -868,7 +1062,7 @@ export default function Home() {
 
         {/* PROJECTS SHOWCASE */}
         <section id="projects" className="space-y-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4">
             <div className="flex flex-col gap-2">
               <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
                 Telemetry Repositories
@@ -878,22 +1072,40 @@ export default function Home() {
               </h2>
             </div>
             
-            {/* Filters */}
-            <div className="flex flex-wrap gap-1 border border-zinc-900 bg-black/60 p-1 rounded-lg">
-              {categories.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveTab(cat)}
-                  className={cn(
-                    "px-3 py-1 text-[10px] uppercase font-bold rounded tracking-wider transition-all",
-                    activeTab === cat 
-                      ? "bg-zinc-900 text-white" 
-                      : "text-zinc-500 hover:text-zinc-300"
-                  )}
-                >
-                  {cat}
-                </button>
-              ))}
+            {/* Search & Filters */}
+            <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+              <div className="relative flex items-center bg-black/60 border border-zinc-900 rounded-lg px-3 py-1.5 focus-within:border-zinc-700 transition-colors">
+                <Search className="h-3.5 w-3.5 text-zinc-500 mr-2" />
+                <input
+                  type="text"
+                  placeholder="Search projects by name, description, or tech..."
+                  value={projectSearch}
+                  onChange={(e) => setProjectSearch(e.target.value)}
+                  className="bg-transparent border-none outline-none text-xs text-white font-mono placeholder-zinc-700 w-full md:w-56"
+                />
+                {projectSearch && (
+                  <button onClick={() => setProjectSearch("")} className="text-zinc-500 hover:text-white ml-2 text-xs">
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-1 border border-zinc-900 bg-black/60 p-1 rounded-lg">
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveTab(cat)}
+                    className={cn(
+                      "px-2.5 py-1 text-[9px] md:text-[10px] uppercase font-bold rounded tracking-wider transition-all",
+                      activeTab === cat 
+                        ? "bg-zinc-900 text-white" 
+                        : "text-zinc-500 hover:text-zinc-300"
+                    )}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -904,48 +1116,85 @@ export default function Home() {
                 key={project.id}
                 className={cn(
                   "group relative flex flex-col justify-between h-full rounded-xl border border-zinc-900 bg-zinc-950/40 p-6 backdrop-blur-md transition-all duration-300",
+                  project.isFeatured ? "border-zinc-800 shadow-[0_0_20px_rgba(255,255,255,0.02)]" : "",
                   currentTheme.borderHover
                 )}
               >
                 {/* Spotlight hover effect */}
                 <SpotlightHover size={150} className="from-zinc-800/10 via-zinc-700/10 to-transparent" />
 
-                <div className="space-y-4 relative z-10">
-                  <div className="flex items-start justify-between">
-                    <span className={cn("px-2 py-0.5 text-[9px] font-mono tracking-widest uppercase bg-zinc-900 border border-zinc-800 rounded-md", currentTheme.primary)}>
-                      {project.category}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      {project.link && project.link !== "#" && (
-                        <a 
-                          href={project.link}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-zinc-500 hover:text-white p-1"
-                          title="View Repository Source"
-                        >
-                          <Github className="h-4 w-4" />
-                        </a>
+                {/* Featured Ribbon / Corner Glow */}
+                {project.isFeatured && (
+                  <div className="absolute -top-px -left-px rounded-tl-xl rounded-br-lg bg-white/5 border-t border-l border-zinc-800 px-2.5 py-0.5 text-[8px] uppercase tracking-widest font-mono text-zinc-300 z-20">
+                    FEATURED SYSTEM
+                  </div>
+                )}
+
+                <div className="space-y-4 relative z-10 pt-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      <span className={cn("px-2 py-0.5 text-[9px] font-mono tracking-widest uppercase bg-zinc-900 border border-zinc-800 rounded-md", currentTheme.primary)}>
+                        {project.category}
+                      </span>
+                      {project.status && (
+                        <span className={cn(
+                          "px-1.5 py-0.5 text-[8px] font-mono rounded border uppercase",
+                          project.status === "Production" && "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+                          project.status === "Active" && "bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse",
+                          project.status === "Research" && "bg-sky-500/10 text-sky-400 border-sky-500/20",
+                          project.status === "Archived" && "bg-zinc-900/50 text-zinc-500 border-zinc-800"
+                        )}>
+                          ● {project.status}
+                        </span>
                       )}
-                      {project.liveLink && project.liveLink !== "#" && (
-                        <a 
-                          href={project.liveLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-zinc-500 hover:text-white p-1"
-                          title="Open Live Preview"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      {project.stars !== undefined && (
+                        <span className="flex items-center gap-0.5 text-[9px] text-zinc-500 font-mono">
+                          ★ {project.stars}
+                        </span>
                       )}
+                      
+                      <div className="flex items-center gap-1.5">
+                        {project.link && project.link !== "#" && (
+                          <a 
+                            href={project.link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-zinc-500 hover:text-white p-1 transition-colors"
+                            title="View Repository Source"
+                          >
+                            <Github className="h-4 w-4" />
+                          </a>
+                        )}
+                        {project.liveLink && project.liveLink !== "#" && (
+                          <a 
+                            href={project.liveLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-zinc-500 hover:text-white p-1 transition-colors"
+                            title="Open Live Preview"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <h3 className="text-base font-bold font-mono text-white tracking-wide">
-                      {project.title}
-                    </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed font-mono line-clamp-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-bold font-mono text-white tracking-wide">
+                        {project.title}
+                      </h3>
+                      {project.completionDate && (
+                        <span className="text-[9px] text-zinc-650 font-mono tracking-wider">
+                          [{project.completionDate.toUpperCase()}]
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-zinc-450 leading-relaxed font-mono line-clamp-3 group-hover:text-zinc-300 transition-colors">
                       {project.description}
                     </p>
                   </div>
@@ -956,7 +1205,7 @@ export default function Home() {
                     {project.tech.map((t, i) => (
                       <span 
                         key={i}
-                        className="px-2 py-0.5 rounded text-[9px] font-mono bg-zinc-900 border border-zinc-850 text-zinc-500"
+                        className="px-2 py-0.5 rounded text-[9px] font-mono bg-zinc-900 border border-zinc-850 text-zinc-500 transition-all hover:scale-105 hover:border-zinc-700 hover:text-zinc-350 cursor-default"
                       >
                         {t}
                       </span>
@@ -1138,11 +1387,11 @@ export default function Home() {
                   <p className="text-[10px] font-mono text-zinc-500">Edit skills as comma-separated values.</p>
                   {Object.keys(profile.skills).map((cat) => (
                     <div key={cat}>
-                      <label className="block text-[10px] font-mono text-zinc-400 uppercase mb-1">{cat}</label>
-                      <input 
-                        type="text"
+                      <label className="block text-[10px] font-mono text-zinc-400 uppercase mb-1">{skillCategoryLabels[cat] || cat}</label>
+                      <textarea 
                         value={(profile.skills as any)[cat].join(", ")}
                         onChange={e => handleSkillChange(cat, e.target.value)}
+                        rows={2}
                         className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
                       />
                     </div>
