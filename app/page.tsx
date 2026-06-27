@@ -42,10 +42,7 @@ import {
   ArrowRight,
   Check,
   Send,
-  Bell,
-  Sun,
-  Moon,
-  MessageSquare
+  Bell
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Perspective, Highlight } from "@/components/ui/perspective-highlight";
@@ -53,10 +50,10 @@ import { CpuArchitecture } from "@/components/ui/cpu-architecture";
 import { Spotlight } from "@/components/ui/spotlight";
 import { SpotlightHover } from "@/components/ui/spotlight-hover";
 import ResumeUploadModal from "@/components/resume-upload-modal";
-import RobotCompanion from "@/components/robot-companion";
 
 const INITIAL_PROFILE = {
-  schemaVersion: 4,
+  schemaVersion: 5,
+  avatar: "",
   name: "Vivek Goud Shaganti",
   title: "Full Stack Engineer & AI Automation Developer",
   email: "vivekshaganti@gmail.com",
@@ -426,7 +423,7 @@ const INITIAL_PROFILE = {
       solution: "Created scheduling cron processes that monitor system folders and trigger actions on changes.",
       architecture: "Python daemon process executing background tasks based on custom event schedules.",
       codeHighlight: "observer.schedule(event_handler, path=watch_dir, recursive=True)",
-      lessonsLearned: "Managing memory leaks during manual file observation requires cyclical buffer sweeps.",
+      lessonsLearned: "Managing memory leaks during indefinite file watching requires cycling loop buffers.",
       futureImprovements: "Integrate a beautiful web control dashboard to inspect jobs."
     }
   ],
@@ -519,26 +516,25 @@ interface Link {
   target: string;
 }
 
-// Nodes represent 10 professional categories & projects
 const GRAPH_NODES: Node[] = [
-  { id: "Python", category: "programmingLanguages", x: 100, y: 100, vx: 0, vy: 0, size: 10, color: "#4584b6", desc: "Vivek's core language for machine learning workflows and AI social automation.", exp: "3+ Years", projects: ["Instagram AI Automation", "Trading AI", "Job Applier AI"] },
-  { id: "Java", category: "programmingLanguages", x: 150, y: 120, vx: 0, vy: 0, size: 10, color: "#f89820", desc: "Core language for enterprise Spring Boot backend microservices.", exp: "3+ Years", projects: ["JavaMind AI", "Full Stack E-Commerce"] },
+  { id: "Python", category: "programmingLanguages", x: 100, y: 100, vx: 0, vy: 0, size: 10, color: "#4584b6", desc: "Vivek's core language for machine learning workflows and AI scripting.", exp: "3+ Years", projects: ["Instagram AI Automation", "Trading AI", "Job Applier AI"] },
+  { id: "Java", category: "programmingLanguages", x: 150, y: 120, vx: 0, vy: 0, size: 10, color: "#f89820", desc: "Core language for enterprise systems, Spring Boot backend microservices.", exp: "3+ Years", projects: ["JavaMind AI", "Full Stack E-Commerce"] },
   { id: "TypeScript", category: "programmingLanguages", x: 180, y: 80, vx: 0, vy: 0, size: 9, color: "#3178c6", desc: "For building secure, robust frontend components and API endpoints.", exp: "2.5 Years", projects: ["AI Interview Platform", "Portfolio OS", "rShield"] },
-  { id: "React.js", category: "frontendEngineering", x: 220, y: 150, vx: 0, vy: 0, size: 9, color: "#61dbfb", desc: "Modular hook implementations and state management setups.", exp: "2.5 Years", projects: ["AI Interview Platform", "rShield"] },
-  { id: "Next.js", category: "frontendEngineering", x: 260, y: 160, vx: 0, vy: 0, size: 11, color: "#999999", desc: "Dynamic SSR app framework supporting server actions.", exp: "2 Years", projects: ["AI Interview Platform", "Portfolio OS"] },
-  { id: "Tailwind CSS", category: "frontendEngineering", x: 280, y: 110, vx: 0, vy: 0, size: 8, color: "#38bdf8", desc: "Utility-first responsive layout styling grids.", exp: "3 Years", projects: ["Portfolio OS", "rShield"] },
+  { id: "React.js", category: "frontendEngineering", x: 220, y: 150, vx: 0, vy: 0, size: 9, color: "#61dbfb", desc: "Wired with modular hooks and atomic state managers for highly interactive views.", exp: "2.5 Years", projects: ["AI Interview Platform", "rShield"] },
+  { id: "Next.js", category: "frontendEngineering", x: 260, y: 160, vx: 0, vy: 0, size: 11, color: "#ffffff", desc: "Dynamic SSR app framework supporting server actions and optimized headers.", exp: "2 Years", projects: ["AI Interview Platform", "Portfolio OS"] },
+  { id: "Tailwind CSS", category: "frontendEngineering", x: 280, y: 110, vx: 0, vy: 0, size: 8, color: "#38bdf8", desc: "Utility-first layouts with smooth breakpoints and responsive grid settings.", exp: "3 Years", projects: ["Portfolio OS", "rShield"] },
   { id: "Spring Boot", category: "backendEngineering", x: 120, y: 200, vx: 0, vy: 0, size: 11, color: "#6db33f", desc: "Primary frameworks for enterprise secure transactional backends.", exp: "2+ Years", projects: ["JavaMind AI", "Full Stack E-Commerce"] },
-  { id: "Node.js", category: "backendEngineering", x: 180, y: 220, vx: 0, vy: 0, size: 8, color: "#68a063", desc: "Asynchronous backend loops, micro-server scripts.", exp: "2 Years", projects: ["Sticker Ordering Platform"] },
+  { id: "Node.js", category: "backendEngineering", x: 180, y: 220, vx: 0, vy: 0, size: 8, color: "#68a063", desc: "Asynchronous backend loops, micro-server scripts, and webhook orchestrations.", exp: "2 Years", projects: ["Sticker Ordering Platform"] },
   { id: "Express.js", category: "backendEngineering", x: 210, y: 250, vx: 0, vy: 0, size: 7, color: "#828282", desc: "Routing pipelines and middleware architectures handling request endpoints.", exp: "2 Years", projects: ["Sticker Ordering Platform"] },
   { id: "AI Agents", category: "aiMachineLearning", x: 350, y: 100, vx: 0, vy: 0, size: 12, color: "#CCFF00", desc: "Autonomous agent execution loops coordinating API calls and tool logic.", exp: "2 Years", projects: ["AI Interview Platform", "rShield", "Jarvis AI"] },
   { id: "Gemini API", category: "aiMachineLearning", x: 390, y: 120, vx: 0, vy: 0, size: 10, color: "#4285f4", desc: "Multimodal analysis, context ingestion, and complex logical schema queries.", exp: "2 Years", projects: ["AI Interview Platform", "JavaMind AI", "Instagram AI Automation"] },
   { id: "Groq API", category: "aiMachineLearning", x: 420, y: 80, vx: 0, vy: 0, size: 10, color: "#ff8c00", desc: "Sub-100ms low-latency Llama reasoning calls for conversational interfaces.", exp: "1 Year", projects: ["AI Interview Platform", "Portfolio OS"] },
-  { id: "RAG", category: "aiMachineLearning", x: 380, y: 160, vx: 0, vy: 0, size: 9, color: "#9c27b0", desc: "Retrieval-Augmented Generation context syncing using vector indexes.", exp: "1.5 Years", projects: ["AI Interview Platform", "JavaMind AI"] },
-  { id: "PostgreSQL", category: "databasesStorage", x: 100, y: 300, vx: 0, vy: 0, size: 9, color: "#336791", desc: "Relational database core hosting client records.", exp: "2 Years", projects: ["AI Interview Platform"] },
+  { id: "RAG", category: "aiMachineLearning", x: 380, y: 160, vx: 0, vy: 0, size: 9, color: "#9c27b0", desc: "Retrieval-Augmented Generation context syncing using local vector databases.", exp: "1.5 Years", projects: ["AI Interview Platform", "JavaMind AI"] },
+  { id: "PostgreSQL", category: "databasesStorage", x: 100, y: 300, vx: 0, vy: 0, size: 9, color: "#336791", desc: "Relational database core hosting client records and transaction blocks.", exp: "2 Years", projects: ["AI Interview Platform"] },
   { id: "Redis", category: "databasesStorage", x: 150, y: 320, vx: 0, vy: 0, size: 8, color: "#d82c20", desc: "Fast caching, memory pipelines, and user telemetry rate-limit filters.", exp: "1.5 Years", projects: ["AI Interview Platform", "rShield"] },
   { id: "Supabase", category: "databasesStorage", x: 180, y: 340, vx: 0, vy: 0, size: 8, color: "#3ecf8e", desc: "Hosting authentication hooks and backend storage variables.", exp: "1.5 Years", projects: ["RAN Fitness"] },
   { id: "Docker", category: "cloudDevOps", x: 300, y: 300, vx: 0, vy: 0, size: 9, color: "#0db7ed", desc: "Container wrapping to guarantee isolated compile execution cycles.", exp: "1.5 Years", projects: ["AI Interview Platform"] },
-  { id: "Vercel", category: "cloudDevOps", x: 340, y: 320, vx: 0, vy: 0, size: 8, color: "#555555", desc: "Static and serverless production builds with automatic deploy monitors.", exp: "2 Years", projects: ["Portfolio OS", "RAN Fitness"] },
+  { id: "Vercel", category: "cloudDevOps", x: 340, y: 320, vx: 0, vy: 0, size: 8, color: "#ffffff", desc: "Static and serverless production builds with automatic deploy monitors.", exp: "2 Years", projects: ["Portfolio OS", "RAN Fitness"] },
   { id: "GitHub Actions", category: "cloudDevOps", x: 370, y: 345, vx: 0, vy: 0, size: 8, color: "#2088ff", desc: "CI/CD automated trigger scripts testing code compiling and lint constraints.", exp: "1.5 Years", projects: ["Portfolio OS"] },
   { id: "Solidity", category: "blockchain", x: 450, y: 250, vx: 0, vy: 0, size: 9, color: "#aa67ff", desc: "Smart contracts coding layer handling transactions on EVM chains.", exp: "1 Year", projects: ["Blockchain Club AU"] }
 ];
@@ -561,7 +557,7 @@ const GRAPH_LINKS: Link[] = [
   { source: "AI Agents", target: "Docker" }
 ];
 
-export function KnowledgeGraph({ themeMode, onNodeSelect, theme }: { themeMode: ThemeMode; onNodeSelect: (node: Node) => void; theme: "dark" | "light" }) {
+export function KnowledgeGraph({ themeMode, onNodeSelect }: { themeMode: ThemeMode; onNodeSelect: (node: Node) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [nodes, setNodes] = useState<Node[]>(JSON.parse(JSON.stringify(GRAPH_NODES)));
@@ -648,7 +644,6 @@ export function KnowledgeGraph({ themeMode, onNodeSelect, theme }: { themeMode: 
       ctx.scale(zoom, zoom);
       ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
-      // Links
       GRAPH_LINKS.forEach(link => {
         const sourceNode = nodes.find(n => n.id === link.source);
         const targetNode = nodes.find(n => n.id === link.target);
@@ -656,11 +651,10 @@ export function KnowledgeGraph({ themeMode, onNodeSelect, theme }: { themeMode: 
           ctx.beginPath();
           ctx.moveTo(sourceNode.x, sourceNode.y);
           ctx.lineTo(targetNode.x, targetNode.y);
-          ctx.strokeStyle = theme === "dark" ? "rgba(63, 63, 70, 0.4)" : "rgba(200, 200, 200, 0.6)";
+          ctx.strokeStyle = "rgba(63, 63, 70, 0.4)";
           ctx.lineWidth = 1;
           ctx.stroke();
           
-          // Particle pulses on lines
           const time = Date.now() * 0.001;
           const progress = (time % 2) / 2;
           const px = sourceNode.x + (targetNode.x - sourceNode.x) * progress;
@@ -675,39 +669,25 @@ export function KnowledgeGraph({ themeMode, onNodeSelect, theme }: { themeMode: 
         }
       });
 
-      // Nodes
       nodes.forEach(node => {
         const isHovered = hoveredNode && hoveredNode.id === node.id;
-        const isConnected = hoveredNode && (
-          hoveredNode.id === node.id || 
-          GRAPH_LINKS.some(l => (l.source === hoveredNode.id && l.target === node.id) || (l.target === hoveredNode.id && l.source === node.id))
-        );
-
         ctx.beginPath();
-        ctx.arc(node.x, node.y, node.size + (isHovered ? 4 : 0), 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, node.size + (isHovered ? 3 : 0), 0, Math.PI * 2);
         
         ctx.fillStyle = node.color;
-        // Fade unconnected nodes if one is hovered
-        if (hoveredNode && !isConnected) {
-          ctx.fillStyle = theme === "dark" ? "rgba(63, 63, 70, 0.2)" : "rgba(220, 220, 220, 0.3)";
-        }
-
-        ctx.shadowBlur = isHovered ? 20 : 4;
+        ctx.shadowBlur = isHovered ? 15 : 4;
         ctx.shadowColor = node.color;
         ctx.fill();
         ctx.shadowBlur = 0;
 
         ctx.beginPath();
-        ctx.arc(node.x, node.y, node.size + (isHovered ? 5 : 2), 0, Math.PI * 2);
-        ctx.strokeStyle = theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)";
+        ctx.arc(node.x, node.y, node.size + (isHovered ? 4 : 2), 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        ctx.fillStyle = isHovered ? (theme === "dark" ? "#ffffff" : "#000000") : (theme === "dark" ? "#a1a1aa" : "#71717a");
-        if (hoveredNode && !isConnected) {
-          ctx.fillStyle = theme === "dark" ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.15)";
-        }
-        ctx.font = `bold ${isHovered ? 12 : 9}px monospace`;
+        ctx.fillStyle = isHovered ? "#ffffff" : "#a1a1aa";
+        ctx.font = `bold ${isHovered ? 11 : 9}px monospace`;
         ctx.textAlign = "center";
         ctx.fillText(node.id, node.x, node.y - node.size - 6);
       });
@@ -726,7 +706,7 @@ export function KnowledgeGraph({ themeMode, onNodeSelect, theme }: { themeMode: 
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [nodes, hoveredNode, draggedNode, panX, panY, zoom, themeMode, theme]);
+  }, [nodes, hoveredNode, draggedNode, panX, panY, zoom, themeMode]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -734,13 +714,13 @@ export function KnowledgeGraph({ themeMode, onNodeSelect, theme }: { themeMode: 
       const container = containerRef.current;
       if (canvas && container) {
         canvas.width = container.clientWidth;
-        canvas.height = container.clientHeight || 450;
+        canvas.height = container.clientHeight || 400;
         
         const newNodes = [...nodes];
         newNodes.forEach(node => {
           if (node.x === 0 && node.y === 0) {
-            node.x = canvas.width / 2 + (Math.random() - 0.5) * 180;
-            node.y = canvas.height / 2 + (Math.random() - 0.5) * 180;
+            node.x = canvas.width / 2 + (Math.random() - 0.5) * 150;
+            node.y = canvas.height / 2 + (Math.random() - 0.5) * 150;
           }
         });
         setNodes(newNodes);
@@ -815,28 +795,32 @@ export function KnowledgeGraph({ themeMode, onNodeSelect, theme }: { themeMode: 
     isDraggingCanvas.current = false;
   };
 
+  const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const zoomFactor = 1.05;
+    if (e.deltaY < 0) {
+      setZoom(z => Math.min(z * zoomFactor, 2.5));
+    } else {
+      setZoom(z => Math.max(z / zoomFactor, 0.4));
+    }
+  };
+
   return (
-    <div ref={containerRef} className="w-full h-full relative cursor-grab active:cursor-grabbing select-none rounded-2xl overflow-hidden border border-zinc-900/60 dark:border-zinc-800/40 bg-zinc-100/10 dark:bg-black/30">
+    <div ref={containerRef} className="w-full h-full relative cursor-grab active:cursor-grabbing select-none bg-black/40">
       <canvas 
         ref={canvasRef} 
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
         className="w-full h-full block"
       />
-      <div className="absolute bottom-3 left-3 flex flex-col gap-0.5 text-[9px] font-mono text-zinc-500 bg-white/80 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-900 px-2.5 py-1.5 rounded select-none pointer-events-none">
-        <span>INTERACTIVE KNOWLEDGE NODE MAP</span>
-        <span>• DRAG NODES / HOVER FOR CONNECTIONS</span>
+      <div className="absolute bottom-3 left-3 flex flex-col gap-1 text-[9px] font-mono text-zinc-600 bg-zinc-950/80 border border-zinc-900 px-2.5 py-1.5 rounded select-none pointer-events-none">
+        <span>INTERACTIVE CORE MAP</span>
+        <span>• DRAG NODES TO APPLY PHYSICS</span>
+        <span>• PINCH/WHEEL TO ZOOM / DRAG SPACE TO PAN</span>
       </div>
-      
-      {hoveredNode && (
-        <div className="absolute top-3 right-3 text-[10px] font-mono bg-white/90 dark:bg-zinc-950/90 border border-zinc-200 dark:border-zinc-900 p-2 rounded shadow-lg max-w-[200px] pointer-events-none">
-          <span className="font-bold text-black dark:text-white block mb-0.5">{hoveredNode.id}</span>
-          <span className="text-zinc-500 block text-[8px] uppercase">{hoveredNode.exp} EXPERIENCE</span>
-          <span className="text-zinc-450 block leading-tight mt-1">{hoveredNode.desc}</span>
-        </div>
-      )}
     </div>
   );
 }
@@ -845,7 +829,6 @@ export default function Home() {
   const [profile, setProfile] = useState(INITIAL_PROFILE);
   const [isEditMode, setIsEditMode] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>("volt");
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [activeTab, setActiveTab] = useState("all");
   const [projectSearch, setProjectSearch] = useState("");
   
@@ -869,9 +852,8 @@ export default function Home() {
 
   const [terminalInput, setTerminalInput] = useState("");
   const [terminalHistory, setTerminalHistory] = useState<string[]>([
-    "VIVEK_OS v4.0.0 INITIALIZED SUCCESSFULLY.",
-    "DECRYPT COMPILER SYSTEMS ONLINE.",
-    "Type 'help' to review candidate terminal codes."
+    "System Initialized. Welcome to Vivek's Command Interface.",
+    "Type 'help' to see list of operational commands."
   ]);
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
@@ -883,26 +865,6 @@ export default function Home() {
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [isResumeUploadModalOpen, setIsResumeUploadModalOpen] = useState(false);
   const [resumeUpdatedAt, setResumeUpdatedAt] = useState<string | null>(null);
-
-  // Initialize and persist Theme Mode
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("portfolio-theme") as "dark" | "light" | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle("dark", savedTheme === "dark");
-      document.documentElement.classList.toggle("light", savedTheme === "light");
-    } else {
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    localStorage.setItem("portfolio-theme", nextTheme);
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
-    document.documentElement.classList.toggle("light", nextTheme === "light");
-  };
 
   const themes = {
     volt: {
@@ -926,7 +888,7 @@ export default function Home() {
       text: "text-white"
     },
     chrome: {
-      primary: "text-sky-400 dark:text-sky-400",
+      primary: "text-sky-400",
       bg: "bg-sky-400",
       border: "border-sky-400",
       borderHover: "hover:border-sky-400/50",
@@ -1000,7 +962,8 @@ export default function Home() {
     if (savedProfile) {
       try {
         const parsed = JSON.parse(savedProfile);
-        if (!parsed.schemaVersion || parsed.schemaVersion < 4) {
+        if (!parsed.schemaVersion || parsed.schemaVersion < 5) {
+          console.warn("[PROFILE MIGRATION] Outdated schema detected in localStorage. Overwriting with INITIAL_PROFILE (v5).");
           localStorage.setItem("vivek_portfolio_profile", JSON.stringify(INITIAL_PROFILE));
           setProfile(INITIAL_PROFILE);
         } else {
@@ -1059,7 +1022,7 @@ export default function Home() {
   const activityTimeline = [
     { date: "June 2026", status: "RELEASE", text: "Deployed AI Interview Platform v1.0.0 for behavioral assessments.", badge: "Next.js", link: "https://interviewai-os.vercel.app/" },
     { date: "May 2026", status: "COMMIT", text: "Merged JavaMind AST parser architecture module in dev.", badge: "Spring Boot", link: "https://github.com/vivek-shaganti1/JavaMind-AI-agent" },
-    { date: "May 2026", status: "MILESTONE", text: "Upgraded Portfolio interface into visual AI Operating System v4.0.", badge: "React 19", link: "#" },
+    { date: "May 2026", status: "MILESTONE", text: "Upgraded Portfolio interface into visual AI Operating System v3.0.", badge: "React 19", link: "#" },
     { date: "April 2026", status: "ALERT", text: "rShield Reddit agent threat engine configured for production.", badge: "AI Agents", link: "https://github.com/vivek-shaganti1/rshield" },
     { date: "March 2026", status: "RELEASE", text: "Successfully completed automated content generator cron jobs.", badge: "Python", link: "https://instagram-automation-phi.vercel.app/" }
   ];
@@ -1132,7 +1095,7 @@ export default function Home() {
       { name: "Toggle Theme: Chrome", action: () => { setThemeMode("chrome"); setCommandPaletteOpen(false); } },
       { name: "Download Resume PDF", action: () => {
         const link = document.createElement("a");
-        link.href = "/Vivek Goud Shaganti CV.pdf";
+        link.href = "/Resume.pdf";
         link.download = "Vivek_Goud_Shaganti_CV.pdf";
         document.body.appendChild(link);
         link.click();
@@ -1155,7 +1118,7 @@ export default function Home() {
 
     switch (cmd) {
       case "help":
-        response = "Operational commands: about, skills, projects, stats, clear";
+        response = "Available commands: about, skills, projects, stats, clear";
         break;
       case "about":
         response = `Profile: ${profile.name} | ${profile.title}. Bio: ${profile.bio}`;
@@ -1187,7 +1150,7 @@ export default function Home() {
     
     if (action === "view" || action === "download") {
       const link = document.createElement("a");
-      link.href = resumeBase64 || "/Vivek Goud Shaganti CV.pdf";
+      link.href = resumeBase64 || "/Resume.pdf";
       link.download = "Vivek_Goud_Shaganti_CV.pdf";
       document.body.appendChild(link);
       link.click();
@@ -1204,13 +1167,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060608] dark:bg-[#060608] light:bg-[#fafafa] text-zinc-800 dark:text-zinc-300 font-mono relative overflow-hidden flex flex-col justify-between transition-colors duration-500">
+    <div className="min-h-screen bg-[#060608] text-zinc-300 font-mono relative overflow-hidden flex flex-col justify-between">
       
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#141416_1px,transparent_1px),linear-gradient(to_bottom,#141416_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none opacity-40" />
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#f4f4f5] dark:from-[#09090b] to-transparent pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#141416_1px,transparent_1px),linear-gradient(to_bottom,#141416_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none opacity-40" />
+      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#09090b] to-transparent pointer-events-none z-0" />
       
       <div 
-        className="fixed w-[280px] h-[280px] rounded-full pointer-events-none z-30 blur-[120px] opacity-10 transition-transform duration-75 mix-blend-screen hidden lg:block"
+        className="fixed w-[280px] h-[280px] rounded-full pointer-events-none z-30 blur-[120px] opacity-15 transition-transform duration-75 mix-blend-screen hidden lg:block"
         style={{
           background: currentTheme.accent,
           left: `${mousePosition.x - 140}px`,
@@ -1218,52 +1181,42 @@ export default function Home() {
         }}
       />
 
-      <header className="sticky top-0 z-45 w-full border-b border-zinc-200 dark:border-zinc-900 bg-white/80 dark:bg-[#060608]/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 w-full border-b border-zinc-900 bg-[#060608]/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <a href="#" className="flex items-center gap-2 font-black tracking-widest text-zinc-900 dark:text-white text-xs md:text-sm">
+            <a href="#" className="flex items-center gap-2 font-black tracking-widest text-white text-xs md:text-sm">
               <span className={cn("inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping absolute")} />
               <span className={cn("inline-block w-2.5 h-2.5 rounded-full bg-emerald-500")} />
-              V-OS v4.0
+              V-OS v3.0
             </a>
             
-            <nav className="hidden md:flex items-center gap-4 text-[10px] tracking-wider uppercase font-bold text-zinc-500 dark:text-zinc-400">
-              <a href="#hero" className="hover:text-black dark:hover:text-white transition-colors">Core</a>
-              <a href="#about" className="hover:text-black dark:hover:text-white transition-colors">About</a>
-              <a href="#skills-map" className="hover:text-black dark:hover:text-white transition-colors">Knowledge Map</a>
-              <a href="#skills" className="hover:text-black dark:hover:text-white transition-colors">Arsenal</a>
-              <a href="#projects" className="hover:text-black dark:hover:text-white transition-colors">Nodes</a>
-              <a href="#timeline" className="hover:text-black dark:hover:text-white transition-colors">Timeline</a>
-              <a href="#blogs" className="hover:text-black dark:hover:text-white transition-colors">Blogs</a>
+            <nav className="hidden md:flex items-center gap-4 text-[10px] tracking-wider uppercase font-bold text-zinc-400">
+              <a href="#spline-hero" className="hover:text-white transition-colors">Core</a>
+              <a href="#skills" className="hover:text-white transition-colors">Arsenal</a>
+              <a href="#projects" className="hover:text-white transition-colors">Nodes</a>
+              <a href="#timeline" className="hover:text-white transition-colors">Timeline</a>
+              <a href="#blogs" className="hover:text-white transition-colors">Blogs</a>
             </nav>
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={toggleTheme}
-              className="p-2 border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded-lg active:scale-95 transition-all"
-              title="Toggle Light/Dark Theme"
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
-
-            <div className="relative hidden md:flex items-center bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-lg px-2.5 py-1 focus-within:border-zinc-300 dark:focus-within:border-zinc-800">
-              <Search className="h-3 w-3 text-zinc-550 mr-2" />
+            <div className="relative hidden md:flex items-center bg-zinc-950 border border-zinc-900 rounded-lg px-2.5 py-1 focus-within:border-zinc-800">
+              <Search className="h-3 w-3 text-zinc-500 mr-2" />
               <input
                 type="text"
                 placeholder="Global Search... (⌘K)"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none outline-none text-[10px] text-zinc-900 dark:text-white font-mono placeholder-zinc-400 dark:placeholder-zinc-700 w-32 focus:w-44 transition-all"
+                className="bg-transparent border-none outline-none text-[10px] text-white font-mono placeholder-zinc-700 w-32 focus:w-44 transition-all"
               />
               {searchQuery && (
-                <button onClick={() => setSearchQuery("")} className="text-zinc-500 hover:text-black dark:hover:text-white ml-1 text-[10px]">✕</button>
+                <button onClick={() => setSearchQuery("")} className="text-zinc-500 hover:text-white ml-1 text-[10px]">✕</button>
               )}
             </div>
 
             <button 
               onClick={() => setCommandPaletteOpen(true)}
-              className="px-2.5 py-1 text-[9px] border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white active:scale-95 transition-all font-mono"
+              className="px-2.5 py-1 text-[9px] border border-zinc-800 bg-zinc-900/60 rounded text-zinc-400 hover:text-white active:scale-95 transition-all font-mono"
             >
               ⌘K
             </button>
@@ -1275,7 +1228,7 @@ export default function Home() {
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold font-mono tracking-wider border transition-all active:scale-95",
                   isEditMode 
                     ? "bg-amber-500/10 border-amber-500/30 text-amber-400" 
-                    : "bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-white hover:border-zinc-300 dark:hover:border-zinc-700"
+                    : "bg-zinc-900 border-zinc-800 text-white hover:border-zinc-700"
                 )}
               >
                 <FileText className="h-3.5 w-3.5" />
@@ -1289,20 +1242,20 @@ export default function Home() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 mt-2 w-44 rounded-lg border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-950 p-1 shadow-2xl z-50 text-[10px] font-mono"
+                    className="absolute right-0 mt-2 w-44 rounded-lg border border-zinc-900 bg-zinc-955 p-1 shadow-2xl z-50 text-[10px] font-mono"
                   >
-                    <button onClick={() => handleResumeAction("view")} className="w-full text-left px-3 py-2 rounded text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-black dark:hover:text-white">
+                    <button onClick={() => handleResumeAction("view")} className="w-full text-left px-3 py-2 rounded text-zinc-300 hover:bg-zinc-900 hover:text-white">
                       View Resume
                     </button>
-                    <button onClick={() => handleResumeAction("upload")} className="w-full text-left px-3 py-2 rounded text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-black dark:hover:text-white">
+                    <button onClick={() => handleResumeAction("upload")} className="w-full text-left px-3 py-2 rounded text-zinc-300 hover:bg-zinc-900 hover:text-white">
                       Upload New Resume
                     </button>
                     {resumeBase64 && (
                       <>
-                        <button onClick={() => handleResumeAction("replace")} className="w-full text-left px-3 py-2 rounded text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-black dark:hover:text-white">
+                        <button onClick={() => handleResumeAction("replace")} className="w-full text-left px-3 py-2 rounded text-zinc-300 hover:bg-zinc-900 hover:text-white">
                           Replace Resume
                         </button>
-                        <button onClick={() => handleResumeAction("delete")} className="w-full text-left px-3 py-2 rounded text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20">
+                        <button onClick={() => handleResumeAction("delete")} className="w-full text-left px-3 py-2 rounded text-red-400 hover:bg-red-950/20">
                           Delete Resume
                         </button>
                       </>
@@ -1317,13 +1270,13 @@ export default function Home() {
 
       {searchQuery && (
         <div className="max-w-7xl mx-auto px-4 md:px-8 w-full z-40 relative">
-          <div className="absolute top-1 left-4 right-4 bg-white dark:bg-zinc-950 border border-zinc-250 dark:border-zinc-900 rounded-xl p-4 shadow-2xl space-y-3 max-h-[300px] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-900 pb-2">
-              <span className="text-[10px] text-zinc-550 uppercase tracking-widest font-bold">Search results ({globalSearchResults.length})</span>
-              <button onClick={() => setSearchQuery("")} className="text-zinc-500 hover:text-black dark:hover:text-white text-xs">✕ Close</button>
+          <div className="absolute top-1 left-4 right-4 bg-zinc-950 border border-zinc-900 rounded-xl p-4 shadow-2xl space-y-3 max-h-[300px] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Search results ({globalSearchResults.length})</span>
+              <button onClick={() => setSearchQuery("")} className="text-zinc-500 hover:text-white text-xs">✕ Close</button>
             </div>
             {globalSearchResults.length === 0 ? (
-              <p className="text-xs text-zinc-550 font-mono py-2">No matching nodes found. Check parameters.</p>
+              <p className="text-xs text-zinc-650 font-mono py-2">No matching nodes found. Check parameters.</p>
             ) : (
               <div className="space-y-2">
                 {globalSearchResults.map((res, index) => (
@@ -1334,13 +1287,13 @@ export default function Home() {
                       if (res.type === "blog") setSelectedBlog(res.item);
                       setSearchQuery("");
                     }}
-                    className="p-2.5 rounded border border-zinc-200 dark:border-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:border-zinc-300 dark:hover:border-zinc-800 transition-colors cursor-pointer flex items-center justify-between"
+                    className="p-2.5 rounded border border-zinc-900 hover:bg-zinc-900/60 hover:border-zinc-800 transition-colors cursor-pointer flex items-center justify-between"
                   >
                     <div>
-                      <span className="text-[9px] uppercase tracking-wider bg-zinc-200 dark:bg-zinc-900 text-zinc-650 dark:text-zinc-500 border border-zinc-300 dark:border-zinc-850 px-1 py-0.5 rounded mr-2">
+                      <span className="text-[9px] uppercase tracking-wider bg-zinc-900 text-zinc-500 border border-zinc-850 px-1 py-0.5 rounded mr-2">
                         {res.type}
                       </span>
-                      <span className="text-xs text-zinc-900 dark:text-white font-bold font-mono">{res.title}</span>
+                      <span className="text-xs text-white font-bold font-mono">{res.title}</span>
                     </div>
                     <span className="text-[10px] text-zinc-500">{res.subtitle}</span>
                   </div>
@@ -1351,229 +1304,216 @@ export default function Home() {
         </div>
       )}
 
-      <main className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex-1 w-full space-y-16 relative z-10">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex-1 w-full space-y-12 relative z-10">
         
-        {/* HERO SECTION WITH ROBOT MASCOT COMPANION */}
-        <section id="hero" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[500px] relative">
+        <section id="spline-hero" className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[580px]">
           
-          <div className="lg:col-span-8 space-y-6">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-emerald-500/10 dark:bg-emerald-950/60 border border-emerald-500/20 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest animate-pulse">
-              ● System Online • Interactive Representative Representation
-            </div>
-
-            <h1 className="text-4xl md:text-6xl font-black font-mono tracking-tight text-zinc-900 dark:text-white leading-tight">
-              Futuristic <br/>
-              <span className={cn("bg-clip-text text-transparent bg-gradient-to-r", themeMode === "volt" ? "from-[#CCFF00] to-emerald-400" : themeMode === "amber" ? "from-[#FFDE21] to-yellow-500" : "from-sky-400 to-indigo-500")}>
-                Personal AI OS
-              </span>
-            </h1>
-
-            <p className="text-sm md:text-base font-light text-zinc-600 dark:text-zinc-450 leading-relaxed max-w-2xl">
-              Welcome to Vivek's Engineering Command Deck. Explore node matrices, audit microservices structures, customize telemetry variables, or consult the recruiter companion representation directly below.
-            </p>
-
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => window.dispatchEvent(new CustomEvent("recruiter-chat-trigger"))}
-                className={cn(
-                  "px-6 py-2.5 rounded-lg text-xs font-bold font-mono tracking-widest uppercase transition-all duration-300 hover:scale-[1.03] active:scale-95 shadow-md flex items-center gap-2",
-                  themeMode === "volt" ? "bg-[#CCFF00] hover:bg-[#8dfa00] text-black" :
-                  themeMode === "amber" ? "bg-[#FFDE21] hover:bg-yellow-400/90 text-black" :
-                  "bg-sky-400 hover:bg-sky-500 text-black"
-                )}
-              >
-                <MessageSquare className="h-4 w-4" />
-                <span>Consult Recruiter Companion</span>
-              </button>
-              
-              <a
-                href="#skills-map"
-                className="px-6 py-2.5 rounded-lg text-xs font-bold font-mono tracking-widest uppercase border border-zinc-300 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 text-zinc-900 dark:text-white transition-all text-center"
-              >
-                Inspect Skill Nodes
-              </a>
-            </div>
-          </div>
-
-          {/* Holographic Mascot Companion Column */}
-          <div className="lg:col-span-4 flex flex-col items-center justify-center relative">
-            <RobotCompanion themeMode={themeMode} />
-            <span className="text-[9px] text-zinc-500 uppercase tracking-widest mt-2 block font-mono">
-              Hologram AI Representational Companion
-            </span>
-          </div>
-
-        </section>
-
-        {/* ABOUT ME SECTION WITH PREMIUM REAL PHOTO FRAME */}
-        <section id="about" className="space-y-6 pt-8 border-t border-zinc-200 dark:border-zinc-900">
-          <div className="flex flex-col gap-1">
-            <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
-              Hardware Core
-            </span>
-            <h2 className="text-2xl md:text-3xl font-bold font-mono text-zinc-900 dark:text-white">
-              About Vivek
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            {/* Professional Picture Frame Column */}
-            <div className="lg:col-span-4 flex justify-center">
-              <div className="relative w-56 h-56 group">
-                {/* Glowing Outer Neon Ring */}
-                <div className={cn(
-                  "absolute inset-px rounded-full blur-[10px] opacity-40 group-hover:opacity-75 transition-opacity duration-300",
-                  themeMode === "volt" && "bg-gradient-to-r from-[#CCFF00] to-emerald-400",
-                  themeMode === "amber" && "bg-gradient-to-r from-[#FFDE21] to-yellow-500",
-                  themeMode === "chrome" && "bg-gradient-to-r from-sky-400 to-indigo-500"
-                )} />
-
-                {/* Glass Border ring container */}
-                <div className="w-full h-full rounded-full p-1.5 bg-white/30 dark:bg-zinc-950/40 border border-white/20 dark:border-zinc-900 backdrop-blur-sm relative z-10 flex items-center justify-center overflow-hidden">
-                  <div className="w-full h-full rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 relative">
-                    <img 
-                      src="/photo_1.png" 
-                      alt="Vivek Goud Shaganti" 
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 ease-out"
-                    />
-
-                    {/* AI Scan Overlay sweep lines */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#CCFF00]/10 to-transparent pointer-events-none h-1/2 w-full animate-[bounce_4s_infinite]" />
-                  </div>
+          <div className="lg:col-span-3 rounded-2xl border border-zinc-900 bg-zinc-955/40 p-6 flex flex-col justify-between backdrop-blur-md relative overflow-hidden h-full">
+            <div className="space-y-6">
+              <div className="relative w-24 h-24 mx-auto group">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#CCFF00] via-cyan-400 to-[#FFDE21] animate-spin opacity-40 blur-sm pointer-events-none duration-500" />
+                <div className="w-full h-full rounded-full border border-zinc-850 bg-black flex items-center justify-center overflow-hidden relative z-10">
+                  {profile.avatar ? (
+                    <img src={profile.avatar} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="text-white text-xs font-bold select-none text-center">
+                      <UserIcon className="h-10 w-10 text-zinc-500 mx-auto" />
+                    </div>
+                  )}
                 </div>
-
-                {/* Online Indicator Green Dot */}
-                <span className="absolute bottom-3 right-3 flex h-4.5 w-4.5 z-20">
+                <span className="absolute bottom-0 right-0 flex h-3.5 w-3.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-4.5 w-4.5 bg-emerald-500 border-2 border-white dark:border-zinc-950"></span>
+                  <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border border-black"></span>
                 </span>
               </div>
-            </div>
 
-            {/* Profile Bio Details Column */}
-            <div className="lg:col-span-8 space-y-4">
-              <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-mono">
-                {profile.bio}
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="border border-zinc-200 dark:border-zinc-900 bg-white/40 dark:bg-zinc-955/40 p-4 rounded-xl backdrop-blur-md">
-                  <span className="text-[9px] text-zinc-550 block font-bold uppercase tracking-widest mb-1.5">Education Core</span>
-                  <div className="text-xs space-y-1 font-mono">
-                    <p className="text-zinc-900 dark:text-white font-bold">{profile.education.institution}</p>
-                    <p className="text-zinc-500">{profile.education.degree}</p>
-                    <p className={cn("font-bold", currentTheme.primary)}>{profile.education.grade}</p>
-                  </div>
+              <div className="text-center space-y-2">
+                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/20 text-[8px] font-bold text-emerald-400 uppercase tracking-widest animate-pulse mx-auto">
+                  Available for Internships
                 </div>
+                <h1 className="text-lg font-black font-mono text-white tracking-wide">{profile.name}</h1>
+                <p className={cn("text-[9px] font-bold uppercase tracking-wider", currentTheme.primary)}>
+                  AI Engineer | Builder
+                </p>
+                <p className="text-[10px] text-zinc-500 leading-relaxed font-mono px-2">
+                  Building automated systems and microservices interfaces.
+                </p>
+              </div>
 
-                <div className="border border-zinc-200 dark:border-zinc-900 bg-white/40 dark:bg-zinc-955/40 p-4 rounded-xl backdrop-blur-md">
-                  <span className="text-[9px] text-zinc-550 block font-bold uppercase tracking-widest mb-1.5">Capabilities Index</span>
-                  <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
-                    {profile.stats?.slice(0, 4).map((st, i) => (
-                      <div key={i} className="border border-zinc-200 dark:border-zinc-900 p-1.5 rounded bg-white/60 dark:bg-zinc-950/60 text-center">
-                        <span className="block text-zinc-900 dark:text-white font-bold">{st.value}</span>
-                        <span className="text-[8px] text-zinc-500 block truncate">{st.label}</span>
-                      </div>
-                    ))}
-                  </div>
+              <div className="border-t border-zinc-900 pt-4 space-y-2">
+                <span className="text-[8px] text-zinc-650 font-bold uppercase tracking-widest block mb-2">TELEMETRY SCORECARD</span>
+                <div className="grid grid-cols-2 gap-2 text-[10px]">
+                  {profile.stats?.map((st, i) => (
+                    <div key={i} className="border border-zinc-900 p-2 rounded bg-zinc-955/60 text-center font-mono">
+                      <span className="block text-white font-bold">{st.value}</span>
+                      <span className="text-[8px] text-zinc-500 block truncate">{st.label}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-          </div>
-        </section>
+            <div className="border-t border-zinc-900 pt-4 flex flex-col gap-2">
+              <a 
+                href={`mailto:${profile.email}`}
+                className={cn(
+                  "w-full text-center py-2 rounded text-[10px] font-bold tracking-widest uppercase border transition-all duration-300 hover:scale-[1.02] active:scale-95",
+                  themeMode === "volt" ? "bg-[#CCFF00] border-[#CCFF00] text-black hover:bg-[#8dfa00]" :
+                  themeMode === "amber" ? "bg-[#FFDE21] border-[#FFDE21] text-black hover:bg-yellow-400" :
+                  "bg-sky-400 border-sky-400 text-black hover:bg-sky-500"
+                )}
+              >
+                Connect Terminal
+              </a>
 
-        {/* REPOSITIONED KNOWLEDGE GRAPH IMMERSIVE SECTION */}
-        <section id="skills-map" className="space-y-6 pt-8 border-t border-zinc-200 dark:border-zinc-900">
-          <div className="flex flex-col gap-1">
-            <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
-              Node Interface Map
-            </span>
-            <h2 className="text-2xl md:text-3xl font-bold font-mono text-zinc-900 dark:text-white">
-              Interactive Knowledge Graph
-            </h2>
-            <p className="text-xs text-zinc-500 max-w-xl leading-relaxed">
-              Explore Vivek's complete technological stack visually. Drag nodes to apply spring force physics. Hover to trace link connections, or click any node to open the dossier side-drawer.
-            </p>
+              <div className="flex items-center justify-center gap-4 text-zinc-550 pt-1">
+                <a href={profile.github} target="_blank" rel="noreferrer" className="hover:text-white transition-colors" title="GitHub"><Github className="h-4 w-4" /></a>
+                <a href={profile.linkedin} target="_blank" rel="noreferrer" className="hover:text-white transition-colors" title="LinkedIn"><Linkedin className="h-4 w-4" /></a>
+                <a href={profile.telegram} target="_blank" rel="noreferrer" className="hover:text-white transition-colors" title="Telegram"><Send className="h-4 w-4" /></a>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[480px]">
-            {/* Core Interactive Graph Canvas */}
-            <div className="lg:col-span-8 h-full relative">
+          <div className="lg:col-span-6 rounded-2xl border border-zinc-900 bg-[#09090b]/40 backdrop-blur-md relative overflow-hidden flex flex-col justify-between h-full group">
+            <div className="p-4 border-b border-zinc-900 bg-black/40 flex items-center justify-between z-20 relative">
+              <span className="text-[10px] font-bold tracking-widest text-white uppercase flex items-center gap-1.5">
+                <Activity className={cn("h-3.5 w-3.5", currentTheme.primary)} />
+                Knowledge Graph Telemetry
+              </span>
+              <span className="text-[9px] text-zinc-500 font-mono tracking-widest">
+                Nodes: {GRAPH_NODES.length} | Links: {GRAPH_LINKS.length}
+              </span>
+            </div>
+
+            <div className="flex-1 w-full h-[400px] lg:h-full relative overflow-hidden">
               <KnowledgeGraph 
                 themeMode={themeMode}
-                theme={theme}
                 onNodeSelect={(node) => {
                   setSelectedNode(node);
                   trackInteraction("click");
                 }}
               />
             </div>
+          </div>
 
-            {/* Live Telemetry Sidebar */}
-            <div className="lg:col-span-4 h-full border border-zinc-200 dark:border-zinc-900 bg-white/40 dark:bg-zinc-955/40 rounded-2xl p-6 backdrop-blur-md flex flex-col justify-between overflow-y-auto">
-              <div className="space-y-4">
-                <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold block border-b border-zinc-200 dark:border-zinc-900 pb-2">
-                  Dossier Inspector
+          <div className="lg:col-span-3 rounded-2xl border border-zinc-900 bg-zinc-955/40 p-6 flex flex-col justify-between backdrop-blur-md relative overflow-hidden h-full">
+            <div className="space-y-4 flex flex-col h-full justify-between">
+              <div className="space-y-3">
+                <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest block border-b border-zinc-900 pb-2 flex items-center gap-1">
+                  <Bell className="h-3 w-3 animate-bounce" />
+                  Live Activity Feed
                 </span>
-
-                {selectedNode ? (
-                  <div className="space-y-4 text-xs font-mono">
-                    <div>
-                      <span className="text-[8px] text-zinc-550 block uppercase">Selected node</span>
-                      <h3 className="text-sm font-bold text-zinc-900 dark:text-white">{selectedNode.id}</h3>
-                      <span className="text-[9px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded mt-1 inline-block">
-                        {selectedNode.exp} Experience
-                      </span>
-                    </div>
-
-                    <div className="space-y-1">
-                      <span className="text-[8px] text-zinc-550 block uppercase tracking-widest">Description</span>
-                      <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-[11px]">{selectedNode.desc}</p>
-                    </div>
-
-                    {selectedNode.projects && selectedNode.projects.length > 0 && (
-                      <div className="space-y-1.5">
-                        <span className="text-[8px] text-zinc-550 block uppercase tracking-widest">Active System Nodes</span>
-                        <div className="space-y-1">
-                          {selectedNode.projects.map((proj, idx) => (
-                            <div key={idx} className="p-1.5 border border-zinc-100 dark:border-zinc-900 rounded bg-white/60 dark:bg-zinc-950/60 text-[10px] text-zinc-800 dark:text-white font-mono flex items-center gap-1.5">
-                              <Check className="h-3 w-3 text-emerald-500" />
-                              {proj}
-                            </div>
-                          ))}
-                        </div>
+                
+                <div className="space-y-3 overflow-y-auto max-h-[360px] pr-1">
+                  {activityTimeline.map((act, i) => (
+                    <div key={i} className="border border-zinc-900 p-2.5 rounded bg-zinc-955/60 font-mono space-y-1.5 hover:border-zinc-800 transition-colors">
+                      <div className="flex justify-between items-center text-[8px] font-mono">
+                        <span className="text-zinc-500 font-bold">{act.date}</span>
+                        <span className={cn(
+                          "px-1.5 py-0.5 rounded font-bold uppercase text-[7px] border",
+                          act.status === "RELEASE" && "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+                          act.status === "COMMIT" && "bg-amber-500/10 text-amber-400 border-amber-500/20",
+                          act.status === "MILESTONE" && "bg-sky-500/10 text-sky-400 border-sky-500/20",
+                          act.status === "ALERT" && "bg-red-500/10 text-red-400 border-red-500/20"
+                        )}>
+                          {act.status}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-center py-16 text-zinc-500 font-mono text-xs">
-                    <Activity className="h-8 w-8 mx-auto mb-2 opacity-30 animate-pulse" />
-                    <span>Select a graph node to inspect telemetry values.</span>
-                  </div>
-                )}
+                      <p className="text-[10px] text-zinc-300 font-mono leading-relaxed line-clamp-2">{act.text}</p>
+                      <div className="flex justify-between items-center pt-1">
+                        <span className="text-[8px] text-zinc-650 bg-zinc-900 px-1 py-0.2 rounded">{act.badge}</span>
+                        {act.link !== "#" && (
+                          <a href={act.link} target="_blank" rel="noreferrer" className="text-[8px] text-zinc-400 hover:text-white flex items-center gap-0.5">
+                            Inspect <ArrowRight className="h-2 w-2" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {selectedNode && (
-                <button
-                  onClick={() => setSelectedNode(null)}
-                  className="w-full text-center py-2 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded text-[10px] font-bold tracking-widest uppercase transition-colors"
-                >
-                  Clear Dossier
-                </button>
-              )}
+              <div className="border-t border-zinc-900 pt-4 space-y-3">
+                <span className="text-[8px] text-zinc-650 font-bold uppercase tracking-widest block">TELEGRAM MODULE</span>
+                <div className="p-2.5 border border-zinc-900 bg-zinc-955/80 rounded space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] text-white font-bold font-mono">@VivekRecruiterBot</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  </div>
+                  <p className="text-[8px] text-zinc-500 leading-relaxed font-mono">
+                    Ask coding questions, receive updates, and access resume details via Telegram.
+                  </p>
+                  <a 
+                    href="https://t.me/vivekshaganti"
+                    target="_blank"
+                    rel="noreferrer"
+                    className={cn(
+                      "w-full text-center block py-1 rounded text-[8px] font-bold tracking-widest uppercase border",
+                      themeMode === "volt" ? "bg-zinc-900 hover:border-[#CCFF00] text-[#CCFF00]" :
+                      themeMode === "amber" ? "bg-zinc-900 hover:border-[#FFDE21] text-[#FFDE21]" :
+                      "bg-zinc-900 hover:border-sky-400 text-sky-400"
+                    )}
+                  >
+                    Launch Telegram Bot
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </section>
+
+        <section className="space-y-6">
+          <div className="flex flex-col gap-1">
+            <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
+              Operational Metrics
+            </span>
+            <h2 className="text-xl md:text-2xl font-bold font-mono text-white tracking-tight">
+              Engineering Analytics Dashboard
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div className="border border-zinc-900 bg-zinc-955/60 p-4 rounded-xl relative overflow-hidden">
+              <span className="text-zinc-600 font-mono text-[8px] block uppercase tracking-widest">TELEMETRY ACCESS</span>
+              <span className="text-white text-xl md:text-2xl font-black font-mono block mt-1">2,412</span>
+              <span className="text-emerald-500 text-[8px] font-bold block mt-1">+12% THIS SESSION</span>
+            </div>
+            <div className="border border-zinc-900 bg-zinc-955/60 p-4 rounded-xl relative overflow-hidden">
+              <span className="text-zinc-600 font-mono text-[8px] block uppercase tracking-widest">COMMITS INDEX</span>
+              <span className="text-white text-xl md:text-2xl font-black font-mono block mt-1">1,824</span>
+              <span className="text-zinc-550 text-[8px] font-bold block mt-1">DAILY PUSH ACTIVE</span>
+            </div>
+            <div className="border border-zinc-900 bg-zinc-955/60 p-4 rounded-xl relative overflow-hidden">
+              <span className="text-zinc-600 font-mono text-[8px] block uppercase tracking-widest">ACTIVE REPOSITORIES</span>
+              <span className="text-white text-xl md:text-2xl font-black font-mono block mt-1">42</span>
+              <span className="text-zinc-550 text-[8px] font-bold block mt-1">GITHUB SYNC ACTIVE</span>
+            </div>
+            <div className="border border-zinc-900 bg-zinc-955/60 p-4 rounded-xl relative overflow-hidden">
+              <span className="text-zinc-600 font-mono text-[8px] block uppercase tracking-widest">AI APPLICATIONS</span>
+              <span className="text-white text-xl md:text-2xl font-black font-mono block mt-1">8</span>
+              <span className="text-emerald-500 text-[8px] font-bold block mt-1">3 PRODUCTION DEPLOYS</span>
+            </div>
+            <div className="border border-zinc-900 bg-zinc-955/60 p-4 rounded-xl relative overflow-hidden">
+              <span className="text-zinc-600 font-mono text-[8px] block uppercase tracking-widest">RECRUITER HIRE CLICKS</span>
+              <span className="text-white text-xl md:text-2xl font-black font-mono block mt-1">{analyticsData.interactions}</span>
+              <span className="text-zinc-550 text-[8px] font-bold block mt-1">TELEMETRY CLICKS</span>
+            </div>
+            <div className="border border-zinc-900 bg-zinc-955/60 p-4 rounded-xl relative overflow-hidden">
+              <span className="text-zinc-600 font-mono text-[8px] block uppercase tracking-widest">RESUME DOWNLOADS</span>
+              <span className="text-white text-xl md:text-2xl font-black font-mono block mt-1">{analyticsData.downloads}</span>
+              <span className="text-emerald-500 text-[8px] font-bold block mt-1">ACTIVE RUNNER</span>
             </div>
           </div>
         </section>
 
-        {/* TECHNICAL ARSENAL SECTION */}
-        <section id="skills" className="space-y-6 pt-8 border-t border-zinc-200 dark:border-zinc-900">
+        <section id="skills" className="space-y-8">
           <div className="flex flex-col gap-2">
             <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
               Hardware & Software Layers
             </span>
-            <h2 className="text-2xl md:text-3xl font-bold font-mono tracking-tight text-zinc-900 dark:text-white">
+            <h2 className="text-2xl md:text-4xl font-bold font-mono tracking-tight text-white">
               Technical Arsenal
             </h2>
           </div>
@@ -1584,17 +1524,17 @@ export default function Home() {
               return (
                 <div 
                   key={category}
-                  className="rounded-xl border border-zinc-200 dark:border-zinc-900 bg-white/40 dark:bg-zinc-955/40 p-6 backdrop-blur-md relative overflow-hidden flex flex-col justify-between h-full hover:border-zinc-300 dark:hover:border-zinc-850 transition-colors duration-300"
+                  className="rounded-xl border border-zinc-900 bg-zinc-955/40 p-6 backdrop-blur-md relative overflow-hidden flex flex-col justify-between h-full hover:border-zinc-850 transition-colors duration-300"
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-4 border-b border-zinc-200 dark:border-zinc-900 pb-2">
+                    <div className="flex items-center justify-between mb-4 border-b border-zinc-900 pb-2">
                       <div className="flex items-center gap-2">
                         <IconComp className={cn("h-4 w-4", currentTheme.primary)} />
-                        <h3 className="font-mono font-bold text-zinc-900 dark:text-white text-xs md:text-sm tracking-wide">
+                        <h3 className="font-mono font-bold text-white text-sm tracking-wide">
                           {skillCategoryLabels[category] || category}
                         </h3>
                       </div>
-                      <span className="text-[10px] font-mono text-zinc-500 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-850 px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] font-mono text-zinc-550 bg-zinc-900/60 border border-zinc-850 px-1.5 py-0.5 rounded">
                         {items.length}
                       </span>
                     </div>
@@ -1602,7 +1542,7 @@ export default function Home() {
                       {items.map((skill, idx) => (
                         <span 
                           key={idx}
-                          className="px-2.5 py-1 text-xs rounded bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-850 text-zinc-700 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-zinc-350 dark:hover:border-zinc-700 hover:scale-105 transition-all duration-200 cursor-default"
+                          className="px-2.5 py-1 text-xs rounded bg-zinc-900 border border-zinc-850 text-zinc-400 hover:text-white hover:border-zinc-700 hover:scale-105 transition-all duration-200 cursor-default"
                         >
                           {skill}
                         </span>
@@ -1615,100 +1555,74 @@ export default function Home() {
           </div>
         </section>
 
-        {/* TELEGRAM BOT & SYSTEM COMMAND INTERFACE */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-8 border-t border-zinc-200 dark:border-zinc-900">
-          
-          {/* Telegram bot status block */}
-          <div className="lg:col-span-4 rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white/40 dark:bg-zinc-955/40 p-6 backdrop-blur-md flex flex-col justify-between">
-            <div className="space-y-4">
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold block border-b border-zinc-200 dark:border-zinc-900 pb-2">
-                Telegram Module Integration
-              </span>
-
-              <div className="p-3 border border-zinc-200 dark:border-zinc-900 bg-white/80 dark:bg-zinc-955/80 rounded-xl space-y-2 font-mono text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-zinc-900 dark:text-white">@VivekRecruiterBot</span>
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                </div>
-                <p className="text-[11px] text-zinc-500 leading-relaxed">
-                  Query project telemetry, receive automated push logs, and decrypt resume credentials via Telegram chat bot representative.
-                </p>
-              </div>
-            </div>
-
-            <a 
-              href="https://t.me/vivekshaganti"
-              target="_blank"
-              rel="noreferrer"
-              className={cn(
-                "w-full text-center block py-2.5 rounded-lg text-xs font-bold tracking-widest uppercase border transition-all mt-4",
-                themeMode === "volt" ? "bg-zinc-900 text-[#CCFF00] hover:border-[#CCFF00] dark:bg-zinc-900 dark:text-[#CCFF00]" :
-                themeMode === "amber" ? "bg-zinc-900 text-[#FFDE21] hover:border-[#FFDE21] dark:bg-zinc-900 dark:text-[#FFDE21]" :
-                "bg-zinc-900 text-sky-400 hover:border-sky-400 dark:bg-zinc-900 dark:text-sky-400"
-              )}
-            >
-              Launch Telegram Bot
-            </a>
+        <section className="space-y-6">
+          <div className="flex flex-col gap-1">
+            <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
+              Sandbox Console Interface
+            </span>
+            <h2 className="text-xl md:text-2xl font-bold font-mono text-white">
+              Command Terminal
+            </h2>
           </div>
 
-          {/* Terminal control CLI block */}
-          <div className="lg:col-span-8 rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white/40 dark:bg-zinc-955/40 p-6 backdrop-blur-md flex flex-col justify-between">
-            <div className="space-y-4">
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold block border-b border-zinc-200 dark:border-zinc-900 pb-2">
-                System Command Terminal CLI
-              </span>
-
-              <div className="rounded-xl border border-zinc-200 dark:border-zinc-900 bg-black p-4 font-mono text-xs text-zinc-300 relative overflow-hidden h-36">
-                <div className="h-full overflow-y-auto space-y-1.5 pr-2">
-                  {terminalHistory.map((line, idx) => (
-                    <div key={idx} className="whitespace-pre-wrap leading-relaxed">
-                      {line}
-                    </div>
-                  ))}
-                  <div ref={terminalEndRef} />
-                </div>
-              </div>
-
-              <form onSubmit={handleTerminalSubmit} className="pt-2 border-t border-zinc-200 dark:border-zinc-900 flex items-center gap-2">
-                <ChevronRight className={cn("h-4 w-4 shrink-0", currentTheme.primary)} />
-                <input 
-                  type="text" 
-                  value={terminalInput}
-                  onChange={e => setTerminalInput(e.target.value)}
-                  placeholder="Type CLI codes (help, stats, about)..."
-                  className="w-full bg-transparent border-none outline-none text-zinc-900 dark:text-white font-mono placeholder-zinc-500 text-xs"
-                />
-              </form>
+          <div className="rounded-xl border border-zinc-900 bg-black p-6 font-mono text-xs md:text-sm text-zinc-300 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-2 right-4 flex items-center gap-1.5 opacity-55">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
             </div>
-          </div>
 
+            <div className="h-40 overflow-y-auto space-y-2 pr-2">
+              {terminalHistory.map((line, idx) => (
+                <div key={idx} className="whitespace-pre-wrap leading-relaxed">
+                  {line}
+                </div>
+              ))}
+              <div ref={terminalEndRef} />
+            </div>
+
+            <form onSubmit={handleTerminalSubmit} className="mt-4 pt-3 border-t border-zinc-900 flex items-center gap-2">
+              <ChevronRight className={cn("h-4 w-4 shrink-0", currentTheme.primary)} />
+              <input 
+                type="text" 
+                value={terminalInput}
+                onChange={e => setTerminalInput(e.target.value)}
+                placeholder="Type command (help, stats, about)..."
+                className="w-full bg-transparent border-none outline-none text-white font-mono placeholder-zinc-700 text-xs md:text-sm"
+              />
+            </form>
+          </div>
         </section>
 
-        {/* PROJECTS SECTION */}
-        <section id="projects" className="space-y-8 pt-8 border-t border-zinc-200 dark:border-zinc-900">
+        <section id="projects" className="space-y-8">
           <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4">
             <div className="flex flex-col gap-2">
               <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
                 Telemetry Repositories
               </span>
-              <h2 className="text-2xl md:text-3xl font-bold font-mono tracking-tight text-zinc-900 dark:text-white">
+              <h2 className="text-2xl md:text-4xl font-bold font-mono tracking-tight text-white">
                 Projects Command Panel
               </h2>
             </div>
             
             <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-              <div className="relative flex items-center bg-white/60 dark:bg-black/60 border border-zinc-200 dark:border-zinc-900 rounded-lg px-3 py-1.5 focus-within:border-zinc-400 dark:focus-within:border-zinc-700 transition-colors">
+              <div className="relative flex items-center bg-black/60 border border-zinc-900 rounded-lg px-3 py-1.5 focus-within:border-zinc-700 transition-colors">
                 <Search className="h-3.5 w-3.5 text-zinc-500 mr-2" />
                 <input
                   type="text"
-                  placeholder="Search project grids..."
+                  placeholder="Search projects by name or tech..."
                   value={projectSearch}
                   onChange={(e) => setProjectSearch(e.target.value)}
-                  className="bg-transparent border-none outline-none text-xs text-zinc-900 dark:text-white font-mono placeholder-zinc-500 w-full md:w-56"
+                  className="bg-transparent border-none outline-none text-xs text-white font-mono placeholder-zinc-700 w-full md:w-56"
                 />
+                {projectSearch && (
+                  <button onClick={() => setProjectSearch("")} className="text-zinc-500 hover:text-white ml-2 text-xs">
+                    ✕
+                  </button>
+                )}
               </div>
 
-              <div className="flex flex-wrap gap-1 border border-zinc-200 dark:border-zinc-900 bg-white/60 dark:bg-black/60 p-1 rounded-lg">
+              <div className="flex flex-wrap gap-1 border border-zinc-900 bg-black/60 p-1 rounded-lg">
                 {categories.map(cat => (
                   <button
                     key={cat}
@@ -1716,8 +1630,8 @@ export default function Home() {
                     className={cn(
                       "px-2.5 py-1 text-[9px] md:text-[10px] uppercase font-bold rounded tracking-wider transition-all",
                       activeTab === cat 
-                        ? "bg-zinc-200 dark:bg-zinc-900 text-black dark:text-white" 
-                        : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300"
+                        ? "bg-zinc-900 text-white" 
+                        : "text-zinc-500 hover:text-zinc-300"
                     )}
                   >
                     {cat}
@@ -1733,26 +1647,32 @@ export default function Home() {
                 key={project.id}
                 onClick={() => setSelectedProject(project)}
                 className={cn(
-                  "group relative flex flex-col justify-between h-full rounded-xl border border-zinc-200 dark:border-zinc-900 bg-white/40 dark:bg-zinc-955/40 p-6 backdrop-blur-md transition-all duration-300 cursor-pointer",
-                  project.isFeatured ? "border-zinc-300 dark:border-zinc-800 shadow-[0_0_20px_rgba(0,0,0,0.01)] dark:shadow-[0_0_20px_rgba(255,255,255,0.02)]" : "",
+                  "group relative flex flex-col justify-between h-full rounded-xl border border-zinc-900 bg-zinc-955/40 p-6 backdrop-blur-md transition-all duration-300 cursor-pointer",
+                  project.isFeatured ? "border-zinc-800 shadow-[0_0_20px_rgba(255,255,255,0.02)]" : "",
                   currentTheme.borderHover
                 )}
               >
-                <SpotlightHover size={150} className="from-zinc-100/10 dark:from-zinc-800/10 via-zinc-200/10 dark:via-zinc-700/10 to-transparent" />
+                <SpotlightHover size={150} className="from-zinc-800/10 via-zinc-700/10 to-transparent" />
 
-                <div className="space-y-4 relative z-10 pt-2">
+                {project.isFeatured && (
+                  <div className="absolute -top-px -left-px rounded-tl-xl rounded-br-lg bg-white/5 border-t border-l border-zinc-800 px-2.5 py-0.5 text-[8px] uppercase tracking-widest font-mono text-zinc-300 z-20">
+                    FEATURED SYSTEM
+                  </div>
+                )}
+
+                <div className="space-y-4 relative z-10 pt-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex flex-wrap gap-1.5 items-center">
-                      <span className={cn("px-2 py-0.5 text-[9px] font-mono tracking-widest uppercase bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md", currentTheme.primary)}>
+                      <span className={cn("px-2 py-0.5 text-[9px] font-mono tracking-widest uppercase bg-zinc-900 border border-zinc-800 rounded-md", currentTheme.primary)}>
                         {project.category}
                       </span>
                       {project.status && (
                         <span className={cn(
                           "px-1.5 py-0.5 text-[8px] font-mono rounded border uppercase",
-                          project.status === "Production" && "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-                          project.status === "Active" && "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 animate-pulse",
-                          project.status === "Research" && "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
-                          project.status === "Archived" && "bg-zinc-100 dark:bg-zinc-900/50 text-zinc-500 border-zinc-200 dark:border-zinc-800"
+                          project.status === "Production" && "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+                          project.status === "Active" && "bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse",
+                          project.status === "Research" && "bg-sky-500/10 text-sky-400 border-sky-500/20",
+                          project.status === "Archived" && "bg-zinc-900/50 text-zinc-500 border-zinc-800"
                         )}>
                           ● {project.status}
                         </span>
@@ -1762,33 +1682,33 @@ export default function Home() {
 
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-base font-bold font-mono text-zinc-900 dark:text-white tracking-wide">
+                      <h3 className="text-base font-bold font-mono text-white tracking-wide">
                         {project.title}
                       </h3>
                       {project.completionDate && (
-                        <span className="text-[9px] text-zinc-550 font-mono tracking-wider">
+                        <span className="text-[9px] text-zinc-650 font-mono tracking-wider">
                           [{project.completionDate.toUpperCase()}]
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-600 dark:text-zinc-450 leading-relaxed font-mono line-clamp-3 group-hover:text-zinc-800 dark:group-hover:text-zinc-300 transition-colors">
+                    <p className="text-xs text-zinc-450 leading-relaxed font-mono line-clamp-3 group-hover:text-zinc-300 transition-colors">
                       {project.description}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-zinc-200 dark:border-zinc-900/60 mt-4 relative z-10 flex justify-between items-center">
+                <div className="pt-6 border-t border-zinc-900/60 mt-4 relative z-10 flex justify-between items-center">
                   <div className="flex flex-wrap gap-1.5">
                     {project.tech.slice(0, 3).map((t, i) => (
                       <span 
                         key={i}
-                        className="px-2 py-0.5 rounded text-[9px] font-mono bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-850 text-zinc-500"
+                        className="px-2 py-0.5 rounded text-[9px] font-mono bg-zinc-900 border border-zinc-850 text-zinc-500"
                       >
                         {t}
                       </span>
                     ))}
                     {project.tech.length > 3 && (
-                      <span className="text-[9px] text-zinc-500 font-mono align-middle self-center">+{project.tech.length - 3}</span>
+                      <span className="text-[9px] text-zinc-600 font-mono align-middle self-center">+{project.tech.length - 3}</span>
                     )}
                   </div>
                   <span className={cn("text-[9px] font-bold tracking-widest uppercase flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity", currentTheme.primary)}>
@@ -1800,46 +1720,44 @@ export default function Home() {
           </div>
         </section>
 
-        {/* TIMELINE ROADMAP SECTION */}
-        <section id="timeline" className="space-y-6 pt-8 border-t border-zinc-200 dark:border-zinc-900">
+        <section id="timeline" className="space-y-6">
           <div className="flex flex-col gap-1">
             <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
               Chronological Path
             </span>
-            <h2 className="text-2xl md:text-3xl font-bold font-mono text-zinc-900 dark:text-white tracking-tight">
+            <h2 className="text-xl md:text-2xl font-bold font-mono text-white tracking-tight">
               Interactive Engineering Roadmap
             </h2>
           </div>
 
-          <div className="relative border-l border-zinc-200 dark:border-zinc-900 pl-6 space-y-8 max-w-3xl mx-auto">
+          <div className="relative border-l border-zinc-900 pl-6 space-y-8 max-w-3xl mx-auto">
             {profile.timeline?.map((item, idx) => (
               <div key={idx} className="relative group">
-                <div className="absolute -left-[31px] top-1 w-4.5 h-4.5 rounded-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:border-black dark:group-hover:border-white transition-colors">
+                <div className="absolute -left-[31px] top-1 w-4.5 h-4.5 rounded-full bg-zinc-950 border border-zinc-800 flex items-center justify-center group-hover:border-white transition-colors">
                   <div className={cn("w-2 h-2 rounded-full", currentTheme.bg)} />
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className={cn("font-mono font-bold text-xs", currentTheme.primary)}>[{item.year}]</span>
-                    <span className="text-[8px] uppercase tracking-widest bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-850 text-zinc-550 dark:text-zinc-500 px-1.5 py-0.5 rounded">
+                    <span className="text-[8px] uppercase tracking-widest bg-zinc-900 border border-zinc-850 text-zinc-500 px-1.5 py-0.5 rounded">
                       {item.type}
                     </span>
                   </div>
-                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white font-mono">{item.title}</h3>
+                  <h3 className="text-sm font-bold text-white font-mono">{item.title}</h3>
                   <p className="text-xs text-zinc-500 font-mono">{item.subtitle}</p>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-450 font-mono leading-relaxed max-w-2xl">{item.details}</p>
+                  <p className="text-xs text-zinc-450 font-mono leading-relaxed max-w-2xl">{item.details}</p>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* DEVELOPER LEDGER BLOGS */}
-        <section id="blogs" className="space-y-6 pt-8 border-t border-zinc-200 dark:border-zinc-900">
+        <section id="blogs" className="space-y-6">
           <div className="flex flex-col gap-1">
             <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
               Engineering Ledger
             </span>
-            <h2 className="text-2xl md:text-3xl font-bold font-mono text-zinc-900 dark:text-white tracking-tight">
+            <h2 className="text-xl md:text-2xl font-bold font-mono text-white tracking-tight">
               Developer Log & System Design Notebooks
             </h2>
           </div>
@@ -1849,21 +1767,21 @@ export default function Home() {
               <div 
                 key={blog.id}
                 onClick={() => setSelectedBlog(blog)}
-                className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-900 bg-white/40 dark:bg-zinc-955/30 hover:border-zinc-300 dark:hover:border-zinc-850 hover:bg-white/80 dark:hover:bg-zinc-955/60 transition-all cursor-pointer flex flex-col justify-between h-full"
+                className="p-6 rounded-xl border border-zinc-900 bg-zinc-955/30 hover:border-zinc-850 hover:bg-zinc-955/60 transition-all cursor-pointer flex flex-col justify-between h-full"
               >
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-[9px] font-mono text-zinc-500">
                     <span>{blog.date}</span>
                     <span>{blog.readingTime}</span>
                   </div>
-                  <h3 className="text-base font-bold text-zinc-900 dark:text-white font-mono">{blog.title}</h3>
-                  <p className="text-xs text-zinc-650 dark:text-zinc-450 leading-relaxed font-mono line-clamp-3">{blog.summary}</p>
+                  <h3 className="text-base font-bold text-white font-mono group-hover:text-[#CCFF00]">{blog.title}</h3>
+                  <p className="text-xs text-zinc-450 leading-relaxed font-mono line-clamp-3">{blog.summary}</p>
                 </div>
 
-                <div className="flex justify-between items-center mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-900/60">
+                <div className="flex justify-between items-center mt-4 pt-4 border-t border-zinc-900/60">
                   <div className="flex gap-1.5">
                     {blog.tags.map((t: string, i: number) => (
-                      <span key={i} className="text-[8px] font-mono text-zinc-600 dark:text-zinc-650 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-850 px-1.5 py-0.5 rounded">{t}</span>
+                      <span key={i} className="text-[8px] font-mono text-zinc-650 bg-zinc-900 border border-zinc-850 px-1.5 py-0.5 rounded">{t}</span>
                     ))}
                   </div>
                   <span className={cn("text-[9px] font-bold uppercase tracking-widest flex items-center gap-0.5", currentTheme.primary)}>
@@ -1875,13 +1793,12 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CERTIFICATIONS WALL */}
-        <section className="space-y-6 pt-8 border-t border-zinc-200 dark:border-zinc-900">
+        <section className="space-y-6">
           <div className="flex flex-col gap-1">
             <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
               Credential Ledger
             </span>
-            <h2 className="text-2xl md:text-3xl font-bold font-mono text-zinc-900 dark:text-white tracking-tight">
+            <h2 className="text-xl md:text-2xl font-bold font-mono text-white tracking-tight">
               Professional Certifications
             </h2>
           </div>
@@ -1894,31 +1811,29 @@ export default function Home() {
               >
                 <div className="w-full h-full relative transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] cursor-pointer">
                   
-                  {/* Front Side */}
-                  <div className="w-full h-full absolute inset-0 bg-white/80 dark:bg-zinc-955/80 border border-zinc-250 dark:border-zinc-900 rounded-xl p-5 flex flex-col justify-between [backface-visibility:hidden] z-20">
+                  <div className="w-full h-full absolute inset-0 bg-zinc-955/80 border border-zinc-900 rounded-xl p-5 flex flex-col justify-between [backface-visibility:hidden] z-20">
                     <div className="space-y-2">
                       <div className="flex justify-between items-start">
                         <Award className={cn("h-5 w-5", currentTheme.primary)} />
-                        <span className="text-[9px] font-mono text-zinc-500 bg-zinc-100 dark:bg-zinc-900 px-1.5 py-0.5 rounded">{cert.date}</span>
+                        <span className="text-[9px] font-mono text-zinc-600 bg-zinc-900 px-1.5 py-0.5 rounded">{cert.date}</span>
                       </div>
-                      <h3 className="text-xs font-bold text-zinc-900 dark:text-white font-mono tracking-wide line-clamp-2">{cert.title}</h3>
+                      <h3 className="text-xs font-bold text-white font-mono tracking-wide line-clamp-2">{cert.title}</h3>
                     </div>
-                    <span className="text-[9px] text-zinc-400 font-mono uppercase tracking-widest block text-right">Hover to flip</span>
+                    <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest block text-right">Hover to flip</span>
                   </div>
 
-                  {/* Back Side */}
-                  <div className="w-full h-full absolute inset-0 bg-zinc-200 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-xl p-5 flex flex-col justify-between [transform:rotateY(180deg)] [backface-visibility:hidden] z-10">
-                    <div className="space-y-2 text-[10px] font-mono text-zinc-700 dark:text-zinc-400">
+                  <div className="w-full h-full absolute inset-0 bg-zinc-900 border border-zinc-800 rounded-xl p-5 flex flex-col justify-between [transform:rotateY(180deg)] [backface-visibility:hidden] z-10">
+                    <div className="space-y-2 text-[10px] font-mono text-zinc-400">
                       <div>
-                        <span className="text-zinc-500 dark:text-zinc-650 block text-[8px] uppercase">Authority</span>
-                        <span className="text-zinc-900 dark:text-white font-bold">{cert.provider}</span>
+                        <span className="text-zinc-600 block text-[8px] uppercase">Authority</span>
+                        <span className="text-white font-bold">{cert.provider}</span>
                       </div>
                       <div>
-                        <span className="text-zinc-500 dark:text-zinc-650 block text-[8px] uppercase">Skills Verified</span>
-                        <span className="text-zinc-800 dark:text-zinc-300">{cert.skills}</span>
+                        <span className="text-zinc-600 block text-[8px] uppercase">Skills Verified</span>
+                        <span className="text-zinc-300">{cert.skills}</span>
                       </div>
                     </div>
-                    <span className="text-[8px] text-zinc-500 font-mono">ID: {cert.id}</span>
+                    <span className="text-[8px] text-zinc-600 font-mono">ID: {cert.id}</span>
                   </div>
 
                 </div>
@@ -1927,9 +1842,37 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="space-y-6">
+          <div className="flex flex-col gap-1">
+            <span className={cn("font-mono text-xs uppercase tracking-widest", currentTheme.primary)}>
+              Competitions Wall
+            </span>
+            <h2 className="text-xl md:text-2xl font-bold font-mono text-white tracking-tight">
+              Hackathons & Achievements
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {profile.achievements?.map((ach, idx) => (
+              <div key={idx} className="border border-zinc-900 bg-zinc-955/60 p-6 rounded-xl space-y-4 hover:border-zinc-800 transition-colors">
+                <div className="flex justify-between items-start">
+                  <Award className={cn("h-6 w-6", currentTheme.primary)} />
+                  <span className={cn("text-[9px] font-bold uppercase font-mono px-2 py-0.5 rounded border", currentTheme.primary, currentTheme.border)}>
+                    {ach.metric}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-white font-mono">{ach.title}</h3>
+                  <p className="text-[10px] text-zinc-550 font-mono mt-1">{ach.subtitle}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
       </main>
 
-      <footer className="border-t border-zinc-200 dark:border-zinc-900 bg-zinc-100 dark:bg-[#060608] py-8 text-center text-xs text-zinc-500 dark:text-zinc-650 font-mono mt-12">
+      <footer className="border-t border-zinc-900 bg-[#060608] py-8 text-center text-xs text-zinc-600 font-mono mt-12">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <span>&copy; {new Date().getFullYear()} Vivek Goud Shaganti. All rights reserved.</span>
           <div className="flex items-center gap-1">
@@ -1939,34 +1882,33 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* DETAIL MODALS & CMS OVERLAYS */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
           >
             <motion.div
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-[#0a0a0c] border border-zinc-300 dark:border-zinc-900 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] font-mono text-zinc-800 dark:text-zinc-300"
+              className="bg-[#0a0a0c] border border-zinc-900 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] font-mono"
             >
-              <div className="p-4 border-b border-zinc-200 dark:border-zinc-900 bg-zinc-100 dark:bg-black flex justify-between items-center">
+              <div className="p-4 border-b border-zinc-900 bg-black flex justify-between items-center">
                 <span className="text-[10px] text-zinc-555 font-bold uppercase tracking-widest flex items-center gap-2">
                   <Terminal className={cn("h-4 w-4", currentTheme.primary)} />
                   System Application: {selectedProject.title}
                 </span>
-                <button onClick={() => setSelectedProject(null)} className="text-zinc-550 hover:text-black dark:hover:text-white transition-colors">
+                <button onClick={() => setSelectedProject(null)} className="text-zinc-500 hover:text-white transition-colors">
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
               <div className="p-6 md:p-8 overflow-y-auto space-y-6 text-xs md:text-sm">
                 <div className="flex flex-wrap gap-2 items-center">
-                  <span className={cn("px-2.5 py-0.5 rounded text-[10px] font-bold uppercase border bg-zinc-100 dark:bg-zinc-900", currentTheme.primary, currentTheme.border)}>
+                  <span className={cn("px-2.5 py-0.5 rounded text-[10px] font-bold uppercase border bg-zinc-900", currentTheme.primary, currentTheme.border)}>
                     {selectedProject.category}
                   </span>
                   <span className="text-[10px] text-zinc-500 font-bold">Ver: {selectedProject.version || "1.0.0"}</span>
@@ -1975,18 +1917,25 @@ export default function Home() {
 
                 <div className="space-y-2">
                   <span className="text-[9px] text-zinc-650 font-bold uppercase tracking-widest block">Overview</span>
-                  <p className="text-zinc-700 dark:text-zinc-350 leading-relaxed font-mono">{selectedProject.description}</p>
+                  <p className="text-zinc-300 leading-relaxed font-mono">{selectedProject.description}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 border border-zinc-200 dark:border-zinc-900 bg-zinc-50 dark:bg-zinc-955/60 rounded-xl space-y-1.5">
-                    <span className="text-[8px] text-red-500 dark:text-red-400 font-bold uppercase tracking-widest block">The Problem</span>
-                    <p className="text-[11px] text-zinc-600 dark:text-zinc-400 font-mono leading-relaxed">{selectedProject.problem || "Legacy systems are slow and inefficient."}</p>
+                  <div className="p-4 border border-zinc-900 bg-zinc-955/60 rounded-xl space-y-1.5">
+                    <span className="text-[8px] text-red-400 font-bold uppercase tracking-widest block">The Problem</span>
+                    <p className="text-[11px] text-zinc-400 font-mono leading-relaxed">{selectedProject.problem || "Legacy infrastructure is manual and slow."}</p>
                   </div>
-                  <div className="p-4 border border-zinc-200 dark:border-zinc-900 bg-zinc-50 dark:bg-zinc-955/60 rounded-xl space-y-1.5">
-                    <span className="text-[8px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-widest block">The AI Solution</span>
-                    <p className="text-[11px] text-zinc-600 dark:text-zinc-400 font-mono leading-relaxed">{selectedProject.solution || "Integrate smart agent nodes to orchestrate."}</p>
+                  <div className="p-4 border border-zinc-900 bg-zinc-955/60 rounded-xl space-y-1.5">
+                    <span className="text-[8px] text-emerald-400 font-bold uppercase tracking-widest block">The AI Solution</span>
+                    <p className="text-[11px] text-zinc-400 font-mono leading-relaxed">{selectedProject.solution || "Deploy intelligent pipelines to automate responses."}</p>
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <span className="text-[9px] text-zinc-650 font-bold uppercase tracking-widest block">Architecture Blueprint</span>
+                  <p className="text-zinc-400 font-mono leading-relaxed text-[11px] bg-zinc-950 p-3 rounded border border-zinc-900">
+                    {selectedProject.architecture || "MERN Stack connected via REST API pipelines."}
+                  </p>
                 </div>
 
                 {selectedProject.codeHighlight && (
@@ -1998,13 +1947,24 @@ export default function Home() {
                   </div>
                 )}
 
-                <div className="border-t border-zinc-200 dark:border-zinc-900 pt-4 flex gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] font-mono">
+                  <div className="space-y-1">
+                    <span className="text-[8px] text-zinc-600 uppercase font-bold tracking-widest block">Lessons Learned</span>
+                    <p className="text-zinc-400 leading-relaxed">{selectedProject.lessonsLearned || "None recorded."}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[8px] text-zinc-600 uppercase font-bold tracking-widest block">Future Roadmap</span>
+                    <p className="text-zinc-400 leading-relaxed">{selectedProject.futureImprovements || "None recorded."}</p>
+                  </div>
+                </div>
+
+                <div className="border-t border-zinc-900 pt-4 flex gap-3">
                   {selectedProject.link && selectedProject.link !== "#" && (
                     <a 
                       href={selectedProject.link} 
                       target="_blank" 
                       rel="noreferrer"
-                      className="px-4 py-2 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-white rounded text-xs font-bold font-mono tracking-widest uppercase flex items-center gap-1.5"
+                      className="px-4 py-2 border border-zinc-800 hover:border-zinc-700 bg-zinc-900 text-white rounded text-xs font-bold font-mono tracking-widest uppercase flex items-center gap-1.5"
                     >
                       <Github className="h-4 w-4" /> View Repo
                     </a>
@@ -2018,7 +1978,7 @@ export default function Home() {
                         "px-4 py-2 rounded text-black text-xs font-bold font-mono tracking-widest uppercase flex items-center gap-1.5",
                         themeMode === "volt" && "bg-[#CCFF00] hover:bg-[#8dfa00]",
                         themeMode === "amber" && "bg-[#FFDE21] hover:bg-yellow-400",
-                        themeMode === "chrome" && "bg-sky-400 hover:bg-sky-500"
+                        themeMode === "chrome" && "bg-[#38bdf8] hover:bg-[#38bdf8]"
                       )}
                     >
                       <ExternalLink className="h-4 w-4" /> Launch App
@@ -2032,25 +1992,85 @@ export default function Home() {
       </AnimatePresence>
 
       <AnimatePresence>
+        {selectedNode && (
+          <motion.div 
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 25 }}
+            className="fixed top-0 right-0 h-full w-full max-w-sm bg-[#0a0a0c] border-l border-zinc-900 shadow-2xl z-50 flex flex-col justify-between font-mono"
+          >
+            <div className="p-6 border-b border-zinc-900 flex justify-between items-center">
+              <span className="text-[10px] text-zinc-555 font-bold uppercase tracking-widest flex items-center gap-1.5">
+                <Code className={cn("h-4 w-4", currentTheme.primary)} />
+                Technology Dossier
+              </span>
+              <button onClick={() => setSelectedNode(null)} className="text-zinc-500 hover:text-white">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              <div>
+                <span className="text-[8px] text-zinc-650 block uppercase">Skill Node</span>
+                <h2 className="text-lg font-black text-white">{selectedNode.id}</h2>
+                <span className="text-[10px] text-zinc-500 bg-zinc-900 px-1.5 py-0.5 rounded mt-1 inline-block">
+                  {selectedNode.exp}
+                </span>
+              </div>
+
+              <div className="space-y-1.5 text-xs">
+                <span className="text-[8px] text-zinc-650 block uppercase tracking-widest">Capability Parameters</span>
+                <p className="text-zinc-350 leading-relaxed font-mono">{selectedNode.desc}</p>
+              </div>
+
+              {selectedNode.projects && selectedNode.projects.length > 0 && (
+                <div className="space-y-3">
+                  <span className="text-[8px] text-zinc-650 block uppercase tracking-widest">Active System Nodes</span>
+                  <div className="space-y-2">
+                    {selectedNode.projects.map((proj, idx) => (
+                      <div key={idx} className="p-2 border border-zinc-900 rounded bg-zinc-955/60 text-[10px] text-white font-mono flex items-center gap-1.5">
+                        <Check className={cn("h-3.5 w-3.5", currentTheme.primary)} />
+                        {proj}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-zinc-900">
+              <button 
+                onClick={() => setSelectedNode(null)}
+                className="w-full text-center py-2.5 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white rounded text-[10px] font-bold tracking-widest uppercase transition-colors"
+              >
+                Close Dossier
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
         {selectedBlog && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
           >
             <motion.div
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-[#0a0a0c] border border-zinc-350 dark:border-zinc-900 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[80vh] font-mono text-zinc-800 dark:text-zinc-300"
+              className="bg-[#0a0a0c] border border-zinc-900 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[80vh] font-mono"
             >
-              <div className="p-4 border-b border-zinc-200 dark:border-zinc-900 bg-zinc-100 dark:bg-black flex justify-between items-center">
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest flex items-center gap-2">
-                  <BookOpen className="h-4 w-4 text-zinc-400" />
+              <div className="p-4 border-b border-zinc-900 bg-black flex justify-between items-center">
+                <span className="text-[10px] text-zinc-555 font-bold uppercase tracking-widest flex items-center gap-2">
+                  <BookOpen className="h-4 w-4 text-zinc-500" />
                   Engineering Ledger Log
                 </span>
-                <button onClick={() => setSelectedBlog(null)} className="text-zinc-550 hover:text-black dark:hover:text-white">
+                <button onClick={() => setSelectedBlog(null)} className="text-zinc-500 hover:text-white">
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -2058,11 +2078,11 @@ export default function Home() {
               <div className="p-6 md:p-8 overflow-y-auto space-y-6 text-xs md:text-sm">
                 <div className="space-y-2">
                   <span className={cn("text-[9px] font-bold uppercase tracking-widest", currentTheme.primary)}>{selectedBlog.category}</span>
-                  <h2 className="text-lg md:text-xl font-black text-zinc-900 dark:text-white font-mono leading-snug">{selectedBlog.title}</h2>
-                  <span className="text-[9px] text-zinc-550 font-mono block">Published: {selectedBlog.date} • {selectedBlog.readingTime}</span>
+                  <h2 className="text-lg md:text-2xl font-black text-white font-mono leading-snug">{selectedBlog.title}</h2>
+                  <span className="text-[9px] text-zinc-500 font-mono block">Published: {selectedBlog.date} • {selectedBlog.readingTime}</span>
                 </div>
 
-                <div className="border-t border-zinc-200 dark:border-zinc-900 pt-4 whitespace-pre-wrap leading-relaxed">
+                <div className="border-t border-zinc-900 pt-4 text-zinc-300 font-mono whitespace-pre-wrap leading-relaxed">
                   {selectedBlog.content}
                 </div>
               </div>
@@ -2084,10 +2104,10 @@ export default function Home() {
               initial={{ scale: 0.95, y: -20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: -20 }}
-              className="bg-white dark:bg-zinc-950 border border-zinc-350 dark:border-zinc-900 rounded-xl w-full max-w-lg overflow-hidden shadow-2xl font-mono text-zinc-800 dark:text-zinc-300"
+              className="bg-zinc-950 border border-zinc-900 rounded-xl w-full max-w-lg overflow-hidden shadow-2xl font-mono"
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-3.5 border-b border-zinc-200 dark:border-zinc-900 flex items-center bg-zinc-50 dark:bg-black">
+              <div className="p-3.5 border-b border-zinc-900 flex items-center bg-black">
                 <Terminal className="h-4 w-4 text-zinc-500 mr-2 shrink-0" />
                 <input
                   type="text"
@@ -2095,19 +2115,19 @@ export default function Home() {
                   placeholder="Type a navigation command or action..."
                   value={commandQuery}
                   onChange={e => setCommandQuery(e.target.value)}
-                  className="bg-transparent border-none outline-none text-xs text-zinc-900 dark:text-white font-mono w-full"
+                  className="bg-transparent border-none outline-none text-xs text-white font-mono placeholder-zinc-700 w-full"
                 />
               </div>
 
               <div className="p-2 max-h-[250px] overflow-y-auto space-y-1">
                 {filteredCommandItems.length === 0 ? (
-                  <p className="text-[10px] text-zinc-550 p-2">No command matches found.</p>
+                  <p className="text-[10px] text-zinc-650 p-2">No command matches found.</p>
                 ) : (
                   filteredCommandItems.map((item, idx) => (
                     <button
                       key={idx}
                       onClick={item.action}
-                      className="w-full text-left p-2 rounded text-[11px] text-zinc-650 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors font-mono flex items-center justify-between"
+                      className="w-full text-left p-2 rounded text-[11px] text-zinc-450 hover:text-white hover:bg-zinc-900 transition-colors font-mono flex items-center justify-between"
                     >
                       <span>{item.name}</span>
                       <ChevronRight className="h-3.5 w-3.5 opacity-40" />
@@ -2127,29 +2147,29 @@ export default function Home() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 20 }}
-            className="fixed top-0 right-0 h-full w-full max-w-lg bg-white dark:bg-[#0a0a0c] border-l border-zinc-200 dark:border-zinc-900 shadow-2xl z-50 flex flex-col justify-between text-zinc-800 dark:text-zinc-300"
+            className="fixed top-0 right-0 h-full w-full max-w-lg bg-[#0a0a0c] border-l border-zinc-900 shadow-2xl z-50 flex flex-col justify-between"
           >
-            <div className="p-6 border-b border-zinc-200 dark:border-zinc-900 flex items-center justify-between">
+            <div className="p-6 border-b border-zinc-900 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Edit3 className={cn("h-4 w-4", currentTheme.primary)} />
-                <h3 className="text-sm font-bold font-mono text-zinc-900 dark:text-white">System Param Customizer</h3>
+                <h3 className="text-sm font-bold font-mono text-white">System Param Customizer</h3>
               </div>
               <button 
                 onClick={() => setShowAdminPanel(false)}
-                className="text-zinc-500 hover:text-black dark:hover:text-white"
+                className="text-zinc-500 hover:text-white"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="flex border-b border-zinc-200 dark:border-zinc-900 px-6 overflow-x-auto text-[10px] font-mono font-bold gap-2">
+            <div className="flex border-b border-zinc-900 px-6 overflow-x-auto text-[10px] font-mono font-bold gap-2">
               {(["summary", "skills", "experience", "projects", "blogs", "timeline", "certifications"] as const).map(tab => (
                 <button
                   key={tab}
                   onClick={() => setAdminTab(tab)}
                   className={cn(
                     "py-3 border-b-2 transition-colors uppercase whitespace-nowrap",
-                    adminTab === tab ? "border-[#CCFF00] text-zinc-900 dark:text-white" : "border-transparent text-zinc-500 hover:text-zinc-300"
+                    adminTab === tab ? "border-[#CCFF00] text-white" : "border-transparent text-zinc-500 hover:text-zinc-300"
                   )}
                 >
                   {tab}
@@ -2158,15 +2178,65 @@ export default function Home() {
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              
               {adminTab === "summary" && (
                 <div className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-mono text-zinc-550 uppercase mb-1.5">Profile Picture (Avatar)</label>
+                    <div className="flex items-center gap-3">
+                      {profile.avatar ? (
+                        <img src={profile.avatar} alt="Avatar Preview" className="w-10 h-10 rounded-full border border-zinc-800 object-cover" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full border border-zinc-800 bg-black flex items-center justify-center">
+                          <UserIcon className="h-5 w-5 text-zinc-500" />
+                        </div>
+                      )}
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={e => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              const base64 = event.target?.result as string;
+                              saveProfile({ ...profile, avatar: base64 });
+                              setToast({ message: "Profile picture updated.", type: "success" });
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="hidden"
+                        id="avatar-upload-input"
+                      />
+                      <label 
+                        htmlFor="avatar-upload-input"
+                        className="px-3 py-1.5 bg-zinc-900 border border-zinc-850 rounded hover:border-zinc-750 text-[10px] text-white font-bold cursor-pointer transition-colors"
+                      >
+                        Upload Photo
+                      </label>
+                      {profile.avatar && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            saveProfile({ ...profile, avatar: "" });
+                            setToast({ message: "Profile picture removed.", type: "success" });
+                          }}
+                          className="px-3 py-1.5 bg-red-950/20 border border-red-900/30 rounded text-[10px] text-red-400 font-bold hover:bg-red-950/40 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-[10px] font-mono text-zinc-550 uppercase mb-1">Name</label>
                     <input 
                       type="text" 
                       value={profile.name}
                       onChange={e => saveProfile({...profile, name: e.target.value})}
-                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-250 dark:border-zinc-900 rounded p-2 text-xs text-zinc-900 dark:text-white font-mono"
+                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
                     />
                   </div>
                   <div>
@@ -2175,7 +2245,16 @@ export default function Home() {
                       type="text" 
                       value={profile.title}
                       onChange={e => saveProfile({...profile, title: e.target.value})}
-                      className="w-full bg-zinc-50 dark:bg-zinc-955 border border-zinc-250 dark:border-zinc-900 rounded p-2 text-xs text-zinc-900 dark:text-white font-mono"
+                      className="w-full bg-zinc-950 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-mono text-zinc-550 uppercase mb-1">Summary (Bio)</label>
+                    <textarea 
+                      value={profile.bio}
+                      onChange={e => saveProfile({...profile, bio: e.target.value})}
+                      rows={6}
+                      className="w-full bg-zinc-955 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
                     />
                   </div>
                 </div>
@@ -2183,9 +2262,10 @@ export default function Home() {
 
               {adminTab === "skills" && (
                 <div className="space-y-4">
+                  <span className="text-[9px] text-zinc-500 uppercase font-mono block">Edit skill categories (comma-separated lists)</span>
                   {Object.entries(profile.skills).map(([category, items]) => (
                     <div key={category} className="space-y-1">
-                      <label className="block text-[9px] font-mono text-zinc-800 dark:text-white uppercase font-bold">
+                      <label className="block text-[9px] font-mono text-white uppercase font-bold">
                         {skillCategoryLabels[category] || category}
                       </label>
                       <textarea 
@@ -2196,19 +2276,319 @@ export default function Home() {
                           saveProfile({ ...profile, skills: newSkills });
                         }}
                         rows={2}
-                        className="w-full bg-zinc-50 dark:bg-zinc-955 border border-zinc-250 dark:border-zinc-900 rounded p-2 text-xs text-zinc-900 dark:text-white font-mono"
+                        className="w-full bg-zinc-955 border border-zinc-900 rounded p-2 text-xs text-white font-mono"
                       />
                     </div>
                   ))}
                 </div>
               )}
+
+              {adminTab === "experience" && (
+                <div className="space-y-6">
+                  {profile.experience.map((exp, idx) => (
+                    <div key={idx} className="p-4 border border-zinc-900 bg-zinc-950/60 rounded-lg space-y-3 relative">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold text-white font-mono">Position #{idx + 1}</span>
+                        <button 
+                          onClick={() => {
+                            const newExp = profile.experience.filter((_, i) => i !== idx);
+                            saveProfile({ ...profile, experience: newExp });
+                          }}
+                          className="text-red-500 hover:text-red-400 text-[10px] uppercase font-bold"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[8px] text-zinc-555 uppercase">Role</label>
+                          <input 
+                            type="text" 
+                            value={exp.role} 
+                            onChange={e => {
+                              const newExp = [...profile.experience];
+                              newExp[idx].role = e.target.value;
+                              saveProfile({ ...profile, experience: newExp });
+                            }}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[8px] text-zinc-555 uppercase">Company</label>
+                          <input 
+                            type="text" 
+                            value={exp.company} 
+                            onChange={e => {
+                              const newExp = [...profile.experience];
+                              newExp[idx].company = e.target.value;
+                              saveProfile({ ...profile, experience: newExp });
+                            }}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-[8px] text-zinc-555 uppercase">Duration</label>
+                        <input 
+                          type="text" 
+                          value={exp.duration} 
+                          onChange={e => {
+                            const newExp = [...profile.experience];
+                            newExp[idx].duration = e.target.value;
+                            saveProfile({ ...profile, experience: newExp });
+                          }}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[8px] text-zinc-555 uppercase">Description</label>
+                        <textarea 
+                          value={exp.description} 
+                          onChange={e => {
+                            const newExp = [...profile.experience];
+                            newExp[idx].description = e.target.value;
+                            saveProfile({ ...profile, experience: newExp });
+                          }}
+                          rows={3}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                        />
+                      </div>
+                    </div>
+                  ))}
+
+                  <button 
+                    onClick={() => {
+                      const newExp = [...profile.experience, { role: "New Role", company: "Company Name", duration: "2026 - Present", description: "Role descriptions." }];
+                      saveProfile({ ...profile, experience: newExp });
+                    }}
+                    className="w-full py-2 bg-zinc-900 hover:bg-zinc-800 text-[10px] font-bold text-white uppercase rounded border border-zinc-800"
+                  >
+                    + Add Position
+                  </button>
+                </div>
+              )}
+
+              {adminTab === "projects" && (
+                <div className="space-y-6">
+                  {editingProject ? (
+                    <div className="p-4 border border-zinc-900 bg-zinc-950 rounded-lg space-y-4">
+                      <div className="flex justify-between items-center pb-2 border-b border-zinc-900">
+                        <span className="text-[10px] font-bold text-white">Editing Project ID: {editingProject.id}</span>
+                        <button onClick={() => setEditingProject(null)} className="text-zinc-500 hover:text-white text-[10px]">✕ Back</button>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-[8px] text-zinc-555 uppercase">Title</label>
+                        <input 
+                          type="text" 
+                          value={editingProject.title}
+                          onChange={e => setEditingProject({ ...editingProject, title: e.target.value })}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[8px] text-zinc-555 uppercase">Description</label>
+                        <textarea 
+                          value={editingProject.description}
+                          onChange={e => setEditingProject({ ...editingProject, description: e.target.value })}
+                          rows={3}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[8px] text-zinc-555 uppercase">Status</label>
+                          <select 
+                            value={editingProject.status}
+                            onChange={e => setEditingProject({ ...editingProject, status: e.target.value })}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                          >
+                            <option value="Production">Production</option>
+                            <option value="Active">Active</option>
+                            <option value="Research">Research</option>
+                            <option value="Archived">Archived</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[8px] text-zinc-555 uppercase">Category</label>
+                          <input 
+                            type="text" 
+                            value={editingProject.category}
+                            onChange={e => setEditingProject({ ...editingProject, category: e.target.value })}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[8px] text-zinc-555 uppercase">Technologies (comma-separated)</label>
+                        <input 
+                          type="text" 
+                          value={editingProject.tech.join(", ")}
+                          onChange={e => setEditingProject({ ...editingProject, tech: e.target.value.split(",").map(t => t.trim()) })}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white font-mono"
+                        />
+                      </div>
+
+                      <button 
+                        onClick={() => {
+                          const updated = profile.projects.map(p => p.id === editingProject.id ? editingProject : p);
+                          saveProfile({ ...profile, projects: updated });
+                          setEditingProject(null);
+                        }}
+                        className="w-full py-2 bg-emerald-500 hover:bg-emerald-600 text-[10px] font-bold text-black uppercase rounded"
+                      >
+                        Save Project Variables
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {profile.projects.map((proj) => (
+                        <div key={proj.id} className="p-3 border border-zinc-900 bg-zinc-950/60 rounded flex justify-between items-center">
+                          <div>
+                            <h4 className="text-xs font-bold text-white font-mono">{proj.title}</h4>
+                            <span className="text-[8px] text-zinc-500 uppercase tracking-widest">{proj.category}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={() => setEditingProject(proj)}
+                              className="text-emerald-500 hover:text-emerald-400 text-[10px] uppercase font-bold"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => {
+                                const updated = profile.projects.filter(p => p.id !== proj.id);
+                                saveProfile({ ...profile, projects: updated });
+                              }}
+                              className="text-red-500 hover:text-red-400 text-[10px] uppercase font-bold"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {adminTab === "blogs" && (
+                <div className="space-y-4">
+                  <span className="text-[9px] text-zinc-500 uppercase font-mono block">Currently configured blog logs</span>
+                  {profile.blogs?.map((blog, idx) => (
+                    <div key={blog.id} className="p-4 border border-zinc-900 bg-zinc-955 rounded-lg space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold text-white">Post #{idx + 1}</span>
+                        <button 
+                          onClick={() => {
+                            const newBlogs = profile.blogs.filter(b => b.id !== blog.id);
+                            saveProfile({ ...profile, blogs: newBlogs });
+                          }}
+                          className="text-red-500 hover:text-red-400 text-[10px]"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                      <input 
+                        type="text" 
+                        value={blog.title}
+                        onChange={e => {
+                          const newBlogs = [...profile.blogs];
+                          newBlogs[idx].title = e.target.value;
+                          saveProfile({ ...profile, blogs: newBlogs });
+                        }}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-white"
+                      />
+                    </div>
+                  ))}
+                  <button 
+                    onClick={() => {
+                      const newB = [...(profile.blogs || []), { id: `blog-${Date.now()}`, title: "New Blog Post", category: "AI", date: "June 2026", readingTime: "4 min read", summary: "Summary here.", tags: ["AI"], content: "Markdown content here." }];
+                      saveProfile({ ...profile, blogs: newB });
+                    }}
+                    className="w-full py-2 bg-zinc-900 hover:bg-zinc-855 text-[10px] font-bold text-white uppercase rounded border border-zinc-800"
+                  >
+                    + Create Blog Post
+                  </button>
+                </div>
+              )}
+
+              {adminTab === "timeline" && (
+                <div className="space-y-4">
+                  {profile.timeline?.map((node, idx) => (
+                    <div key={idx} className="p-4 border border-zinc-900 bg-zinc-955 rounded-lg space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold text-white">Node #{idx + 1}</span>
+                        <button 
+                          onClick={() => {
+                            const newT = profile.timeline.filter((_, i) => i !== idx);
+                            saveProfile({ ...profile, timeline: newT });
+                          }}
+                          className="text-red-500 hover:text-red-400 text-[10px]"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <input 
+                          type="text" 
+                          value={node.year}
+                          onChange={e => {
+                            const newT = [...profile.timeline];
+                            newT[idx].year = e.target.value;
+                            saveProfile({ ...profile, timeline: newT });
+                          }}
+                          placeholder="Year"
+                          className="bg-zinc-900 border border-zinc-850 rounded p-1.5 text-xs text-white"
+                        />
+                        <input 
+                          type="text" 
+                          value={node.type}
+                          onChange={e => {
+                            const newT = [...profile.timeline];
+                            newT[idx].type = e.target.value;
+                            saveProfile({ ...profile, timeline: newT });
+                          }}
+                          placeholder="Type"
+                          className="bg-zinc-900 border border-zinc-850 rounded p-1.5 text-xs text-white"
+                        />
+                        <input 
+                          type="text" 
+                          value={node.title}
+                          onChange={e => {
+                            const newT = [...profile.timeline];
+                            newT[idx].title = e.target.value;
+                            saveProfile({ ...profile, timeline: newT });
+                          }}
+                          placeholder="Title"
+                          className="bg-zinc-900 border border-zinc-850 rounded p-1.5 text-xs text-white"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  <button 
+                    onClick={() => {
+                      const newT = [...(profile.timeline || []), { year: "2026", type: "Experience", title: "New Roadmap Node", subtitle: "Company Name", details: "Detail text." }];
+                      saveProfile({ ...profile, timeline: newT });
+                    }}
+                    className="w-full py-2 bg-zinc-900 hover:bg-zinc-855 text-[10px] font-bold text-white uppercase rounded border border-zinc-800"
+                  >
+                    + Add Timeline Node
+                  </button>
+                </div>
+              )}
+
             </div>
 
-            <div className="p-6 border-t border-zinc-200 dark:border-zinc-900 bg-zinc-50 dark:bg-black/60 flex items-center justify-between gap-4">
+            <div className="p-6 border-t border-zinc-900 bg-black/60 flex items-center justify-between gap-4">
               <button 
                 onClick={() => {
-                  if (window.confirm("Factory reset?")) {
+                  if (window.confirm("Restore default parameters and delete customized edits?")) {
                     saveProfile(INITIAL_PROFILE);
+                    setToast({ message: "System profile parameters reset to defaults.", type: "success" });
                   }
                 }}
                 className="text-red-500 hover:text-red-400 text-[10px] uppercase font-bold tracking-widest"
@@ -2216,8 +2596,16 @@ export default function Home() {
                 Factory Reset
               </button>
               <button 
-                onClick={() => setShowAdminPanel(false)}
-                className="px-4 py-2 text-[10px] font-bold text-black rounded uppercase tracking-widest bg-[#CCFF00]"
+                onClick={() => {
+                  setShowAdminPanel(false);
+                  setToast({ message: "Parameters compiled and saved.", type: "success" });
+                }}
+                className={cn(
+                  "px-4 py-2 text-[10px] font-bold text-black rounded uppercase tracking-widest",
+                  themeMode === "volt" && "bg-[#CCFF00] hover:bg-[#8dfa00]",
+                  themeMode === "amber" && "bg-[#FFDE21] hover:bg-yellow-400",
+                  themeMode === "chrome" && "bg-sky-400 hover:bg-sky-500"
+                )}
               >
                 Apply Changes
               </button>
@@ -2239,38 +2627,88 @@ export default function Home() {
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-zinc-900 border border-zinc-800 p-6 md:p-8 rounded-xl w-full max-w-sm shadow-2xl space-y-6 relative overflow-hidden"
+              className="bg-[#09090b] border border-zinc-900 p-6 md:p-8 rounded-xl w-full max-w-sm shadow-2xl space-y-6 relative overflow-hidden"
             >
-              <div className="space-y-2 text-center">
-                <KeyRound className="h-8 w-8 mx-auto text-[#CCFF00]" />
+              <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none" />
+
+              <div className="space-y-2 text-center relative">
+                <KeyRound className={cn("h-8 w-8 mx-auto", currentTheme.primary)} />
                 <h3 className="text-sm font-black text-white uppercase tracking-widest">
                   DECRYPTION SIGNATURE REQUIRED
                 </h3>
+                <p className="text-[10px] text-zinc-500 leading-relaxed font-mono">
+                  Enter authorization security password.
+                </p>
               </div>
 
               <form onSubmit={(e) => {
                 e.preventDefault();
+                console.log("[CUSTOMIZER] Authentication form submitted. Input:", passwordInput);
                 if (passwordInput === "vivek2006") {
+                  console.log("[CUSTOMIZER] Password correct. Open editor.");
                   setIsAuthorized(true);
                   sessionStorage.setItem("portfolio_edit_auth", "true");
                   setIsEditMode(true);
                   setShowAdminPanel(true);
                   setShowPasswordModal(false);
+                  setPasswordError(false);
                   setPasswordInput("");
                 } else {
+                  console.log("[CUSTOMIZER] Password rejected.");
                   setPasswordError(true);
                 }
-              }} className="space-y-4">
-                <input
-                  type="password"
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                  placeholder="ENTER PASSWORD"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white"
-                />
-                <button type="submit" className="w-full py-2 rounded bg-[#CCFF00] text-black font-bold uppercase">
-                  Access
-                </button>
+              }} className="space-y-4 pl-2">
+                <div className="space-y-2">
+                  <label className="block text-[9px] text-zinc-500 uppercase tracking-wider">
+                    AUTHORIZED SIGNATURE REQUIRED
+                  </label>
+                  <input
+                    type="password"
+                    autoFocus
+                    value={passwordInput}
+                    onChange={(e) => {
+                      setPasswordInput(e.target.value);
+                      if (passwordError) setPasswordError(false);
+                    }}
+                    placeholder="ENTER PASSWORD"
+                    className={cn(
+                      "w-full bg-zinc-955 border rounded p-2 text-xs text-white font-mono placeholder:text-zinc-700 focus:outline-none focus:ring-1 focus:ring-opacity-50",
+                      passwordError 
+                        ? "border-red-500/50 focus:ring-red-500 focus:border-red-500" 
+                        : "border-zinc-800/80 focus:ring-zinc-700 focus:border-zinc-700"
+                    )}
+                  />
+                  {passwordError && (
+                    <p className="text-[9px] text-red-500 font-bold uppercase tracking-wider animate-pulse">
+                      AUTHENTICATION FAULT: DECRYPTION FAILS
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPasswordModal(false);
+                      setPasswordError(false);
+                      setPasswordInput("");
+                    }}
+                    className="px-3 py-1.5 border border-zinc-800 text-[9px] font-bold text-zinc-400 hover:text-white rounded transition-colors"
+                  >
+                    ABORT
+                  </button>
+                  <button
+                    type="submit"
+                    className={cn(
+                      "px-4 py-1.5 text-[9px] font-bold text-black rounded transition-colors uppercase tracking-widest",
+                      themeMode === "volt" && "bg-[#CCFF00] hover:bg-[#8dfa00]",
+                      themeMode === "amber" && "bg-[#FFDE21] hover:bg-yellow-400",
+                      themeMode === "chrome" && "bg-sky-400 hover:bg-sky-500"
+                    )}
+                  >
+                    ACCESS
+                  </button>
+                </div>
               </form>
             </motion.div>
           </motion.div>
@@ -2279,13 +2717,124 @@ export default function Home() {
 
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex gap-2">
         <button
-          onClick={handleCustomizeClick}
-          className="flex items-center gap-2 rounded-full px-5 py-2.5 text-[10px] md:text-xs font-mono font-bold tracking-wider bg-zinc-950/80 border border-[#CCFF00]/40 text-[#CCFF00] hover:bg-zinc-900 active:scale-95 shadow-lg whitespace-nowrap"
+          onClick={() => {
+            console.log("[CUSTOMIZER] Customizer button clicked. isEditMode:", isEditMode, "isAuthorized:", isAuthorized);
+            handleCustomizeClick();
+          }}
+          className={cn(
+            "flex items-center gap-2 rounded-full px-5 py-2.5 text-[10px] md:text-xs font-mono font-bold tracking-wider transition-all duration-300 backdrop-blur-md border shadow-lg cursor-pointer select-none whitespace-nowrap active:scale-95",
+            isEditMode
+              ? "bg-red-500/25 hover:bg-red-500/40 border-red-500/40 text-red-400 shadow-red-500/20"
+              : themeMode === "volt"
+                ? "bg-zinc-950/70 border-[#CCFF00]/40 text-[#CCFF00] hover:bg-zinc-900/80 shadow-[#CCFF00]/10 hover:shadow-[#CCFF00]/20"
+                : themeMode === "amber"
+                  ? "bg-zinc-950/70 border-[#FFDE21]/40 text-[#FFDE21] hover:bg-zinc-900/80 shadow-[#FFDE21]/10 hover:shadow-[#FFDE21]/20"
+                  : "bg-zinc-955/70 border-sky-400/40 text-[#38bdf8] hover:bg-zinc-900/80 shadow-sky-400/10 hover:shadow-sky-400/20"
+          )}
+          style={{
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+          }}
         >
           {isEditMode ? <Unlock className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
           <span>{isEditMode ? "LOCK CONSOLE" : "CUSTOMIZER TERMINAL"}</span>
         </button>
+
+        {isEditMode && (
+          <button
+            onClick={() => {
+              console.log("[CUSTOMIZER] Toggle drawer clicked. Current state:", showAdminPanel);
+              setShowAdminPanel(!showAdminPanel);
+            }}
+            className={cn(
+              "flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[10px] md:text-xs font-mono font-bold tracking-wider transition-all duration-300 backdrop-blur-md border shadow-lg cursor-pointer select-none whitespace-nowrap active:scale-95",
+              themeMode === "volt"
+                ? "bg-zinc-950/70 border-[#CCFF00]/40 text-white hover:bg-zinc-900/80"
+                : themeMode === "amber"
+                  ? "bg-zinc-950/70 border-[#FFDE21]/40 text-white hover:bg-zinc-900/80"
+                  : "bg-zinc-950/70 border-sky-400/40 text-white hover:bg-zinc-900/80"
+            )}
+            style={{
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+            }}
+          >
+            <Edit3 className="h-3.5 w-3.5" />
+            <span>DRAWER</span>
+          </button>
+        )}
       </div>
+
+      <AnimatePresence>
+        {uploadProgress !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center font-mono gap-4"
+          >
+            <div className="w-64 space-y-2 text-center">
+              <span className="text-[10px] font-bold text-white tracking-widest uppercase">
+                UPLOADING RESUME PDF...
+              </span>
+              <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-800">
+                <motion.div 
+                  className={cn(
+                    "h-full rounded-full",
+                    themeMode === "volt" && "bg-[#CCFF00]",
+                    themeMode === "amber" && "bg-[#FFDE21]",
+                    themeMode === "chrome" && "bg-sky-400"
+                  )}
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${uploadProgress}%` }}
+                  transition={{ duration: 0.1 }}
+                />
+              </div>
+              <span className="text-[9px] text-zinc-500 uppercase tracking-widest">
+                {uploadProgress}% COMPLETE
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className={cn(
+              "fixed top-6 right-6 z-[10000] px-4 py-2.5 rounded-lg border shadow-xl flex items-center gap-2 font-mono text-xs font-bold",
+              toast.type === "success" 
+                ? "bg-emerald-950/90 border-emerald-500/50 text-emerald-400" 
+                : "bg-red-950/90 border-red-500/50 text-red-400"
+            )}
+            style={{
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+            }}
+          >
+            <span className="relative flex h-2 w-2">
+              <span className={cn(
+                "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                toast.type === "success" ? "bg-emerald-400" : "bg-red-400"
+              )}></span>
+              <span className={cn(
+                "relative inline-flex rounded-full h-2 w-2",
+                toast.type === "success" ? "bg-emerald-500" : "bg-red-500"
+              )}></span>
+            </span>
+            <span>{toast.message}</span>
+            <button 
+              onClick={() => setToast(null)}
+              className="ml-2 text-zinc-400 hover:text-white transition-colors"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <ResumeUploadModal
         isOpen={isResumeUploadModalOpen}
@@ -2300,5 +2849,25 @@ export default function Home() {
       />
 
     </div>
+  );
+}
+
+function UserIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
   );
 }
