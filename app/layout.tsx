@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Vivek Goud Shaganti | Full Stack Engineer & Blockchain Developer",
   description: "Computer Science Engineer specializing in Spring Boot, React.js, Blockchain, and AI-powered systems.",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

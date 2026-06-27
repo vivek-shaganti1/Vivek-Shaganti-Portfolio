@@ -1,0 +1,17 @@
+{
+  "name": "Vivek Goud Shaganti Portfolio",
+  "short_name": "Vivek OS",
+  "description": "Full Stack Engineer & Blockchain Developer Portfolio Operating System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060608",
+  "theme_color": "#8CFF00",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

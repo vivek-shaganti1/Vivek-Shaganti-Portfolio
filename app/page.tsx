@@ -58,6 +58,7 @@ import { SpotlightHover } from "@/components/ui/spotlight-hover";
 import RobotCompanion from "@/components/robot-companion";
 import RecruiterChatbot from "@/components/recruiter-chatbot";
 import ResumeUploadModal from "@/components/resume-upload-modal";
+import CurvedVLogo from "@/components/curved-v-logo";
 
 const INITIAL_PROFILE = {
   schemaVersion: 5,
@@ -1605,10 +1606,11 @@ export default function Home() {
       <header className="sticky top-0 z-40 w-full border-b border-zinc-900 bg-[#060608]/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <a href="#" className="flex items-center gap-2 font-black tracking-widest text-white text-xs md:text-sm">
-              <span className={cn("inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping absolute")} />
-              <span className={cn("inline-block w-2.5 h-2.5 rounded-full bg-emerald-500")} />
-              V-OS v4.1
+            <a href="#" className="flex items-center gap-2 font-black tracking-widest text-white text-xs md:text-sm group">
+              <div className="relative w-8 h-8 flex items-center justify-center transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3 active:scale-95">
+                <CurvedVLogo className="w-6 h-6 animate-pulse" />
+              </div>
+              <span>V-OS v4.1</span>
             </a>
             
             <nav className="hidden md:flex items-center gap-4 text-[10px] tracking-wider uppercase font-bold text-zinc-400">

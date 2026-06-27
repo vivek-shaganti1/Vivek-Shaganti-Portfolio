@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { sfx } from "@/lib/audio";
 import { cn } from "@/lib/utils";
+import CurvedVLogo from "./curved-v-logo";
 
 interface Message {
   role: "user" | "assistant";
@@ -450,7 +451,7 @@ export default function RecruiterChatbot() {
             {/* Window Header */}
             <div className="p-4 border-b border-zinc-900 bg-black/40 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Terminal className="h-4 w-4 text-[#CCFF00]" />
+                <CurvedVLogo className="h-4 w-4" glow={false} />
                 <div className="flex flex-col">
                   <span className="text-[11px] font-bold text-white tracking-widest uppercase">
                     GROQ SYSTEM COMMAND DECK
