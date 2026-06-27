@@ -131,9 +131,27 @@ export default function RecruiterChatbot() {
         setResumeUrl("/Vivek Goud Shaganti CV.pdf");
       }
     };
+    
+    const triggerOpen = () => {
+      handleOpenClick();
+    };
+
     window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, []);
+    window.addEventListener("recruiter-chat-trigger", triggerOpen);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("recruiter-chat-trigger", triggerOpen);
+    };
+  }, [isOpen, isBooted]);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("recruiter-chat-state", {
+      detail: {
+        isOpen: isOpen,
+        isSpeaking: isLoading || isStreaming
+      }
+    }));
+  }, [isOpen, isLoading, isStreaming]);
 
   useEffect(() => {
     if (isOpen) {
