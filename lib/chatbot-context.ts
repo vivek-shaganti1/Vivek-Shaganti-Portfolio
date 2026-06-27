@@ -14,16 +14,16 @@ Duration: 2023 - Present
 Grade: CGPA: 9.21 / 10
 
 TECHNICAL ARSENAL (10-CATEGORY SYSTEM):
-1. Languages: Java, Python, JavaScript, TypeScript, SQL, C, C++, HTML5, CSS3
-2. Frontend: React.js, Next.js, Tailwind CSS, TypeScript, Framer Motion, ShadCN UI, Vite, Responsive UI, App Router
-3. Backend: Spring Boot, Node.js, Express.js, REST APIs, JWT Authentication, Hibernate/JPA, Microservices, WebSockets, Server Actions
-4. Artificial Intelligence: Generative AI, LLMs, AI Agents, Multi-Agent Systems, Prompt Engineering, RAG, Gemini API, Groq API, OpenAI API, NVIDIA NIM, Judge0, Scikit-Learn, Semantic Search
-5. Databases: MySQL, PostgreSQL, MongoDB, Redis, Supabase, NeonDB, Prisma ORM, Drizzle ORM
-6. Cloud & DevOps: Microsoft Azure, Vercel, Render, Docker, CI/CD, GitHub Actions, Linux, Cloudinary, Nginx
-7. APIs & Integrations: Gemini API, Groq API, OpenAI API, Telegram Bot API, GitHub API, Cloudinary API, Judge0 API, REST APIs, Webhooks
-8. Data & Analytics: Pandas, NumPy, Plotly, Machine Learning, Predictive Analytics, Data Visualization, Qlik Sense
-9. Developer Tools: Git, GitHub, VS Code, IntelliJ IDEA, Postman, npm, pnpm, FFmpeg, Figma
-10. Blockchain: Web3 Fundamentals, Smart Contracts, Solidity, Decentralized Systems
+1. Programming Languages (9 Tech): Java, Python, JavaScript, TypeScript, SQL, C, C++, HTML5, CSS3
+2. Frontend Engineering (10 Tech): React.js, Next.js, Tailwind CSS, TypeScript, Framer Motion, ShadCN UI, Responsive UI Design, Vite, App Router, React Hooks
+3. Backend Engineering (11 Tech): Spring Boot, Node.js, Express.js, REST APIs, JWT Authentication, Hibernate/JPA, Microservices, Server Actions, WebSockets, Authentication, API Architecture
+4. Artificial Intelligence & Machine Learning (20 Tech): Generative AI, Large Language Models (LLMs), AI Agents, Multi-Agent Systems, Prompt Engineering, RAG, Semantic Search, Function Calling, Tool Calling, AI Workflows, Gemini API, OpenAI API, Groq API, NVIDIA NIM, Judge0, Scikit-Learn, Pandas, NumPy, Predictive Analytics, Vector Search
+5. Databases & Storage (10 Tech): MySQL, PostgreSQL, MongoDB, Redis, Supabase, NeonDB, Prisma ORM, Drizzle ORM, Database Design, SQL Optimization
+6. Cloud & DevOps (11 Tech): Microsoft Azure, Vercel, Render, Docker, GitHub Actions, CI/CD, Linux, Cloudinary, Environment Variables, Deployment Pipelines, Production Builds
+7. APIs & Integrations (12 Tech): REST APIs, Webhooks, Telegram Bot API, GitHub API, Cloudinary API, Judge0 API, Gemini API, OpenAI API, OAuth, JSON, Axios, Fetch API
+8. Data Engineering & Analytics (9 Tech): Pandas, NumPy, Plotly, Qlik Sense, Data Visualization, Machine Learning, Predictive Analytics, Data Processing, ETL Concepts
+9. Developer Tools (11 Tech): Git, GitHub, GitHub Actions, VS Code, IntelliJ IDEA, Postman, npm, pnpm, FFmpeg, Figma, Chrome DevTools
+10. Blockchain (5 Tech): Solidity, Smart Contracts, Web3 Fundamentals, Decentralized Systems, Ethereum Basics
 
 EXPERIENCE & ROLES:
 1. Python Development Intern at Cognifyz Technologies (Apr 2025 - May 2025)
@@ -90,7 +90,7 @@ COMPLETED PROJECTS telemetry:
 
 8. Sticker Ordering Platform (Category: Full Stack, Status: Production, Date: December 2025)
    - Tech: React, Node.js, Express, MongoDB, Cloudinary, Tailwind CSS
-   - Description: Specialized custom sticker printing storefront featuring drag-and-drop visuals, real-time sizing pricing algorithms, and client dashboards.
+   - Description: Specialized custom sticker printing storefront featuring drag-and-drop visuals, real-time pricing algorithms, and client dashboards.
 
 9. AI Interview Prep (Category: AI, Status: Research, Date: September 2025)
    - Tech: Next.js, React, Tailwind CSS, Gemini API, SpeechRecognition, Judge0

@@ -28,7 +28,13 @@ import {
   Trash,
   Trash2,
   KeyRound,
-  Search
+  Search,
+  Database,
+  Cloud,
+  Terminal,
+  LineChart,
+  Cpu,
+  Link2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Perspective, Highlight } from "@/components/ui/perspective-highlight";
@@ -52,16 +58,16 @@ const INITIAL_PROFILE = {
     grade: "CGPA: 9.21 / 10"
   },
   skills: {
-    languages: ["Java", "Python", "JavaScript", "TypeScript", "SQL", "C", "C++", "HTML5", "CSS3"],
-    frontend: ["React.js", "Next.js", "Tailwind CSS", "TypeScript", "Framer Motion", "ShadCN UI", "Vite", "Responsive UI", "App Router"],
-    backend: ["Spring Boot", "Node.js", "Express.js", "REST APIs", "JWT Authentication", "Hibernate/JPA", "Microservices", "WebSockets", "Server Actions"],
-    artificialIntelligence: ["Generative AI", "LLMs", "AI Agents", "Multi-Agent Systems", "Prompt Engineering", "RAG", "Gemini API", "Groq API", "OpenAI API", "NVIDIA NIM", "Judge0", "Scikit-Learn", "Semantic Search"],
-    databases: ["MySQL", "PostgreSQL", "MongoDB", "Redis", "Supabase", "NeonDB", "Prisma ORM", "Drizzle ORM"],
-    cloudDevOps: ["Microsoft Azure", "Vercel", "Render", "Docker", "CI/CD", "GitHub Actions", "Linux", "Cloudinary", "Nginx"],
-    developerTools: ["Git", "GitHub", "VS Code", "IntelliJ IDEA", "Postman", "npm", "pnpm", "FFmpeg", "Figma"],
-    apisIntegrations: ["Gemini API", "Groq API", "OpenAI API", "Telegram Bot API", "GitHub API", "Cloudinary API", "Judge0 API", "REST APIs", "Webhooks"],
-    dataAnalytics: ["Pandas", "NumPy", "Plotly", "Machine Learning", "Predictive Analytics", "Data Visualization", "Qlik Sense"],
-    blockchain: ["Web3 Fundamentals", "Smart Contracts", "Solidity", "Decentralized Systems"]
+    programmingLanguages: ["Java", "Python", "JavaScript", "TypeScript", "SQL", "C", "C++", "HTML5", "CSS3"],
+    frontendEngineering: ["React.js", "Next.js", "Tailwind CSS", "TypeScript", "Framer Motion", "ShadCN UI", "Responsive UI Design", "Vite", "App Router", "React Hooks"],
+    backendEngineering: ["Spring Boot", "Node.js", "Express.js", "REST APIs", "JWT Authentication", "Hibernate/JPA", "Microservices", "Server Actions", "WebSockets", "Authentication", "API Architecture"],
+    aiMachineLearning: ["Generative AI", "Large Language Models (LLMs)", "AI Agents", "Multi-Agent Systems", "Prompt Engineering", "RAG", "Semantic Search", "Function Calling", "Tool Calling", "AI Workflows", "Gemini API", "OpenAI API", "Groq API", "NVIDIA NIM", "Judge0", "Scikit-Learn", "Pandas", "NumPy", "Predictive Analytics", "Vector Search"],
+    databasesStorage: ["MySQL", "PostgreSQL", "MongoDB", "Redis", "Supabase", "NeonDB", "Prisma ORM", "Drizzle ORM", "Database Design", "SQL Optimization"],
+    cloudDevOps: ["Microsoft Azure", "Vercel", "Render", "Docker", "GitHub Actions", "CI/CD", "Linux", "Cloudinary", "Environment Variables", "Deployment Pipelines", "Production Builds"],
+    developerTools: ["Git", "GitHub", "GitHub Actions", "VS Code", "IntelliJ IDEA", "Postman", "npm", "pnpm", "FFmpeg", "Figma", "Chrome DevTools"],
+    apisIntegrations: ["REST APIs", "Webhooks", "Telegram Bot API", "GitHub API", "Cloudinary API", "Judge0 API", "Gemini API", "OpenAI API", "OAuth", "JSON", "Axios", "Fetch API"],
+    dataEngineeringAnalytics: ["Pandas", "NumPy", "Plotly", "Qlik Sense", "Data Visualization", "Machine Learning", "Predictive Analytics", "Data Processing", "ETL Concepts"],
+    blockchain: ["Solidity", "Smart Contracts", "Web3 Fundamentals", "Decentralized Systems", "Ethereum Basics"]
   },
   experience: [
     {
@@ -308,16 +314,29 @@ const INITIAL_PROFILE = {
 };
 
 const skillCategoryLabels: Record<string, string> = {
-  languages: "Languages",
-  frontend: "Frontend",
-  backend: "Backend",
-  artificialIntelligence: "Artificial Intelligence",
-  databases: "Databases",
+  programmingLanguages: "Programming Languages",
+  frontendEngineering: "Frontend Engineering",
+  backendEngineering: "Backend Engineering",
+  aiMachineLearning: "Artificial Intelligence & Machine Learning",
+  databasesStorage: "Databases & Storage",
   cloudDevOps: "Cloud & DevOps",
   developerTools: "Developer Tools",
   apisIntegrations: "APIs & Integrations",
-  dataAnalytics: "Data & Analytics",
+  dataEngineeringAnalytics: "Data Engineering & Analytics",
   blockchain: "Blockchain"
+};
+
+const skillCategoryIcons: Record<string, React.ComponentType<any>> = {
+  programmingLanguages: Code,
+  frontendEngineering: Layers,
+  backendEngineering: Cpu,
+  aiMachineLearning: Sparkles,
+  databasesStorage: Database,
+  cloudDevOps: Cloud,
+  developerTools: Terminal,
+  apisIntegrations: Link2,
+  dataEngineeringAnalytics: LineChart,
+  blockchain: Shield
 };
 
 type ThemeMode = "volt" | "amber" | "chrome";
@@ -531,7 +550,7 @@ export default function Home() {
         response = `Profile: ${profile.name} | ${profile.title}. Bio: ${profile.bio}`;
         break;
       case "skills":
-        response = `Arsenal: Languages: ${profile.skills.languages.join(", ")}; Frontend: ${profile.skills.frontend.join(", ")}; Backend: ${profile.skills.backend.join(", ")}`;
+        response = `Arsenal: Languages: ${profile.skills.programmingLanguages.join(", ")}; Frontend: ${profile.skills.frontendEngineering.join(", ")}; Backend: ${profile.skills.backendEngineering.join(", ")}`;
         break;
       case "projects":
         response = `Active Nodes: ${profile.projects.map(p => p.title).join(" | ")}`;
@@ -992,31 +1011,39 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.entries(profile.skills).map(([category, items]) => (
-              <div 
-                key={category}
-                className="rounded-xl border border-zinc-900 bg-zinc-950/40 p-6 backdrop-blur-md relative overflow-hidden flex flex-col justify-between h-full hover:border-zinc-800 transition-colors duration-300"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4 border-b border-zinc-900 pb-2">
-                    <h3 className="font-mono font-bold text-white text-sm tracking-wide">
-                      {skillCategoryLabels[category] || category}
-                    </h3>
-                    <Code className="h-4 w-4 text-zinc-650" />
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {items.map((skill, idx) => (
-                      <span 
-                        key={idx}
-                        className="px-2.5 py-1 text-xs rounded bg-zinc-900 border border-zinc-850 text-zinc-400 hover:text-white hover:border-zinc-700 hover:scale-105 transition-all duration-200 cursor-default"
-                      >
-                        {skill}
+            {Object.entries(profile.skills).map(([category, items]) => {
+              const IconComp = skillCategoryIcons[category] || Code;
+              return (
+                <div 
+                  key={category}
+                  className="rounded-xl border border-zinc-900 bg-zinc-950/40 p-6 backdrop-blur-md relative overflow-hidden flex flex-col justify-between h-full hover:border-zinc-850 transition-colors duration-300"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4 border-b border-zinc-900 pb-2">
+                      <div className="flex items-center gap-2">
+                        <IconComp className={cn("h-4 w-4", currentTheme.primary)} />
+                        <h3 className="font-mono font-bold text-white text-sm tracking-wide">
+                          {skillCategoryLabels[category] || category}
+                        </h3>
+                      </div>
+                      <span className="text-[10px] font-mono text-zinc-550 bg-zinc-900/60 border border-zinc-850 px-1.5 py-0.5 rounded">
+                        {items.length}
                       </span>
-                    ))}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {items.map((skill, idx) => (
+                        <span 
+                          key={idx}
+                          className="px-2.5 py-1 text-xs rounded bg-zinc-900 border border-zinc-850 text-zinc-400 hover:text-white hover:border-zinc-700 hover:scale-105 transition-all duration-200 cursor-default"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
