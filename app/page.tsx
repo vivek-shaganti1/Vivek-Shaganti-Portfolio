@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { 
@@ -62,7 +64,7 @@ import CurvedVLogo from "@/components/curved-v-logo";
 
 const INITIAL_PROFILE = {
   schemaVersion: 6,
-  avatar: "",
+  avatar: "https://res.cloudinary.com/dgpxnwfaq/image/upload/v1782747230/ED945C59-ED4F-4607-AD7D-E6B49513B92D_rvtyvr.png",
   name: "Vivek Goud Shaganti",
   title: "Full Stack Engineer & AI Automation Developer",
   email: "vivekshaganti@gmail.com",
@@ -819,6 +821,7 @@ const isValidUrl = (url: string) => {
 
 export default function Home() {
   const [profile, setProfile] = useState(INITIAL_PROFILE);
+  const activeAvatar = profile.avatar || "https://res.cloudinary.com/dgpxnwfaq/image/upload/v1782747230/ED945C59-ED4F-4607-AD7D-E6B49513B92D_rvtyvr.png";
   const [isEditMode, setIsEditMode] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>("volt");
   // Dynamic Scroll Handler for shrinking header
@@ -1742,8 +1745,15 @@ export default function Home() {
               <div className="relative w-24 h-24 mx-auto group">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#CCFF00] via-cyan-400 to-[#FFDE21] animate-spin opacity-40 blur-sm pointer-events-none duration-500" />
                 <div className="w-full h-full rounded-full border border-zinc-850 bg-black flex items-center justify-center overflow-hidden relative z-10">
-                  {profile.avatar ? (
-                    <img src={profile.avatar} alt="Profile" className="w-full h-full object-cover" />
+                  {activeAvatar ? (
+                    <Image 
+                      src={activeAvatar} 
+                      alt="Vivek Goud Shaganti" 
+                      fill 
+                      priority 
+                      sizes="96px"
+                      className="object-cover transition-opacity duration-500" 
+                    />
                   ) : (
                     <div className="text-white text-xs font-bold select-none text-center">
                       <UserIcon className="h-10 w-10 text-zinc-500 mx-auto" />
@@ -2793,8 +2803,16 @@ export default function Home() {
                   <div>
                     <label className="block text-[10px] font-mono text-zinc-550 uppercase mb-1.5">Profile Picture (Avatar)</label>
                     <div className="flex items-center gap-3">
-                      {profile.avatar ? (
-                        <img src={profile.avatar} alt="Avatar Preview" className="w-10 h-10 rounded-full border border-zinc-800 object-cover" />
+                      {activeAvatar ? (
+                        <div className="relative w-10 h-10 rounded-full border border-zinc-800 overflow-hidden">
+                          <Image 
+                            src={activeAvatar} 
+                            alt="Avatar Preview" 
+                            fill 
+                            sizes="40px"
+                            className="object-cover" 
+                          />
+                        </div>
                       ) : (
                         <div className="w-10 h-10 rounded-full border border-zinc-800 bg-black flex items-center justify-center">
                           <UserIcon className="h-5 w-5 text-zinc-500" />
