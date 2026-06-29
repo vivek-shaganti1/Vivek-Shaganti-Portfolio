@@ -41,9 +41,6 @@ export async function sendTelegramNotification(payload: TelegramNotificationPayl
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
-  console.log("[TELEGRAM PIPELINE] Incoming recruiter request received.");
-  console.log(`[TELEGRAM PIPELINE] Environment variables loaded - Bot Token exists: ${botToken ? "✅" : "❌"}, Chat ID exists: ${chatId ? "✅" : "❌"}`);
-
   if (!botToken) {
     return { success: false, reason: "Missing Bot Token" };
   }
@@ -75,17 +72,22 @@ export async function sendTelegramNotification(payload: TelegramNotificationPayl
 Portfolio Visitor
 `.trim();
 
+  // Mask token for log printing safety
+  const maskedToken = botToken.substring(0, 8) + "..." + botToken.substring(botToken.length - 4);
   const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+  const loggedUrl = `https://api.telegram.org/bot${maskedToken}/sendMessage`;
   
   let attempt = 1;
   const maxAttempts = 3;
-  let delay = 1000; // start with 1s delay
+  let delay = 1000;
 
   while (attempt <= maxAttempts) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 seconds timeout constraint
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-    console.log(`[TELEGRAM PIPELINE] Sending Telegram request... (Attempt ${attempt}/${maxAttempts})`);
+    // Step 4: Print trace details
+    console.log("Sending Telegram message...");
+    console.log(loggedUrl);
 
     try {
       const response = await fetch(url, {
@@ -100,78 +102,50 @@ Portfolio Visitor
       });
 
       clearTimeout(timeoutId);
-      console.log(`[TELEGRAM PIPELINE] Telegram status: ${response.status}`);
+      console.log(response.status);
 
-      const bodyText = await response.text();
-      console.log(`[TELEGRAM PIPELINE] Telegram body:`, bodyText);
+      const telegram = await response.json();
+      console.log(telegram);
 
-      let data: any = {};
-      try {
-        data = JSON.parse(bodyText);
-      } catch (jsonErr) {
-        console.error("[TELEGRAM PIPELINE] Failed to parse Telegram JSON response:", jsonErr);
-      }
-
-      if (response.ok && data.ok) {
-        console.log("[TELEGRAM PIPELINE] Final API response: Notification Delivered successfully.");
+      if (response.ok && telegram.ok) {
         return { success: true };
       }
 
-      // Map specific error reasons returned from Telegram API
-      let errorReason = "Telegram API rejected request";
-      const desc = (data.description || "").toLowerCase();
-
-      if (response.status === 401) {
-        errorReason = "Unauthorized Bot";
-      } else if (response.status === 403 || desc.includes("block")) {
-        errorReason = "Bot blocked";
-      } else if (desc.includes("chat not found")) {
-        errorReason = "Chat Not Found";
-      } else if (desc.includes("entities") || desc.includes("parse")) {
-        errorReason = "Invalid Parse Mode";
-      } else if (response.status === 429) {
-        errorReason = "Rate Limited";
+      // Step 5: If telegram returns ok: false, throw specific API error details
+      if (telegram && telegram.ok === false) {
+        throw new Error(`Telegram Error ${telegram.error_code}: ${telegram.description}`);
       }
 
-      // Check if we should retry (429 or 5xx)
-      const shouldRetryStatus = response.status === 429 || (response.status >= 500 && response.status <= 504);
-      if (shouldRetryStatus && attempt < maxAttempts) {
-        console.warn(`[TELEGRAM PIPELINE] Retrying in ${delay}ms due to status ${response.status}: ${errorReason}`);
-        await sleep(delay);
-        delay *= 2; // exponential backoff multiplier
-        attempt++;
-        continue;
-      }
-
-      return {
-        success: false,
-        reason: errorReason,
-        errorDetails: {
-          statusCode: response.status,
-          description: data.description,
-          errorCode: data.error_code
-        }
-      };
+      throw new Error(`HTTP Error ${response.status}`);
     } catch (err: any) {
       clearTimeout(timeoutId);
-      
-      const isTimeout = err.name === "AbortError";
-      const errorReason = isTimeout ? "Network Timeout" : "Connection Exception";
-      console.error(`[TELEGRAM PIPELINE] Telegram Exception:`, err);
+      console.error(`Telegram Exception (Attempt ${attempt}/${maxAttempts}):`, err);
 
-      // Retry on network errors or timeouts
-      if (attempt < maxAttempts) {
-        console.warn(`[TELEGRAM PIPELINE] Retrying in ${delay}ms due to exception...`);
+      // Check if we should retry (transient or network errors)
+      const isTimeout = err.name === "AbortError";
+      const isTransient = err.message && (err.message.includes("429") || err.message.includes("500") || err.message.includes("502") || err.message.includes("503") || err.message.includes("504"));
+      
+      if ((isTimeout || isTransient) && attempt < maxAttempts) {
+        console.warn(`[TELEGRAM RETRY] Delaying ${delay}ms before next retry...`);
         await sleep(delay);
         delay *= 2;
         attempt++;
         continue;
       }
 
+      let mappedReason = "Telegram API rejected request";
+      const errMsg = err.message || "";
+      
+      if (errMsg.includes("401")) mappedReason = "Unauthorized Bot";
+      else if (errMsg.includes("403") || errMsg.toLowerCase().includes("block")) mappedReason = "Bot blocked";
+      else if (errMsg.toLowerCase().includes("chat not found") || errMsg.includes("400")) mappedReason = "Chat Not Found";
+      else if (errMsg.toLowerCase().includes("entities") || errMsg.toLowerCase().includes("parse")) mappedReason = "Invalid Parse Mode";
+      else if (isTimeout) mappedReason = "Network Timeout";
+
       return {
         success: false,
-        reason: errorReason,
-        errorDetails: { message: err.message }
+        reason: mappedReason,
+        errorDetails: { message: errMsg }
       };
     }
   }

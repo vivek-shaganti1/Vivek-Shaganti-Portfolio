@@ -1173,15 +1173,18 @@ export default function Home() {
     e.preventDefault();
     setIsSubmittingContact(true);
     try {
+      const payload = {
+        ...contactForm,
+        referrer: typeof document !== "undefined" ? document.referrer || "Direct" : "Direct",
+        resumeViewed: true,
+        resumeDownloaded: analyticsData.downloads > 0
+      };
+      console.log("Submitting contact payload:", JSON.stringify(payload, null, 2));
+
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...contactForm,
-          referrer: document.referrer || "Direct",
-          resumeViewed: true,
-          resumeDownloaded: analyticsData.downloads > 0
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {

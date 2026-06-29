@@ -25,31 +25,58 @@ export async function POST(req: NextRequest) {
       rateLimitMap.set(ip, { count: 1, resetAt: now + 15 * 60 * 1000 });
     }
 
-    const payload = await req.json();
-    
-    // Validation & Sanitization
-    if (!payload.name || !payload.company || !payload.email || !payload.subject || !payload.message) {
-      return NextResponse.json(
-        { success: false, reason: "Missing required contact parameters: name, company, email, subject, message" },
-        { status: 400 }
-      );
+    // Step 2: Log incoming body and validate fields
+    const body = await req.json();
+    console.log("Incoming recruiter payload:", body);
+
+    if (!body) {
+      return NextResponse.json({ success: false, reason: "Invalid payload" }, { status: 400 });
+    }
+    if (!body.name) {
+      return NextResponse.json({ success: false, reason: "Name is missing" }, { status: 400 });
+    }
+    if (!body.email) {
+      return NextResponse.json({ success: false, reason: "Email is missing" }, { status: 400 });
+    }
+    if (!body.company) {
+      return NextResponse.json({ success: false, reason: "Company is missing" }, { status: 400 });
+    }
+    if (!body.subject) {
+      return NextResponse.json({ success: false, reason: "Subject is missing" }, { status: 400 });
+    }
+    if (!body.message) {
+      return NextResponse.json({ success: false, reason: "Message is empty" }, { status: 400 });
     }
 
-    // Sanitize basic strings
+    // Step 3: Log bot environment status check
+    console.log({
+      hasToken: !!process.env.TELEGRAM_BOT_TOKEN,
+      chatId: process.env.TELEGRAM_CHAT_ID,
+      tokenLength: process.env.TELEGRAM_BOT_TOKEN?.length
+    });
+
+    if (!process.env.TELEGRAM_BOT_TOKEN) {
+      return NextResponse.json({ success: false, error: "Missing TELEGRAM_BOT_TOKEN" }, { status: 500 });
+    }
+    if (!process.env.TELEGRAM_CHAT_ID) {
+      return NextResponse.json({ success: false, error: "Missing TELEGRAM_CHAT_ID" }, { status: 500 });
+    }
+
+    // Sanitize strings
     const sanitize = (val: string) => (val || "").trim().replace(/[<>]/g, "");
     const sanitizedPayload = {
-      name: sanitize(payload.name),
-      company: sanitize(payload.company),
-      email: sanitize(payload.email),
-      phone: sanitize(payload.phone),
-      subject: sanitize(payload.subject),
-      message: sanitize(payload.message),
-      linkedinUrl: sanitize(payload.linkedinUrl),
-      country: sanitize(payload.country || "Unknown"),
-      budget: sanitize(payload.budget),
-      hiringTimeline: sanitize(payload.hiringTimeline),
-      recruitmentType: sanitize(payload.recruitmentType || "General"),
-      referrer: sanitize(payload.referrer || "Direct")
+      name: sanitize(body.name),
+      company: sanitize(body.company),
+      email: sanitize(body.email),
+      phone: sanitize(body.phone),
+      subject: sanitize(body.subject),
+      message: sanitize(body.message),
+      linkedinUrl: sanitize(body.linkedinUrl),
+      country: sanitize(body.country || "Unknown"),
+      budget: sanitize(body.budget),
+      hiringTimeline: sanitize(body.hiringTimeline),
+      recruitmentType: sanitize(body.recruitmentType || "General"),
+      referrer: sanitize(body.referrer || "Direct")
     };
 
     const browser = parseBrowser(userAgent);
@@ -69,7 +96,7 @@ export async function POST(req: NextRequest) {
     // 1. Save to Database
     const saved = await insertRecruiter(submission as any);
 
-    // 2. Dispatch Telegram Notification with timeout and retry safety
+    // 2. Dispatch Telegram Notification
     const res = await sendTelegramNotification(saved);
 
     // 3. Log event
@@ -89,9 +116,17 @@ export async function POST(req: NextRequest) {
         data: saved
       }, { status: 400 });
     }
-  } catch (err: any) {
-    console.error("[API CONTACT ERROR] Exception handled:", err);
-    return NextResponse.json({ success: false, reason: err.message || "Internal server error" }, { status: 500 });
+  } catch (error: any) {
+    // Step 1: Wrap entire route error catch handler
+    console.error("API contact submission failure:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        stack: process.env.NODE_ENV === "development" ? error.stack : undefined
+      },
+      { status: 500 }
+    );
   }
 }
 
