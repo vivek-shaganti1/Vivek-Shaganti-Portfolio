@@ -63,12 +63,12 @@ export default function RobotCompanion({ themeMode = "volt" }: RobotCompanionPro
       ref={robotRef}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="relative w-40 h-40 flex items-center justify-center select-none z-30"
+      className="relative w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 flex items-center justify-center select-none z-30"
     >
       {/* Floating Holographic Grid Ring */}
       <motion.div 
         className={cn(
-          "absolute w-32 h-32 rounded-full border border-dashed opacity-25 animate-[spin_10s_linear_infinite]",
+          "absolute w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-full border border-dashed opacity-25 animate-[spin_10s_linear_infinite]",
           themeMode === "volt" && "border-[#CCFF00]",
           themeMode === "amber" && "border-[#FFDE21]",
           themeMode === "chrome" && "border-sky-400"
@@ -117,7 +117,7 @@ export default function RobotCompanion({ themeMode = "volt" }: RobotCompanionPro
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="w-24 h-24 relative flex flex-col items-center justify-center cursor-pointer"
+        className="w-12 h-12 sm:w-20 sm:h-20 md:w-24 md:h-24 relative flex flex-col items-center justify-center cursor-pointer"
         onClick={() => {
           // Open chatbot
           window.dispatchEvent(new CustomEvent("recruiter-chat-trigger"));

@@ -1547,7 +1547,7 @@ export default function Home() {
   }, [visitors]);
 
   return (
-    <div className={cn("min-h-screen bg-[#060608] text-zinc-300 font-mono relative overflow-hidden flex flex-col justify-between theme-light-wrapper", resolvedTheme === "light" && "theme-light")}>
+    <div className={cn("min-h-screen bg-[#060608] text-zinc-300 font-mono relative overflow-x-hidden flex flex-col justify-between theme-light-wrapper", resolvedTheme === "light" && "theme-light")}>
       {/* DYNAMIC LIGHT MODE OVERRIDES */}
       {resolvedTheme === "light" && (
         <style dangerouslySetInnerHTML={{ __html: `
@@ -3978,7 +3978,7 @@ export default function Home() {
       </AnimatePresence>
 
       {/* AI Robot Companion Floating Mascot */}
-      <div className="fixed bottom-20 right-6 z-50">
+      <div className="fixed bottom-[20px] right-[16px] md:bottom-12 md:right-8 lg:bottom-20 lg:right-6 z-50">
         <RobotCompanion themeMode={themeMode} />
       </div>
 
