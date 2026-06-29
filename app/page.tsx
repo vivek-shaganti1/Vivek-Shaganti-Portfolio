@@ -615,15 +615,23 @@ export function KnowledgeGraph({ themeMode, onNodeSelect }: { themeMode: ThemeMo
     isDraggingCanvas.current = false;
   };
 
-  const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
-    const zoomFactor = 1.05;
-    if (e.deltaY < 0) {
-      setZoom(z => Math.min(z * zoomFactor, 2.5));
-    } else {
-      setZoom(z => Math.max(z / zoomFactor, 0.4));
-    }
-  };
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const handleRawWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const zoomFactor = 1.05;
+      if (e.deltaY < 0) {
+        setZoom(z => Math.min(z * zoomFactor, 2.5));
+      } else {
+        setZoom(z => Math.max(z / zoomFactor, 0.4));
+      }
+    };
+    canvas.addEventListener("wheel", handleRawWheel, { passive: false });
+    return () => {
+      canvas.removeEventListener("wheel", handleRawWheel);
+    };
+  }, []);
 
   return (
     <div ref={containerRef} className="w-full h-full relative cursor-grab active:cursor-grabbing select-none bg-black/40">
@@ -633,7 +641,6 @@ export function KnowledgeGraph({ themeMode, onNodeSelect }: { themeMode: ThemeMo
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        onWheel={handleWheel}
         className="w-full h-full block"
       />
       <div className="absolute bottom-3 left-3 flex flex-col gap-1 text-[9px] font-mono text-zinc-600 bg-zinc-950/80 border border-zinc-900 px-2.5 py-1.5 rounded select-none pointer-events-none">
@@ -3421,6 +3428,33 @@ export default function Home() {
                         <div className="flex justify-between"><span>Mobile</span><span className="text-white">25%</span></div>
                         <div className="flex justify-between"><span>Tablet</span><span className="text-white">3%</span></div>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Telegram Connectivity Audit Section */}
+                  <div className="p-4 border border-zinc-900 bg-zinc-955 rounded-xl space-y-3">
+                    <span className="text-zinc-650 text-[8px] uppercase tracking-wider block font-bold">Telegram Diagnostics</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-zinc-400 font-mono">Validate lead routing pipeline:</span>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            const res = await fetch("/api/debug/telegram");
+                            const data = await res.json();
+                            if (data.success) {
+                              setToast({ message: `Success: Connection active. Latency: ${data.latency}`, type: "success" });
+                            } else {
+                              setToast({ message: `Fault: ${data.reason || "failed"}`, type: "error" });
+                            }
+                          } catch (err: any) {
+                            setToast({ message: `Connection failed: ${err.message}`, type: "error" });
+                          }
+                        }}
+                        className="px-3 py-1.5 bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 rounded hover:bg-emerald-950/75 transition-colors uppercase font-bold text-[9px] cursor-pointer"
+                      >
+                        🟢 Test Telegram
+                      </button>
                     </div>
                   </div>
                 </div>

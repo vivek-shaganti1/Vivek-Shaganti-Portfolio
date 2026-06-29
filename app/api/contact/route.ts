@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { insertRecruiter, insertEvent } from "@/lib/db";
 import { sendTelegramNotification } from "@/lib/telegram";
 
-// Simple in-memory rate limiting (per server instance)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
 export async function POST(req: NextRequest) {
@@ -10,14 +9,14 @@ export async function POST(req: NextRequest) {
     const ip = req.headers.get("x-forwarded-for") || "127.0.0.1";
     const userAgent = req.headers.get("user-agent") || "";
     
-    // Rate Limiting Check (5 submissions per 15 minutes)
+    // Rate Limiting (5 submissions per 15 minutes)
     const now = Date.now();
     const limitInfo = rateLimitMap.get(ip);
     
     if (limitInfo && now < limitInfo.resetAt) {
       if (limitInfo.count >= 5) {
         return NextResponse.json(
-          { error: "Too many contact submissions. Please cooldown for 15 minutes." },
+          { success: false, reason: "Too many contact submissions. Please cooldown for 15 minutes." },
           { status: 429 }
         );
       }
@@ -28,21 +27,37 @@ export async function POST(req: NextRequest) {
 
     const payload = await req.json();
     
-    // Validation
+    // Validation & Sanitization
     if (!payload.name || !payload.company || !payload.email || !payload.subject || !payload.message) {
       return NextResponse.json(
-        { error: "Missing required contact parameters: name, company, email, subject, message" },
+        { success: false, reason: "Missing required contact parameters: name, company, email, subject, message" },
         { status: 400 }
       );
     }
 
-    // Determine basic OS, browser, device details from user agent
+    // Sanitize basic strings to prevent formatting breaches
+    const sanitize = (val: string) => (val || "").trim().replace(/[<>]/g, "");
+    const sanitizedPayload = {
+      name: sanitize(payload.name),
+      company: sanitize(payload.company),
+      email: sanitize(payload.email),
+      phone: sanitize(payload.phone),
+      subject: sanitize(payload.subject),
+      message: sanitize(payload.message),
+      linkedinUrl: sanitize(payload.linkedinUrl),
+      country: sanitize(payload.country || "Unknown"),
+      budget: sanitize(payload.budget),
+      hiringTimeline: sanitize(payload.hiringTimeline),
+      recruitmentType: sanitize(payload.recruitmentType || "General"),
+      referrer: sanitize(payload.referrer || "Direct")
+    };
+
     const browser = parseBrowser(userAgent);
     const os = parseOS(userAgent);
     const device = parseDevice(userAgent);
 
     const submission = {
-      ...payload,
+      ...sanitizedPayload,
       ip,
       browser,
       os,
@@ -51,23 +66,41 @@ export async function POST(req: NextRequest) {
       notes: ""
     };
 
-    // Save to database
-    const saved = await insertRecruiter(submission);
+    // 1. Save to Database
+    const saved = await insertRecruiter(submission as any);
 
-    // Send Telegram Notification
-    await sendTelegramNotification(saved);
+    // 2. Dispatch Telegram Notification with timeout safety
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
-    // Log the event
+    let telegramSent = false;
+    try {
+      telegramSent = await sendTelegramNotification(saved);
+      clearTimeout(timeoutId);
+    } catch (telegramErr) {
+      clearTimeout(timeoutId);
+      console.error("[API CONTACT TELEGRAM FAIL]", telegramErr);
+    }
+
+    // 3. Log event
     await insertEvent({
       type: "contact_submit",
-      metadata: { company: saved.company, recruitmentType: saved.recruitmentType },
+      metadata: { company: saved.company, recruitmentType: saved.recruitmentType, telegramSent },
       ip
     });
 
-    return NextResponse.json({ success: true, data: saved });
+    if (telegramSent) {
+      return NextResponse.json({ success: true, data: saved });
+    } else {
+      return NextResponse.json({
+        success: false,
+        reason: "Message successfully saved to database but Telegram delivery failed. Vivek will check CRM logs.",
+        data: saved
+      }, { status: 202 }); // Accepted but incomplete action
+    }
   } catch (err: any) {
     console.error("[API CONTACT ERROR] Exception handled:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ success: false, reason: err.message || "Internal server error" }, { status: 500 });
   }
 }
 
