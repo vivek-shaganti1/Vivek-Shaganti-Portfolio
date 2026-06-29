@@ -998,6 +998,8 @@ export default function Home() {
     referrer: "LinkedIn"
   });
   const [isSubmittingContact, setIsSubmittingContact] = useState(false);
+  const [telegramTestResult, setTelegramTestResult] = useState<any>(null);
+  const [isTestingTelegram, setIsTestingTelegram] = useState(false);
 
   const themes = {
     volt: {
@@ -3438,24 +3440,69 @@ export default function Home() {
                       <span className="text-[10px] text-zinc-400 font-mono">Validate lead routing pipeline:</span>
                       <button
                         type="button"
+                        disabled={isTestingTelegram}
                         onClick={async () => {
+                          setIsTestingTelegram(true);
+                          setTelegramTestResult(null);
                           try {
                             const res = await fetch("/api/debug/telegram");
                             const data = await res.json();
+                            setTelegramTestResult(data);
                             if (data.success) {
-                              setToast({ message: `Success: Connection active. Latency: ${data.latency}`, type: "success" });
+                              setToast({ message: "Telegram integration connected and active!", type: "success" });
                             } else {
-                              setToast({ message: `Fault: ${data.reason || "failed"}`, type: "error" });
+                              setToast({ message: `Fault: ${data.reason || "Verification failed"}`, type: "error" });
                             }
                           } catch (err: any) {
+                            setTelegramTestResult({
+                              success: false,
+                              reason: "Connection failed",
+                              error: err.message
+                            });
                             setToast({ message: `Connection failed: ${err.message}`, type: "error" });
+                          } finally {
+                            setIsTestingTelegram(false);
                           }
                         }}
-                        className="px-3 py-1.5 bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 rounded hover:bg-emerald-950/75 transition-colors uppercase font-bold text-[9px] cursor-pointer"
+                        className="px-3 py-1.5 bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 rounded hover:bg-emerald-950/75 transition-colors uppercase font-bold text-[9px] cursor-pointer disabled:opacity-50"
                       >
-                        🟢 Test Telegram
+                        {isTestingTelegram ? "🟡 Running..." : "🟢 Test Telegram"}
                       </button>
                     </div>
+
+                    {telegramTestResult && (
+                      <div className="mt-2 p-2.5 bg-black/40 border border-zinc-900 rounded font-mono text-[9px] space-y-1">
+                        <div>
+                          <span className="text-zinc-500 font-bold">Status: </span>
+                          <span className={telegramTestResult.success ? "text-emerald-400 font-bold" : "text-rose-500 font-bold"}>
+                            {telegramTestResult.success ? "Connected" : "Failed"}
+                          </span>
+                        </div>
+                        {telegramTestResult.reason && (
+                          <div>
+                            <span className="text-zinc-500 font-bold">Reason: </span>
+                            <span className="text-zinc-300">{telegramTestResult.reason}</span>
+                          </div>
+                        )}
+                        {telegramTestResult.latency && (
+                          <div>
+                            <span className="text-zinc-500 font-bold">Latency: </span>
+                            <span className="text-zinc-300">{telegramTestResult.latency}</span>
+                          </div>
+                        )}
+                        {telegramTestResult.error && (
+                          <div className="pt-1 text-rose-400/80 break-all">
+                            <span className="text-zinc-500 font-bold">Response: </span>
+                            <code>{telegramTestResult.error}</code>
+                          </div>
+                        )}
+                        {telegramTestResult.success && (
+                          <div className="text-emerald-400/80">
+                            <span>✅ Message Sent via bot @{telegramTestResult.botName}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

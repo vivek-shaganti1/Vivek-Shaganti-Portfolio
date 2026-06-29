@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Sanitize basic strings to prevent formatting breaches
+    // Sanitize basic strings
     const sanitize = (val: string) => (val || "").trim().replace(/[<>]/g, "");
     const sanitizedPayload = {
       name: sanitize(payload.name),
@@ -69,34 +69,25 @@ export async function POST(req: NextRequest) {
     // 1. Save to Database
     const saved = await insertRecruiter(submission as any);
 
-    // 2. Dispatch Telegram Notification with timeout safety
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
-
-    let telegramSent = false;
-    try {
-      telegramSent = await sendTelegramNotification(saved);
-      clearTimeout(timeoutId);
-    } catch (telegramErr) {
-      clearTimeout(timeoutId);
-      console.error("[API CONTACT TELEGRAM FAIL]", telegramErr);
-    }
+    // 2. Dispatch Telegram Notification with timeout and retry safety
+    const res = await sendTelegramNotification(saved);
 
     // 3. Log event
     await insertEvent({
       type: "contact_submit",
-      metadata: { company: saved.company, recruitmentType: saved.recruitmentType, telegramSent },
+      metadata: { company: saved.company, recruitmentType: saved.recruitmentType, telegramSent: res.success },
       ip
     });
 
-    if (telegramSent) {
+    if (res.success) {
       return NextResponse.json({ success: true, data: saved });
     } else {
       return NextResponse.json({
         success: false,
-        reason: "Message successfully saved to database but Telegram delivery failed. Vivek will check CRM logs.",
+        reason: res.reason || "Telegram API rejected request",
+        details: res.errorDetails,
         data: saved
-      }, { status: 202 }); // Accepted but incomplete action
+      }, { status: 400 });
     }
   } catch (err: any) {
     console.error("[API CONTACT ERROR] Exception handled:", err);

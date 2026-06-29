@@ -9,24 +9,26 @@ export async function GET() {
       success: false,
       reason: "Missing environment variables",
       details: { botToken: !!botToken, chatId: !!chatId }
-    }, { status: 400 });
+    }, { status: 500 });
   }
 
   const startTime = Date.now();
   try {
-    // 1. Verify Bot Connection
+    // 1. Verify Bot Token
     const getMeRes = await fetch(`https://api.telegram.org/bot${botToken}/getMe`);
     if (!getMeRes.ok) {
+      const errText = await getMeRes.text();
       return NextResponse.json({
         success: false,
-        reason: "Invalid Bot Token",
-        statusCode: getMeRes.status
-      }, { status: 400 });
+        botWorking: "Failed",
+        reason: "Unauthorized Bot - Invalid Bot Token",
+        error: errText
+      }, { status: 401 });
     }
     const getMeData = await getMeRes.json();
 
-    // 2. Verify Chat ID connection by sending diagnostic HTML template message
-    const testMsg = `⚡ <b>TELEGRAM DIAGNOSTIC AUDIT</b>\n\n• Bot Username: @${getMeData.result?.username}\n• Connectivity: Active\n• Status: Ready`;
+    // 2. Verify Chat ID connection by sending diagnostic test message
+    const testMsg = `⚡ <b>TELEGRAM DIAGNOSTIC AUDIT</b>\n\n• Bot: @${getMeData.result?.username}\n• Status: Integration is fully operational.`;
     const sendRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -41,26 +43,37 @@ export async function GET() {
 
     if (!sendRes.ok) {
       const errText = await sendRes.text();
+      let reason = "Telegram API rejected request";
+      try {
+        const parsed = JSON.parse(errText);
+        if (parsed.description && parsed.description.toLowerCase().includes("chat not found")) {
+          reason = "Chat Not Found";
+        } else if (parsed.description && parsed.description.toLowerCase().includes("block")) {
+          reason = "Bot blocked";
+        }
+      } catch (e) {}
+
       return NextResponse.json({
         success: false,
-        reason: "Chat ID verification failed",
+        botWorking: "Bot Active",
+        chatReachable: "Failed",
+        reason,
         error: errText
       }, { status: 400 });
     }
 
     return NextResponse.json({
       success: true,
-      botConnected: true,
+      botWorking: "Bot Working",
+      chatReachable: "Chat Reachable",
+      messageSent: "Message Sent",
       botName: getMeData.result?.username,
-      chatFound: true,
-      tokenValid: true,
-      latency: `${latency}ms`,
-      status: "Ready"
+      latency: `${latency}ms`
     });
   } catch (err: any) {
     return NextResponse.json({
       success: false,
-      reason: "Connection Exception",
+      reason: "Network Timeout or Connectivity Exception",
       error: err.message
     }, { status: 500 });
   }
